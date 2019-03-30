@@ -5,6 +5,7 @@ export const RESUME_PATH = "/resume/:title";
 export const RESET_PATH = "/reset/:token";
 export const ZURUCK_SETZEN_PFAD_ANFORDERN = "anfordern";
 export const PASSWORD_RESET_PATH = "/password-reset";
+export const CLIENT_ONLY_PATH_PREFIX = "/app";
 
 // istanbul ignore next:
 export function removeTrailingSlash(pathname: string) {

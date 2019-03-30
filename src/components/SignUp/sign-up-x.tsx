@@ -16,7 +16,8 @@ import {
   initialFormValues,
   ValidationSchema,
   FormValuesKey,
-  FORMULAR_PASSWORT_RENDERN_MERKMALE
+  FORM_RENDER_PROPS,
+  uiTexts
 } from "./sign-up";
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
 import { LOGIN_URL } from "../../routing";
@@ -24,16 +25,9 @@ import {
   BerechtigungKarte,
   BerechtigungHaupanwendung
 } from "../../styles/mixins";
-import refreshToHomeDefault from "../../refresh-to-home";
+import refreshToAppDefault from "../../refresh-to-app";
 import getConnDefault from "../../State/get-conn-status";
 import { noOp } from "../../constants";
-
-const FORM_RENDER_PROPS = {
-  name: ["Name", "text"],
-  email: ["Email", "email"],
-  source: ["Source", "text"],
-  ...FORMULAR_PASSWORT_RENDERN_MERKMALE
-};
 
 export function SignUp(merkmale: Props) {
   const {
@@ -42,7 +36,7 @@ export function SignUp(merkmale: Props) {
     updateLocalUser,
     scrollToTop: scrollToTopFromProps,
     getConn = getConnDefault,
-    refreshToHome = refreshToHomeDefault,
+    refreshToHome = refreshToAppDefault,
     client
   } = merkmale;
 
@@ -184,7 +178,7 @@ export function SignUp(merkmale: Props) {
 
     if (content) {
       return (
-        <Card.Content extra={true} data-testid="sign-up-form-error">
+        <Card.Content extra={true} data-testid={uiTexts.formErrorTestId}>
           <Message error={true} onDismiss={handleErrorsDismissed}>
             <Message.Content>{content}</Message.Content>
           </Message>
@@ -228,7 +222,7 @@ export function SignUp(merkmale: Props) {
               type="submit"
               fluid={true}
             >
-              <Icon name="checkmark" /> Submit
+              <Icon name="checkmark" /> {uiTexts.submitBtn}
             </Button>
           </Form>
         </Card.Content>

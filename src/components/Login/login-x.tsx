@@ -15,7 +15,7 @@ import { Props, ValidationSchema } from "./login";
 import { LoginInput } from "../../graphql/apollo/types/globalTypes";
 import PwdInput from "../PwdInput";
 import { BerechtigungKarte } from "../../styles/mixins";
-import refreshToHomeDefault from "../../refresh-to-home";
+import refreshToAppDefault from "../../refresh-to-app";
 import getConnDefault from "../../State/get-conn-status";
 import { BerechtigungHaupanwendung } from "../../styles/mixins";
 import { SIGN_UP_URL } from "../../routing";
@@ -31,7 +31,7 @@ export function Login(merkmale: Props) {
     navigate,
     client,
     getConn = getConnDefault,
-    refreshToHome = refreshToHomeDefault,
+    refreshToHome = refreshToAppDefault,
     login,
     header
   } = merkmale;
