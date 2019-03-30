@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
 import { PersistCacheFn } from "../State/apollo-setup";
@@ -13,10 +13,9 @@ export const ResumemakrContext = createContext<ResumemakrContextProps>({});
 
 export const ResumemakrProvider = ResumemakrContext.Provider;
 
-export function useSetupCachePersistor({
-  cache,
-  persistCache
-}: ResumemakrContextProps) {
+export function useSetupCachePersistor() {
+  const { cache, persistCache } = useContext(ResumemakrContext);
+
   if (!(cache && persistCache)) {
     return null;
   }

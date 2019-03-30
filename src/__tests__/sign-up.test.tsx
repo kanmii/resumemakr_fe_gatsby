@@ -8,7 +8,11 @@ import {
 } from "react-testing-library";
 
 import { SignUp } from "../components/SignUp/sign-up-x";
-import { Props, passworteNichtGleich } from "../components/SignUp/sign-up";
+import {
+  Props,
+  passworteNichtGleich,
+  uiTexts
+} from "../components/SignUp/sign-up";
 import { LOGIN_URL } from "../routing";
 
 import { fillField, WithData, renderWithApollo } from "./test_utils";
@@ -16,6 +20,7 @@ import { fillField, WithData, renderWithApollo } from "./test_utils";
 const SignUpP = SignUp as React.FunctionComponent<Partial<Props>>;
 const passwortMuster = new RegExp("Password");
 const passBestMuster = new RegExp("Password Confirmation");
+const submitBtnPattern = new RegExp(uiTexts.submitBtn, "i");
 
 import {
   UserRegMutation,
@@ -52,7 +57,7 @@ it("renders correctly and submits", async () => {
     getByText(/Already have an account\? Login/)
   );
 
-  const $button = getByText(/Submit/);
+  const $button = getByText(submitBtnPattern);
   expect($button.getAttribute("name")).toBe("sign-up-submit");
   expect($button).toBeDisabled();
 
@@ -111,7 +116,7 @@ it("renders error if password and password confirm are not same", async () => {
   fillField(getByLabelText(passBestMuster), "awesome pass1");
 
   act(() => {
-    fireEvent.click(getByText(/Submit/));
+    fireEvent.click(getByText(submitBtnPattern));
   });
 
   const $error = await waitForElement(() => getByTestId("sign-up-form-error"));
@@ -143,7 +148,9 @@ it("renders error if server returns error", async () => {
   const { getByText, getByLabelText, getByTestId } = render(ui);
   fillForm(getByLabelText, getByText);
 
-  const $error = await waitForElement(() => getByTestId("sign-up-form-error"));
+  const $error = await waitForElement(() =>
+    getByTestId(uiTexts.formErrorTestId)
+  );
   expect($error).toContainElement(getByText(/email/i));
   expect(mockScrollToTop).toBeCalled();
 });
@@ -220,7 +227,7 @@ function fillForm(getByLabelText: any, getByText: any) {
   fillField(getByLabelText(passBestMuster), "awesome pass");
 
   act(() => {
-    fireEvent.click(getByText(/Submit/));
+    fireEvent.click(getByText(submitBtnPattern));
   });
 }
 

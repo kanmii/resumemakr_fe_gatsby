@@ -1,13 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Helmet } from "react-helmet";
 
 import GlobalStyle from "../../styles/global-style";
 import { AppContainer } from "../../styles/mixins";
-import { ResumemakrContext, useSetupCachePersistor } from "../resumemakr";
+import { useSetupCachePersistor } from "../resumemakr";
 
 export function Layout({ children }: React.PropsWithChildren<{}>) {
-  const appContext = useContext(ResumemakrContext);
-  useSetupCachePersistor(appContext);
+  useSetupCachePersistor();
 
   return (
     <>

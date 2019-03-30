@@ -28,6 +28,7 @@ import {
 import refreshToAppDefault from "../../refresh-to-app";
 import getConnDefault from "../../State/get-conn-status";
 import { noOp } from "../../constants";
+import { clearToken } from "../../State/tokens";
 
 export function SignUp(merkmale: Props) {
   const {
@@ -71,6 +72,7 @@ export function SignUp(merkmale: Props) {
     validateForm
   }: FormikProps<RegistrationInput>) {
     return async function() {
+      clearToken();
       setSubmitting(true);
       handleErrorsDismissed();
 

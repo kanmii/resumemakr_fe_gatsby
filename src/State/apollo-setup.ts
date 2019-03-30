@@ -63,7 +63,9 @@ export function buildClientCache(
         })
       );
     } else {
-      const absintheSocket = AbsintheSocket.create(getSocket({ onConnChange }));
+      const absintheSocket = AbsintheSocket.create(
+        getSocket({ onConnChange, uri })
+      );
       let socketLink = createAbsintheSocketLink(absintheSocket);
 
       socketLink = middlewareAuthLink(headers).concat(socketLink);

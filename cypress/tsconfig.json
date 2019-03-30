@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "es5",
+    "lib": ["es6", "dom", "esnext"],
+    "types": ["cypress", "cypress-testing-library/typings"]
+  },
+  "include": ["node_modules/cypress", "**/*.ts"]
+}

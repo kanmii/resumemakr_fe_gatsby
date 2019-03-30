@@ -4,7 +4,7 @@ import getBackendUrls from "./State/get-backend-urls";
 
 let socket: Socket;
 
-function defineSocket  (props: DefineParams) {
+function defineSocket(props: DefineParams) {
   // if we are disconnected, phoenix will keep trying to connect which means
   // we will keep dispatching disconnect.  So we track if we already dispatched
   // disconnect (socketDisconnectedCount = 1) and if so we do not send another
@@ -13,7 +13,7 @@ function defineSocket  (props: DefineParams) {
 
   function appConnect(token = getToken()) {
     const params = makeParams(token);
-    socket = new Socket(getBackendUrls().websocketUrl, params);
+    socket = new Socket(getBackendUrls(props.uri).websocketUrl, params);
     socket.connect();
 
     socket.onOpen(() => {
@@ -61,7 +61,7 @@ function defineSocket  (props: DefineParams) {
   }
 
   return socket;
-};
+}
 
 export function getSocket(params: DefineParams = {}) {
   if (socket) {
@@ -75,4 +75,5 @@ export default getSocket;
 
 interface DefineParams {
   onConnChange?: (connStatus: boolean) => void;
+  uri?: string;
 }

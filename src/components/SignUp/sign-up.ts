@@ -66,3 +66,16 @@ export const FORMULAR_PASSWORT_RENDERN_MERKMALE = {
   password: ["Password", "password"],
   passwordConfirmation: ["Password Confirmation", "password"]
 };
+
+export const FORM_RENDER_PROPS = {
+  name: ["Name", "text"],
+  email: ["Email", "email"],
+  source: ["Source", "text"],
+  ...FORMULAR_PASSWORT_RENDERN_MERKMALE
+};
+
+export const uiTexts = {
+  submitBtn: "Sign up for resumemakr",
+
+  formErrorTestId: "sign-up-form-error"
+};

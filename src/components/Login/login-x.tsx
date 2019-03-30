@@ -20,6 +20,7 @@ import getConnDefault from "../../State/get-conn-status";
 import { BerechtigungHaupanwendung } from "../../styles/mixins";
 import { SIGN_UP_URL } from "../../routing";
 import { noOp } from "../../constants";
+import { clearToken } from "../../State/tokens";
 
 const Errors = React.memo(ErrorsComp, ErrorsCompEqual);
 
@@ -71,6 +72,8 @@ export function Login(merkmale: Props) {
     validateForm
   }: FormikProps<LoginInput>) {
     return async function() {
+      clearToken();
+
       setSubmitting(true);
       handleErrorsDismissed();
 
