@@ -88,6 +88,10 @@ export function buildClientCache(
 
 export default buildClientCache;
 
+export type PersistCacheFn = (
+  appCache: InMemoryCache
+) => Promise<CachePersistor<NormalizedCacheObject>>;
+
 export async function persistCache(appCache: InMemoryCache) {
   if (!persistor) {
     persistor = new CachePersistor({

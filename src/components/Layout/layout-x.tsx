@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Helmet } from "react-helmet";
 
 import GlobalStyle from "../../styles/global-style";
 import { AppContainer } from "../../styles/mixins";
+import { ResumemakrContext, useSetupCachePersistor } from "../resumemakr";
 
 export function Layout({ children }: React.PropsWithChildren<{}>) {
+  const appContext = useContext(ResumemakrContext);
+  useSetupCachePersistor(appContext);
+
   return (
     <>
       <Helmet>
@@ -14,7 +18,7 @@ export function Layout({ children }: React.PropsWithChildren<{}>) {
 
         <meta
           name="viewport"
-          content="width=device-width, initial-scale=1, shrink-to-fit=no"
+          content="width=<device-width, initial-scale=1, shrink-to-fit=no"
         />
         <meta name="theme-color" content="#31383F" />
 

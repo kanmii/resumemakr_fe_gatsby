@@ -3,10 +3,23 @@ import { ApolloProvider } from "react-apollo";
 import "semantic-ui-css-offline";
 
 import "./src/styles/index.css";
-import buildClientCache from "./src/State/apollo-setup";
+import buildClientCache, { persistCache } from "./src/State/apollo-setup";
+import { ResumemakrProvider } from "./src/components/resumemakr";
 
-const { client } = buildClientCache();
+export const wrapRootElement = ({ element }) => {
+  const { client, cache } = buildClientCache();
 
-export const wrapRootElement = ({ element }) => (
-  <ApolloProvider client={client}>{element}</ApolloProvider>
-);
+  return (
+    <ApolloProvider client={client}>
+      <ResumemakrProvider
+        value={{
+          client,
+          cache,
+          persistCache
+        }}
+      >
+        {element}
+      </ResumemakrProvider>
+    </ApolloProvider>
+  );
+};

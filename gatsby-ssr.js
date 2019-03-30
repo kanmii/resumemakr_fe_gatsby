@@ -3,13 +3,24 @@ import { ApolloProvider } from "react-apollo";
 import fetch from "isomorphic-fetch";
 
 import buildClientCache from "./src/State/apollo-setup";
+import { ResumemakrProvider } from "./src/components/resumemakr";
 
-const { client } = buildClientCache({
-  isNodeJs: true,
-  uri: "/",
-  fetch
-});
+export const wrapRootElement = ({ element }) => {
+  const { client } = buildClientCache({
+    isNodeJs: true,
+    uri: "/",
+    fetch
+  });
 
-export const wrapRootElement = ({ element }) => (
-  <ApolloProvider client={client}>{element}</ApolloProvider>
-);
+  return (
+    <ApolloProvider client={client}>
+      <ResumemakrProvider
+        value={{
+          client
+        }}
+      >
+        {element}
+      </ResumemakrProvider>
+    </ApolloProvider>
+  );
+};
