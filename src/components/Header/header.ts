@@ -1,5 +1,6 @@
-import { LogoImageQuery_file_childImageSharp_fixed } from "../../graphql/gatsby/types/LogoImageQuery";
+import { RouteComponentProps } from "@reach/router";
 
+import { LogoImageQuery_file_childImageSharp_fixed } from "../../graphql/gatsby/types/LogoImageQuery";
 import { UserLocalGqlProps } from "../../State/auth.local.query";
 import { UserLocalMutationProps } from "../../State/user.local.mutation";
 
@@ -12,7 +13,8 @@ export interface Props
   extends OwnProps,
     UserLocalGqlProps,
     UserLocalMutationProps,
-    WithLogo {}
+    WithLogo,
+    RouteComponentProps<{}> {}
 
 export interface WithLogo {
   logoAttrs: LogoImageQuery_file_childImageSharp_fixed;
