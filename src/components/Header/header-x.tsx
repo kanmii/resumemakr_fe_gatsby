@@ -7,18 +7,21 @@ import {
   Dropdown,
   Responsive
 } from "semantic-ui-react";
-import { Link, navigate } from "@reach/router";
+import { Link, navigate, WindowLocation } from "@reach/router";
 
 import {
   LOGIN_URL,
   ROOT_URL,
   SIGN_UP_URL,
   PASSWORD_RESET_PATH,
-  removeTrailingSlash
+  removeTrailingSlash,
+  CLIENT_ONLY_PATH_PREFIX
 } from "../../routing";
 import { Container, LogoAnchor, LogoSpan } from "./header-styles";
 import { Props } from "./header";
 import { UserFragment } from "../../graphql/apollo/types/UserFragment";
+
+const HOME_URLS = [CLIENT_ONLY_PATH_PREFIX, ROOT_URL];
 
 export function Header(merkmale: Props) {
   const [aktiveArtikel] = useState("home");
@@ -29,20 +32,25 @@ export function Header(merkmale: Props) {
     userLocal,
     logoAttrs,
     updateLocalUser,
-    location
+    matchResumeRouteProps
   } = merkmale;
 
   const user = userLocal && userLocal.user;
 
-  // istanbul ignore next:
-  const pathname = removeTrailingSlash((location && location.pathname) || "");
+  const location = matchResumeRouteProps.location as WindowLocation;
+
+  const pathname = removeTrailingSlash(location.pathname);
+
+  const homeUrl = matchResumeRouteProps.match
+    ? CLIENT_ONLY_PATH_PREFIX
+    : ROOT_URL;
 
   let homeLinkProps = {};
 
-  if (pathname !== ROOT_URL && !user) {
-    homeLinkProps = { as: LogoAnchor, to: ROOT_URL };
-  } else {
+  if (HOME_URLS.includes(pathname)) {
     homeLinkProps = { as: LogoSpan };
+  } else {
+    homeLinkProps = { as: LogoAnchor, to: homeUrl };
   }
 
   const showAuthLinks =

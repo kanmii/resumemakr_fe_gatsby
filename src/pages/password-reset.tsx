@@ -1,6 +1,6 @@
 import React from "react";
 import { RouteComponentProps } from "@reach/router";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 import Layout from "../components/Layout";
 import Header from "../components/Header";

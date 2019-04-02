@@ -8,7 +8,8 @@ import { Header } from "./header-x";
 import { OwnProps } from "./header";
 import { userLocalMutationGql } from "../../State/user.local.mutation";
 import { fetchLogoHOC } from "./fetch-logo";
-import { locationHOC } from "../components";
+import { withMatchHOC } from "../components";
+import { RESUME_PATH } from "../../routing";
 
 const userLocalGql = graphql<
   OwnProps,
@@ -23,7 +24,7 @@ const userLocalGql = graphql<
 });
 
 export default compose(
-  locationHOC,
+  withMatchHOC(RESUME_PATH, "matchResumeRouteProps"),
   userLocalGql,
   userLocalMutationGql,
   fetchLogoHOC

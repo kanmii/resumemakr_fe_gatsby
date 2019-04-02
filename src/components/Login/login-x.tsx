@@ -56,7 +56,6 @@ export function Login(merkmale: Props) {
     if (!user) {
       return;
     }
-
     if (updateLocalUser) {
       updateLocalUser({
         variables: {

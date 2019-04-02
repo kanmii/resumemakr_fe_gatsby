@@ -6,6 +6,7 @@ export const FIRST_LEVEL_CLASS = "app-container";
 export const SECOND_LEVEL_CLASS = "app-main";
 export const ALREADY_UPLOADED = "___ALREADY_UPLOADED___";
 export const SITE_TITLE = "Resume Makr";
+export const USER_KEY = "1554058206372----x-xxx---1554058219607";
 
 // istanbul ignore next:
 export function makeSiteTitle(title: string) {

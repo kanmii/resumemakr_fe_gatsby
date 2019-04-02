@@ -4,19 +4,13 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloLink } from "apollo-link";
 import { ApolloProvider } from "react-apollo";
 import { fireEvent } from "react-testing-library";
+import { RouteComponentProps } from "@reach/router";
 
 export function makeClient() {
   return new ApolloClient({
     cache: new InMemoryCache(),
     link: new ApolloLink()
   });
-}
-
-export interface HistoryProps {
-  push?: (path: string) => void;
-  replace?: (path: string) => void;
-  resumeMakrPath?: string;
-  match?: {};
 }
 
 export function renderWithApollo<TProps>(
@@ -31,6 +25,18 @@ export function renderWithApollo<TProps>(
         <Ui client={client} {...props} />
       </ApolloProvider>
     )
+  };
+}
+
+export function renderWithRouter<TProps extends RouteComponentProps>(
+  Ui: FunctionComponent<TProps> | ComponentClass<TProps>,
+  routerProps: Partial<RouteComponentProps> = {}
+) {
+  const { navigate = jest.fn(), ...rest } = routerProps;
+  return {
+    mockNavigate: navigate,
+    ...rest,
+    Ui: (props: TProps) => <Ui navigate={navigate} {...rest} {...props} />
   };
 }
 
