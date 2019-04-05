@@ -1,11 +1,11 @@
+import React from "react";
 import { graphql, compose } from "react-apollo";
+import { Helmet } from "react-helmet-async";
 
 import Home from "./home-x";
-
 import CREATE_RESUME_TITLE, {
   CreateResumeProps
 } from "../../graphql/apollo/create-resume.mutation";
-
 import CLONE_RESUME, {
   CloneResumeProps
 } from "../../graphql/apollo/clone-resume.mutation";
@@ -23,7 +23,12 @@ import {
 } from "../../graphql/apollo/types/CloneResume";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
-import { ResumeTitlesProps } from "./home";
+import { ResumeTitlesProps, Props } from "./home";
+import { HomeContainer } from "./home-styles";
+import Header from "../../components/Header";
+import Layout from "../Layout";
+import { makeSiteTitle } from "../../constants";
+import { appPageUiTexts } from "../app";
 
 const createResumeGql = graphql<
   {},
@@ -75,9 +80,25 @@ const cloneResumeGql = graphql<
   }
 });
 
+function ResumesRoute(props: Props) {
+  return (
+    <Layout>
+      <Helmet>
+        <title>{makeSiteTitle(appPageUiTexts.title)}</title>
+      </Helmet>
+
+      <HomeContainer>
+        <Header />
+
+        <Home {...props} />
+      </HomeContainer>
+    </Layout>
+  );
+}
+
 export default compose(
   resumeTitlesGql,
   createResumeGql,
   deleteResumeGql,
   cloneResumeGql
-)(Home);
+)(ResumesRoute);

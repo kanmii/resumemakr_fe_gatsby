@@ -13,6 +13,11 @@ export const storeUser = async (user: UserFragment) =>
   localStorage.setItem(USER_KEY, JSON.stringify(user));
 
 export const getUser = (): UserFragment | null => {
+  // istanbul ignore next: branch required only for ssr
+  if (typeof window === "undefined") {
+    return null;
+  }
+
   const data = localStorage.getItem(USER_KEY);
 
   if (data) {

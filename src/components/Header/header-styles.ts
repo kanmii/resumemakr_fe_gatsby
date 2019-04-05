@@ -21,7 +21,7 @@ export const LogoSpan = styled.span`
   ${LogoBg};
 `;
 
-export const Container = styled.div`
+export const GlobalHeaderContainer = styled.div`
   flex-shrink: 0;
   background: #fff;
 

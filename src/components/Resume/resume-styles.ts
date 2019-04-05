@@ -14,7 +14,7 @@ export const DownloadBtn = styled(DownloadBtnWrapped)`
   line-height: 2rem !important;
 `;
 
-export const Container = styled(AppContainer)`
+export const ResumeContainer = styled(AppContainer)`
   ${AppMain1} {
     display: flex;
   }

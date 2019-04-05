@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { navigate } from "gatsby";
 
 import { LOGIN_URL } from "../../routing";
@@ -15,15 +15,15 @@ type Props = WithUser &
 export function AuthRequired(props: Props) {
   const { component, user, ...rest } = props;
 
+  useEffect(() => {
+    if (!user) {
+      navigate(LOGIN_URL);
+    }
+  }, []);
+
   const AuthComponent = component;
 
-  if (user) {
-    return <AuthComponent {...rest} />;
-  }
-
-  navigate(LOGIN_URL);
-
-  return null;
+  return <AuthComponent {...rest} />;
 }
 
 export default AuthRequired;

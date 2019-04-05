@@ -17,7 +17,7 @@ import {
   removeTrailingSlash,
   CLIENT_ONLY_PATH_PREFIX
 } from "../../routing";
-import { Container, LogoAnchor, LogoSpan } from "./header-styles";
+import { GlobalHeaderContainer, LogoAnchor, LogoSpan } from "./header-styles";
 import { Props } from "./header";
 import { UserFragment } from "../../graphql/apollo/types/UserFragment";
 
@@ -57,7 +57,7 @@ export function Header(merkmale: Props) {
     (!user && pathname === ROOT_URL) || pathname === PASSWORD_RESET_PATH;
 
   return (
-    <Container>
+    <GlobalHeaderContainer>
       <Menu secondary={true}>
         <Menu.Item
           {...homeLinkProps}
@@ -127,7 +127,7 @@ export function Header(merkmale: Props) {
           </Dropdown>
         </Menu.Menu>
       </Menu>
-    </Container>
+    </GlobalHeaderContainer>
   );
 }
 
