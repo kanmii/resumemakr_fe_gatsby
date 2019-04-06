@@ -7,6 +7,7 @@
   "scripts": {
     "build": "gatsby build",
     "build:staging": "env-cmd .env.staging yarn build",
+    "build:production": "env-cmd .env.production yarn build",
     "develop": "env-cmd .env.dev gatsby develop --port 3023",
     "start": "yarn develop",
     "start:e2e": "env-cmd .env.staging gatsby develop --port 3023",
@@ -24,7 +25,9 @@
     "cy-open-dev": "cypress open --config baseUrl=http://localhost:3023/",
     "cy-open-staging": "cypress open --config baseUrl=http://localhost:3022/",
     "cy-run-dev": "cypress run --config baseUrl=http://localhost:3023/",
-    "cy-run-staging": "cypress run --config baseUrl=http://localhost:3022/"
+    "cy-run-staging": "cypress run --config baseUrl=http://localhost:3022/",
+    "build-deploy": "yarn build:production && yarn deploy",
+    "deploy": "netlify deploy --prod --dir=public"
   },
   "dependencies": {
     "@absinthe/socket": "^0.2.1",
