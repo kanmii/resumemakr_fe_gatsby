@@ -1,5 +1,5 @@
 import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
-import { ApolloClient } from "apollo-client";
+import { ApolloClient, Resolvers } from "apollo-client";
 import { ApolloLink, Operation } from "apollo-link";
 import { CachePersistor } from "apollo-cache-persist";
 import { onError } from "apollo-link-error";
@@ -11,7 +11,7 @@ import { getToken } from "./tokens";
 import { SCHEMA_VERSION, SCHEMA_VERSION_KEY, SCHEMA_KEY } from "../constants";
 import { getSocket } from "../socket";
 import CONN_MUTATION, { ConnMutData } from "./conn.mutation";
-import initApolloState from "./resolvers";
+import { initState, LocalState } from "./resolvers";
 
 let cache: InMemoryCache;
 let client: ApolloClient<{}>;
@@ -49,40 +49,45 @@ export function buildClientCache(
   }
 
   if (!client || headers) {
-    const links = [];
+    let resolvers = {} as Resolvers;
+    let defaultState = {} as LocalState;
+    let link: ApolloLink;
 
     if (isNodeJs) {
       /**
        * we do not use phoenix websocket. we use plain http
        */
 
-      links.push(
-        new HttpLink({
-          uri,
-          fetch
-        })
-      );
+      link = new HttpLink({
+        uri,
+        fetch
+      });
     } else {
       const absintheSocket = AbsintheSocket.create(
         getSocket({ onConnChange, uri })
       );
-      let socketLink = createAbsintheSocketLink(absintheSocket);
 
-      socketLink = middlewareAuthLink(headers).concat(socketLink);
-      socketLink = middlewareErrorLink().concat(socketLink);
+      link = createAbsintheSocketLink(absintheSocket);
+      link = middlewareAuthLink(headers).concat(link);
+      link = middlewareErrorLink().concat(link);
+      link = middlewareLoggerLink(link);
 
-      if (process.env.NODE_ENV !== "production") {
-        socketLink = middlewareLoggerLink(socketLink);
-      }
-
-      links.push(initApolloState(cache));
-      links.push(socketLink);
+      const state = initState();
+      resolvers = state.resolvers;
+      defaultState = state.defaultState;
     }
 
     client = new ApolloClient({
       cache,
-      link: ApolloLink.from(links)
+      link,
+      resolvers
     });
+
+    if (!isNodeJs) {
+      cache.writeData({
+        data: defaultState
+      });
+    }
   }
 
   return { client, cache };
@@ -157,7 +162,11 @@ const getNow = () => {
   return `${n.getHours()}:${n.getMinutes()}:${n.getSeconds()}`;
 };
 
-function middlewareLoggerLink(l: ApolloLink) {
+function middlewareLoggerLink(link: ApolloLink) {
+  if (process.env.NODE_ENV !== "production") {
+    return link;
+  }
+
   const processOperation = (operation: Operation) => ({
     query: operation.query.loc ? operation.query.loc.source.body : "",
     variables: operation.variables
@@ -198,7 +207,7 @@ function middlewareLoggerLink(l: ApolloLink) {
     return fop;
   });
 
-  return logger.concat(l);
+  return logger.concat(link);
 }
 
 function middlewareErrorLink() {
