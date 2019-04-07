@@ -3,11 +3,10 @@ import { ApolloProvider } from "react-apollo";
 import "semantic-ui-css-offline";
 import { HelmetProvider } from "react-helmet-async";
 
-import "./src/styles/index.css";
+import "./src/styles/global-styles.scss";
 import buildClientCache, { persistCache } from "./src/State/apollo-setup";
 import { ResumemakrProvider } from "./src/components/resumemakr";
 import { RootHelmet } from "./src/components/root-helmet";
-import GlobalStyle from "./src/styles/global-style";
 
 export const wrapRootElement = ({ element }) => {
   const { client, cache } = buildClientCache();
@@ -23,8 +22,6 @@ export const wrapRootElement = ({ element }) => {
       >
         <HelmetProvider>
           <RootHelmet />
-
-          <GlobalStyle />
 
           {element}
         </HelmetProvider>

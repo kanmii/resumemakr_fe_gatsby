@@ -1,4 +1,4 @@
-import { CLIENT_ONLY_PATH_PREFIX } from "./routing";
+import { RESUMES_HOME_PATH } from "./routing";
 import { SCHEMA_KEY } from "./constants";
 
 function getUser() {
@@ -27,7 +27,7 @@ function getUser() {
  */
 export default function refreshToHome() {
   if (getUser()) {
-    window.location.href = CLIENT_ONLY_PATH_PREFIX;
+    window.location.href = RESUMES_HOME_PATH;
     return;
   }
 
@@ -37,7 +37,7 @@ export default function refreshToHome() {
   intervalId = setInterval(() => {
     if (getUser() || counter === 1000) {
       clearInterval(intervalId);
-      window.location.href = CLIENT_ONLY_PATH_PREFIX;
+      window.location.href = RESUMES_HOME_PATH;
     }
 
     counter++;

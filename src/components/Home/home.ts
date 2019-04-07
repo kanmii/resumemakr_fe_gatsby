@@ -13,7 +13,9 @@ export interface ResumeTitlesProps {
   resumeTitlesGql: RTP;
 }
 
-export interface OwnProps extends RouteComponentProps<{}> {}
+export interface OwnProps extends RouteComponentProps<{}> {
+  header?: JSX.Element;
+}
 
 export interface Props
   extends CreateResumeProps,

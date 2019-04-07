@@ -24,7 +24,7 @@ import {
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
 import { ResumeTitlesProps, Props } from "./home";
-import { HomeContainer } from "./home-styles";
+// import { HomeContainer } from "./home-styles";
 import Header from "../../components/Header";
 import Layout from "../Layout";
 import { makeSiteTitle } from "../../constants";
@@ -87,11 +87,7 @@ function ResumesRoute(props: Props) {
         <title>{makeSiteTitle(appPageUiTexts.title)}</title>
       </Helmet>
 
-      <HomeContainer>
-        <Header />
-
-        <Home {...props} />
-      </HomeContainer>
+      <Home {...props} header={<Header />} />
     </Layout>
   );
 }

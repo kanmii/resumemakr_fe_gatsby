@@ -79,6 +79,8 @@ module.exports = {
       options: { prefixes: [`/app/*`] }
     },
 
+    "gatsby-plugin-sass",
+
     "gatsby-plugin-netlify"
   ]
 };

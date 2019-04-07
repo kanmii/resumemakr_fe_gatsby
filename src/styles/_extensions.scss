@@ -139,3 +139,80 @@
   margin: 4em 0 1em;
   opacity: 0.3;
 }
+
+%visually-hidden {
+  /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+%reset-visually-hidden {
+  position: absolute !important;
+  height: initial;
+  width: initial;
+  overflow: visible;
+  clip: initial;
+}
+
+%open-sans {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+%btn {
+  transition: background 0.4s ease-in-out, border-color 0.4s ease-in-out,
+    color 0.4s ease-in-out, box-shadow 0.4s ease-in-out !important;
+  text-align: center !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  touch-action: manipulation !important;
+  cursor: pointer !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  background-image: none !important;
+  text-decoration: none !important;
+  font-weight: 400 !important;
+  border-style: solid !important;
+  border-radius: 3px !important;
+  line-height: 2.25rem !important;
+}
+
+%tool-tip {
+  @extend %visually-hidden;
+}
+
+%navBtn {
+  @extend %btn;
+
+  position: relative !important;
+  padding: 0 1em !important;
+}
+
+%app-main {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+%app-container {
+  background-color: $app-bg-color;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+%with-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

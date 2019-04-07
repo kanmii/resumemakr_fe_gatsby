@@ -6,6 +6,7 @@ import lodashIsEqual from "lodash/isEqual";
 import update from "immutability-helper";
 import { FieldArray } from "formik";
 
+import "./resume-form-styles.scss";
 import {
   FormValues,
   Section,
@@ -16,7 +17,6 @@ import {
   State,
   FormContextProvider
 } from "./resume-form";
-
 import {
   PreviewBtn,
   PreviewBtnIcon,
@@ -26,7 +26,6 @@ import {
   NextBtnIcon,
   Container
 } from "./resume-form-styles";
-
 import { ToolTip } from "../../styles/mixins";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
@@ -83,9 +82,9 @@ export class ResumeForm extends React.Component<Props, State> {
 
       if (loading) {
         return (
-          <Container className="container--loading">
+          <div className="component-resume-form container--loading">
             <Loading />
-          </Container>
+          </div>
         );
       }
     }
@@ -95,7 +94,7 @@ export class ResumeForm extends React.Component<Props, State> {
     const sectionIndex = sectionsList.indexOf(currentSection);
 
     return (
-      <Container>
+      <div className="component-resume-form">
         <Form>
           <FormContextProvider value={this.state}>
             {this.renderCurrEditingSection(values)}
@@ -163,7 +162,7 @@ export class ResumeForm extends React.Component<Props, State> {
             )}
           </div>
         </Form>
-      </Container>
+      </div>
     );
   }
 

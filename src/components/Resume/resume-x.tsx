@@ -1,9 +1,8 @@
 import React from "react";
 import { WindowLocation } from "@reach/router";
 
+import "./resume-styles.scss";
 import ResumeForm from "../ResumeForm";
-import { ResumeContainer } from "./resume-styles";
-import { AppMain1 } from "../../styles/mixins";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import { ResumePathHash } from "../../routing";
@@ -18,25 +17,25 @@ export class Resume extends React.Component<Props> {
     const hash = location.hash;
 
     return (
-      <ResumeContainer>
+      <div className="components-resume">
         {hash.startsWith(ResumePathHash.edit) && (
           <>
             {header}
 
-            <AppMain1>
+            <div className="main">
               <div className="side-bar">.</div>
 
               <div className="main-container">
                 <ResumeForm />
               </div>
-            </AppMain1>
+            </div>
           </>
         )}
 
         {hash.startsWith(ResumePathHash.preview) && (
           <Preview mode={PreviewMode.download} />
         )}
-      </ResumeContainer>
+      </div>
     );
   }
 }

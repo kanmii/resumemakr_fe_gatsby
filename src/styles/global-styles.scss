@@ -1,0 +1,112 @@
+@import "./variables";
+
+@font-face {
+  font-family: "epic-outlines";
+  src: url("./fonts/epic-outlines/epic-outlines.eot");
+  src: url("./fonts/epic-outlines/epic-outlines.eot?#iefix")
+      format("embedded-opentype"),
+    url("./fonts/epic-outlines/epic-outlines.woff") format("woff"),
+    url("./fonts/epic-outlines/epic-outlines.ttf") format("truetype"),
+    url("./fonts/epic-outlines/epic-outlines.svg#epic-outlines") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-300.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-300italic.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-700italic.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 800;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-800.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-regular.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: italic;
+  font-weight: 400;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-italic.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 600;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-600.woff")
+    format("woff");
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: url("./fonts/open-sans/open-sans-v15-latin-ext_cyrillic-ext_vietnamese_greek_greek-ext_cyrillic_latin-700.woff")
+    format("woff");
+}
+
+html,
+body,
+#___gatsby,
+#___gatsby > div {
+  /* we don't want any of these to scroll */
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+
+  /* others */
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+}
+
+body ::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 2px;
+  height: 2px;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  list-style-type: none;
+}
+
+.ui.label,
+.ui.labels .label {
+  color: white;
+}

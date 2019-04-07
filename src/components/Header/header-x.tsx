@@ -9,19 +9,20 @@ import {
 } from "semantic-ui-react";
 import { Link, navigate, WindowLocation } from "@reach/router";
 
+import "./header-styles.scss";
 import {
   LOGIN_URL,
   ROOT_URL,
   SIGN_UP_URL,
   PASSWORD_RESET_PATH,
   removeTrailingSlash,
-  CLIENT_ONLY_PATH_PREFIX
+  RESUMES_HOME_PATH
 } from "../../routing";
-import { GlobalHeaderContainer, LogoAnchor, LogoSpan } from "./header-styles";
+import { LogoAnchor, LogoSpan } from "./header-styles";
 import { Props } from "./header";
 import { UserFragment } from "../../graphql/apollo/types/UserFragment";
 
-const HOME_URLS = [CLIENT_ONLY_PATH_PREFIX, ROOT_URL];
+const HOME_URLS = [RESUMES_HOME_PATH, ROOT_URL];
 
 export function Header(merkmale: Props) {
   const [aktiveArtikel] = useState("home");
@@ -41,9 +42,7 @@ export function Header(merkmale: Props) {
 
   const pathname = removeTrailingSlash(location.pathname);
 
-  const homeUrl = matchResumeRouteProps.match
-    ? CLIENT_ONLY_PATH_PREFIX
-    : ROOT_URL;
+  const homeUrl = matchResumeRouteProps.match ? RESUMES_HOME_PATH : ROOT_URL;
 
   let homeLinkProps = {};
 
@@ -57,7 +56,7 @@ export function Header(merkmale: Props) {
     (!user && pathname === ROOT_URL) || pathname === PASSWORD_RESET_PATH;
 
   return (
-    <GlobalHeaderContainer>
+    <div className="components-header">
       <Menu secondary={true}>
         <Menu.Item
           {...homeLinkProps}
@@ -127,7 +126,7 @@ export function Header(merkmale: Props) {
           </Dropdown>
         </Menu.Menu>
       </Menu>
-    </GlobalHeaderContainer>
+    </div>
   );
 }
 

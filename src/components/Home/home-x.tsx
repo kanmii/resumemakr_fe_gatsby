@@ -7,6 +7,7 @@ import lodashIsEmpty from "lodash/isEmpty";
 import "styled-components/macro";
 import { NavigateFn } from "@reach/router";
 
+import "./home-styles.scss";
 import { FormField } from "./home-styles";
 import {
   ResumeTitles,
@@ -16,7 +17,7 @@ import {
 } from "../../graphql/apollo/types/ResumeTitles";
 import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
-import { AppModal, CircularLabel, AppMain1 } from "../../styles/mixins";
+import { AppModal, CircularLabel /*, AppMain1 */ } from "../../styles/mixins";
 import { makeResumeRoute } from "../../routing";
 import { Props, validationSchema, Action, emptyVal } from "./home";
 import Loading from "../Loading";
@@ -36,7 +37,8 @@ export function Home(merkmale: Props) {
     deleteResume,
     resumeTitlesGql: { loading, error, listResumes },
     createResume,
-    cloneResume
+    cloneResume,
+    header
   } = merkmale;
   const verlauf = navigate as NavigateFn;
   const edges = listResumes && listResumes.edges;
@@ -572,8 +574,10 @@ export function Home(merkmale: Props) {
   }
 
   return (
-    <>
-      <AppMain1>
+    <div className="components-home">
+      {header}
+
+      <div className="main">
         <div className="main-content">
           {error && <div>{error.message}</div>}
 
@@ -585,10 +589,10 @@ export function Home(merkmale: Props) {
             <span>+</span>
           </div>
         )}
-      </AppMain1>
+      </div>
 
       {renderModal()}
-    </>
+    </div>
   );
 }
 

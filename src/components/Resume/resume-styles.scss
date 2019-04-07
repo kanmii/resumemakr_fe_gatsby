@@ -1,0 +1,25 @@
+@import "../../styles//extensions";
+
+.components-resume {
+  @extend %app-container;
+
+  .main {
+    @extend %app-main;
+    display: flex;
+  }
+
+  .side-bar {
+    width: 45px;
+    min-width: 45px;
+    background: #2e353e;
+    color: #fff;
+  }
+
+  .main-container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 100%;
+    margin-left: 5px;
+  }
+}
