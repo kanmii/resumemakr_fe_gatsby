@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FieldProps } from "formik";
 import { Input, Form } from "semantic-ui-react";
 
@@ -10,34 +10,29 @@ interface Props<Values> extends FieldProps<Values> {
   comp?: React.ComponentClass<any>;
 }
 
-export class RegularField<Values> extends React.Component<Props<Values>, {}> {
-  static contextType = FormContext;
-  context!: React.ContextType<typeof FormContext>;
+export function RegularField<Values>(props: Props<Values>) {
+  const { field, label, comp: Component = Input } = props;
 
-  render() {
-    const { field, label, comp: Component = Input } = this.props;
+  const { value, name } = field;
 
-    const { value, name } = field;
+  const formContext = useContext(FormContext);
 
-    return (
-      <Form.Field>
-        {"string" === typeof label ? (
-          <label htmlFor={name}>{label}</label>
-        ) : (
-          label
-        )}
+  return (
+    <Form.Field>
+      {"string" === typeof label ? (
+        <label htmlFor={name}>{label}</label>
+      ) : (
+        label
+      )}
 
-        <Component
-          {...field}
-          value={value || ""}
-          id={field.name}
-          onBlur={this.context.valueChanged}
-        />
-      </Form.Field>
-    );
-  }
+      <Component
+        {...field}
+        value={value || ""}
+        id={field.name}
+        onBlur={formContext.valueChanged}
+      />
+    </Form.Field>
+  );
 }
-
-// RegularField.contextType = FormContext;
 
 export default RegularField;
