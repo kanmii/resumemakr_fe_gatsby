@@ -1,16 +1,20 @@
 import { getBackendUrls } from "../State/get-backend-urls";
 
-// tslint:disable-next-line:no-empty
-export function noOp() {}
+// istanbul ignore next:
+export function noOp() {
+  return null;
+}
 
 // tslint:disable-next-line:no-any
-export function stripTypeName(value: any) {
+export function stripTypeName<T>(value: T): T {
   if ("object" !== typeof value) {
     return value;
   }
 
-  if ("function" === typeof value.map) {
-    return value.map(stripTypeName);
+  // tslint:disable-next-line: no-any
+  if ("function" === typeof (value as any).map) {
+    // tslint:disable-next-line: no-any
+    return (value as any).map(stripTypeName);
   }
 
   return Object.entries(value).reduce(

@@ -5,8 +5,9 @@ module.exports = {
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "<rootDir>/src/__tests__/test_utils.tsx",
-    "<rootDir>/src/refresh-to-home.ts",
-    "<rootDir>/src/State/get-conn-status.ts"
+    "<rootDir>/src/refresh-to-app.ts",
+    "<rootDir>/src/State/get-conn-status.ts",
+    "<rootDir>/src/logger.ts"
   ],
   coverageReporters: ["json", "lcov", "text", "clover"],
   transform: {
