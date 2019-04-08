@@ -1,4 +1,3 @@
-import { SITE_TITLE } from "../../src/constants";
 import {
   FORM_RENDER_PROPS,
   uiTexts
@@ -51,6 +50,9 @@ describe("sign up page", function() {
      */
     cy.getByText(new RegExp(uiTexts.submitBtn, "i")).click();
 
+    /**
+     * Then user should see an error message that has to do with email
+     */
     cy.getByTestId(uiTexts.formErrorTestId).contains(/email/i);
   });
 });
