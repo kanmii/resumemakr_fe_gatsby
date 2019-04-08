@@ -163,7 +163,7 @@ const getNow = () => {
 };
 
 function middlewareLoggerLink(link: ApolloLink) {
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV === "production") {
     return link;
   }
 
