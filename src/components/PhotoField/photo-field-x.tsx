@@ -1,27 +1,16 @@
 import React, { useContext, useState, useRef, useEffect } from "react";
-import { FieldProps } from "formik";
 import { Icon, Modal, Button } from "semantic-ui-react";
 
 import "./styles.scss";
 import { AppModal } from "../../styles/mixins";
 import { toServerUrl } from "../utils";
 import { FormContext } from "../ResumeForm/resume-form";
-
-export interface Props extends FieldProps<{ photo: string | null }> {
-  removeFilePreview?: () => void;
-}
-
-enum FileState {
-  previewing = "previewing",
-  clean = "clean",
-  touched = "touched",
-  deleted = "deleted"
-}
+import { Props, PhotoFieldState, uiTexts } from "./photo-field";
 
 export function PhotoField(props: Props) {
   const { field, form } = props;
   const formContext = useContext(FormContext);
-  const [fileState, setFileState] = useState(FileState.clean);
+  const [fileState, setFileState] = useState(PhotoFieldState.clean);
   const [url, setUrl] = useState<string | undefined>();
   const [openModal, setOpenModal] = useState(false);
 
@@ -59,7 +48,7 @@ export function PhotoField(props: Props) {
      */
     if ("string" === typeof file) {
       setUrl(`url(${toServerUrl(file)})`);
-      setFileState(FileState.previewing);
+      setFileState(PhotoFieldState.previewing);
       return;
     }
 
@@ -73,7 +62,7 @@ export function PhotoField(props: Props) {
       const base64Encoded = reader.result as string;
       valueChanged(base64Encoded);
       setUrl(`url(${base64Encoded})`);
-      setFileState(FileState.previewing);
+      setFileState(PhotoFieldState.previewing);
     };
 
     reader.readAsDataURL(file);
@@ -85,15 +74,15 @@ export function PhotoField(props: Props) {
   }
 
   function touch() {
-    setFileState(FileState.touched);
+    setFileState(PhotoFieldState.touched);
   }
 
   function unTouch() {
-    setFileState(FileState.previewing);
+    setFileState(PhotoFieldState.previewing);
   }
 
   function onDelete() {
-    setFileState(FileState.deleted);
+    setFileState(PhotoFieldState.deleted);
     setUrl(undefined);
     setOpenModal(false);
     valueChanged(null);
@@ -146,9 +135,9 @@ export function PhotoField(props: Props) {
           backgroundImage: url
         }}
       >
-        {fileState === FileState.touched && (
+        {fileState === PhotoFieldState.touched && (
           <div className="editor-container" data-testid="edit-btns">
-            {renderFileInput("Change photo")}
+            {renderFileInput(uiTexts.changePhotoText)}
 
             <label
               className="change-photo"
@@ -157,7 +146,7 @@ export function PhotoField(props: Props) {
                 setOpenModal(true);
               }}
             >
-              <Icon name="delete" /> Remove
+              <Icon name="delete" /> {uiTexts.deletePhotoText}
             </label>
           </div>
         )}
@@ -168,11 +157,11 @@ export function PhotoField(props: Props) {
   function renderModal() {
     return (
       <AppModal open={openModal}>
-        <Modal.Header>Removing photo</Modal.Header>
+        <Modal.Header>{uiTexts.dialogHeader}</Modal.Header>
 
         <Modal.Content>
           <Modal.Description>
-            <div>Do you really want to remove photo?</div>
+            <div>{uiTexts.deletePhotoConfirmationText}</div>
           </Modal.Description>
         </Modal.Content>
 
@@ -181,7 +170,7 @@ export function PhotoField(props: Props) {
             positive={true}
             icon="remove"
             labelPosition="right"
-            content="No"
+            content={uiTexts.negativeToRemovePhotoText}
             onClick={() => {
               setOpenModal(false);
             }}
@@ -191,7 +180,7 @@ export function PhotoField(props: Props) {
             negative={true}
             icon="checkmark"
             labelPosition="right"
-            content="Yes"
+            content={uiTexts.positiveToRemovePhotoText}
             onClick={onDelete}
           />
         </Modal.Actions>
@@ -201,17 +190,18 @@ export function PhotoField(props: Props) {
 
   return (
     <>
-      {(fileState === FileState.previewing ||
-        fileState === FileState.touched) &&
+      {(fileState === PhotoFieldState.previewing ||
+        fileState === PhotoFieldState.touched) &&
         renderThumb()}
 
-      {(fileState === FileState.clean || fileState === FileState.deleted) && (
+      {(fileState === PhotoFieldState.clean ||
+        fileState === PhotoFieldState.deleted) && (
         <div className="components-photo-field file-chooser">
           <div className="upload-photo-icon-wrapper">
             <Icon name="camera" />
           </div>
 
-          {renderFileInput("Upload Photo")}
+          {renderFileInput(uiTexts.uploadPhotoText)}
         </div>
       )}
 
