@@ -7,7 +7,7 @@ import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
 import PhotoField from "../PhotoField";
 import { Section } from "../ResumeForm/resume-form";
-import { emptyVal } from "./personal-info";
+import { emptyVal, uiTexts } from "./personal-info";
 import { FormContext } from "../ResumeForm/resume-form";
 
 class FirstColumn extends React.Component<{ values: PersonalInfoInput }> {
@@ -26,7 +26,7 @@ class FirstColumn extends React.Component<{ values: PersonalInfoInput }> {
         <Card.Content>
           <FastField
             name={makeName("address")}
-            label="Address"
+            label={uiTexts.addressLabel}
             comp={TextArea}
             component={RegularField}
             value={values.address}
@@ -35,14 +35,14 @@ class FirstColumn extends React.Component<{ values: PersonalInfoInput }> {
 
           <FastField
             name={makeName("phone")}
-            label="Phone"
+            label={uiTexts.phoneLabel}
             component={RegularField}
             value={values.phone}
           />
 
           <FastField
             name={makeName("email")}
-            label="Email"
+            label={uiTexts.emailLabel}
             type="email"
             component={RegularField}
             value={values.email}
@@ -101,14 +101,14 @@ function BioData({ values }: { values: PersonalInfoInput }) {
           <div className="names">
             <FastField
               name={makeName("firstName")}
-              label="First name"
+              label={uiTexts.firstNameLabel}
               component={RegularField}
               value={values.firstName}
             />
 
             <FastField
               name={makeName("lastName")}
-              label="Last name"
+              label={uiTexts.lastNameLabel}
               component={RegularField}
               value={values.lastName}
             />
@@ -116,7 +116,7 @@ function BioData({ values }: { values: PersonalInfoInput }) {
 
           <FastField
             name={makeName("profession")}
-            label="Profession"
+            label={uiTexts.professionLabel}
             component={RegularField}
             value={values.profession}
           />

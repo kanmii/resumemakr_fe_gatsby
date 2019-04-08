@@ -18,7 +18,7 @@ import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
 import { AppModal, CircularLabel /*, AppMain1 */ } from "../../styles/mixins";
 import { makeResumeRoute } from "../../routing";
-import { Props, validationSchema, Action, emptyVal } from "./home";
+import { Props, validationSchema, Action, emptyVal, uiTexts } from "./home";
 import Loading from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../ResumeForm/resume-form";
@@ -305,9 +305,7 @@ export function Home(merkmale: Props) {
                         titleError ? "error" : ""
                       }`}
                     >
-                      <label htmlFor="resume-title">
-                        Title e.g. name of company to send to
-                      </label>
+                      <label htmlFor="resume-title">{uiTexts.form.title}</label>
 
                       <FastField
                         component={"input"}
@@ -323,8 +321,8 @@ export function Home(merkmale: Props) {
                       style={{ marginTop: "15px" }}
                     >
                       <label htmlFor="resume-description">
-                        Description{" "}
-                        <span style={{ opacity: 0.6 }}>(optional)</span>
+                        {uiTexts.form.description}
+                        <span style={{ opacity: 0.6 }}> (optional)</span>
                       </label>
 
                       <FastField
@@ -349,7 +347,7 @@ export function Home(merkmale: Props) {
                     negative={true}
                     icon="remove"
                     labelPosition="right"
-                    content="No"
+                    content={uiTexts.form.closeModalBtnText}
                     onClick={() => {
                       einstellenOffnenModal(false);
                     }}
@@ -360,7 +358,7 @@ export function Home(merkmale: Props) {
                     positive={true}
                     icon="checkmark"
                     labelPosition="right"
-                    content="Yes"
+                    content={uiTexts.form.submitBtnText}
                     onClick={erstellenResume(formikProps)}
                   />
                 </Modal.Actions>
@@ -386,7 +384,7 @@ export function Home(merkmale: Props) {
             openModalForCreate();
           }}
         >
-          You have no resumes. Click here to create your first resume.
+          {uiTexts.noResumesMsg}
         </a>
       );
     }

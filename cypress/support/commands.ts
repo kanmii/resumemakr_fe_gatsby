@@ -1,4 +1,5 @@
 import "cypress-testing-library/add-commands";
+import "cypress-file-upload";
 import { MutationOptions } from "apollo-client/core/watchQueryOptions";
 import { FetchResult } from "react-apollo";
 

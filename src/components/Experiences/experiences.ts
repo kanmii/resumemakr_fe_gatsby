@@ -44,3 +44,17 @@ export interface Props extends RouteComponentProps, ChildProps {
   values: Array<CreateExperienceInput | null> | null | undefined;
   label: Section;
 }
+
+export const uiTexts = {
+  positionLabel: "Title/Position/Responsibility",
+
+  companyNameLabel: "Company, department etc.",
+
+  fromDateLabel: "Date from",
+
+  toDateLabel: "Date to (optional)",
+
+  achievementsLabels1: "Achievements",
+
+  achievementsLabels2: "(responsibilities, activities)"
+};

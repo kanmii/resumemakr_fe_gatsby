@@ -15,7 +15,10 @@ import {
   Props,
   getInitialValues,
   State,
-  FormContextProvider
+  FormContextProvider,
+  sectionLabelToHeader,
+  nextTooltipText,
+  prevTooltipText
 } from "./resume-form";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
@@ -118,9 +121,7 @@ export class ResumeForm extends React.Component<Props, State> {
                     className="edit-btn"
                     href={this.urlFromSection(prevSection)}
                   >
-                    <ToolTip>
-                      {`Previous resume section ${prevSection.toLowerCase()}`}
-                    </ToolTip>
+                    <ToolTip>{prevTooltipText(prevSection)}</ToolTip>
 
                     <EpicBtnIcon className="prev-btn-icon" />
 
@@ -133,9 +134,7 @@ export class ResumeForm extends React.Component<Props, State> {
                     className="next-btn"
                     href={this.urlFromSection(nextSection)}
                   >
-                    <ToolTip>
-                      {`Next resume section ${nextSection.toLowerCase()}`}
-                    </ToolTip>
+                    <ToolTip>{nextTooltipText(nextSection)}</ToolTip>
 
                     <span>Next</span>
 
@@ -175,10 +174,7 @@ export class ResumeForm extends React.Component<Props, State> {
   }
 
   private renderCurrEditingSection = (values: FormValues) => {
-    const label = currentSection
-      .split("-")
-      .map(s => s[0].toUpperCase() + s.slice(1))
-      .join(" ") as Section;
+    const label = sectionLabelToHeader(currentSection);
 
     const { setFieldValue } = this.props;
 

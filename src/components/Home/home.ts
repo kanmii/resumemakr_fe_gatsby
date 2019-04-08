@@ -51,3 +51,17 @@ export enum Action {
 }
 
 export const emptyVal = { title: "", description: "" };
+
+export const uiTexts = {
+  noResumesMsg: "You have no resumes. Click here to create your first resume.",
+
+  form: {
+    title: "Title e.g. name of company to send to",
+
+    description: "Description",
+
+    submitBtnText: "Yes",
+
+    closeModalBtnText: "No"
+  }
+};

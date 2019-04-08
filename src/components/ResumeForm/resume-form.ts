@@ -8,22 +8,15 @@ import {
   validationSchema as expSchema,
   defaultVal as experience
 } from "../Experiences/experiences";
-
-import {
-  defaultVal as personalInfo,
-  validationSchema as personalInfoSchema
-} from "../PersonalInfo/personal-info";
-
+import { validationSchema as personalInfoSchema } from "../PersonalInfo/personal-info";
 import {
   validationSchema as edSchema,
   defaultVal as education
 } from "../Education/education";
-
 import {
   defaultVal as skills,
   validationSchema as skillsSchema
 } from "../Skills/skills";
-
 import {
   EducationInput,
   CreateExperienceInput,
@@ -52,7 +45,6 @@ export type Props = OwnProps &
 export type FormValues = Partial<UpdateResumeInput>;
 
 export const initialFormValues: FormValues = {
-  personalInfo,
   experiences: [experience],
   education: [education],
   additionalSkills: [additionalSkillDefaultVal],
@@ -85,6 +77,13 @@ export enum Section {
   preview = "preview"
 }
 
+export function sectionLabelToHeader(section: Section) {
+  return section
+    .split("-")
+    .map(s => s[0].toUpperCase() + s.slice(1))
+    .join(" ") as Section;
+}
+
 export const [sectionsList, sectionsLen]: [Section[], number] = (function() {
   const keys = Object.values(Section);
 
@@ -113,19 +112,26 @@ export function getInitialValues(
     return initial;
   }
 
-  return Object.entries(getResume).reduce((acc, [k, v]) => {
-    if (k === "__typename") {
-      return acc;
-    }
+  return Object.entries(getResume).reduce(
+    (acc, [k, v]) => {
+      const key = k as keyof GetResume_getResume;
 
-    if (!v || (v && typeof v.map === "function" && v.length === 0)) {
-      acc[k] = initial[k];
-      return acc;
-    }
+      if (k === "__typename") {
+        return acc;
+      }
 
-    acc[k] = stripTypeName(v);
-    return acc;
-  }, {});
+      if (!v || (v && typeof v.map === "function" && v.length === 0)) {
+        (acc as GetResume_getResume)[key] = (initial as GetResume_getResume)[
+          key
+        ];
+        return acc;
+      }
+
+      (acc as GetResume_getResume)[key] = stripTypeName(v);
+      return acc;
+    },
+    {} as GetResume_getResume
+  );
 }
 
 export const formikConfig: WithFormikConfig<Props, FormValues> = {
@@ -153,3 +159,11 @@ export interface State {
 
 export const FormContext = createContext<State>({} as State);
 export const FormContextProvider = FormContext.Provider;
+
+export function nextTooltipText(section: Section) {
+  return "Next resume section " + section.toLowerCase();
+}
+
+export function prevTooltipText(section: Section) {
+  return "Previous resume section " + section.toLowerCase();
+}

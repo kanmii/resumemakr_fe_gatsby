@@ -5,7 +5,7 @@ import { FastField, FieldArray } from "formik";
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
 import RegularField from "../RegularField";
 import SectionLabel from "../SectionLabel";
-import { emptyVal, Props } from "./experiences";
+import { emptyVal, Props, uiTexts } from "./experiences";
 import ListIndexHeader from "../ListIndexHeader";
 import ListStrings from "../ListStrings";
 
@@ -79,28 +79,28 @@ export class Experiences extends React.Component<Props, {}> {
         <Card.Content>
           <FastField
             name={makeName(index, "position")}
-            label="Title/Position/Responsibility"
+            label={uiTexts.positionLabel}
             defaultValue={exp.position}
             component={RegularField}
           />
 
           <FastField
             name={makeName(index, "companyName")}
-            label="Company, department etc."
+            label={uiTexts.companyNameLabel}
             defaultValue={exp.companyName}
             component={RegularField}
           />
 
           <FastField
             name={makeName(index, "fromDate")}
-            label="Date from"
+            label={uiTexts.fromDateLabel}
             defaultValue={exp.fromDate}
             component={RegularField}
           />
 
           <FastField
             name={makeName(index, "toDate")}
-            label="Date to (optional)"
+            label={uiTexts.toDateLabel}
             defaultValue={exp.toDate}
             component={RegularField}
           />
@@ -114,8 +114,8 @@ export class Experiences extends React.Component<Props, {}> {
                   arrayHelper={helper}
                   header={
                     <div>
-                      Achievements
-                      <span> (responsibilities, activities)</span>
+                      {uiTexts.achievementsLabels1}
+                      <span> {uiTexts.achievementsLabels2}</span>
                     </div>
                   }
                   fieldName={makeName(index, "achievements")}

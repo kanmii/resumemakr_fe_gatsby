@@ -72,3 +72,6 @@ yarn-error.log
 # Yarn Integrity file
 .yarn-integrity
 /.netlify
+
+# cypress
+cypress/screenshots
