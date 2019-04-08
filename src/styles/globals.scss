@@ -1,4 +1,5 @@
 @import "./variables";
+@import "./extensions";
 
 @font-face {
   font-family: "epic-outlines";
@@ -109,4 +110,8 @@ li {
 .ui.label,
 .ui.labels .label {
   color: white;
+}
+
+.visually-hidden {
+  @extend %visually-hidden;
 }

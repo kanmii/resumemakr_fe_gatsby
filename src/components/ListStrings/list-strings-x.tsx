@@ -13,6 +13,7 @@ interface Props {
   hiddenLabel?: string;
   header?: JSX.Element;
   controlComponent?: React.ComponentClass | React.FunctionComponent;
+  appendToHiddenLabel?: string;
 }
 
 export function ListStrings(props: Props) {
@@ -22,7 +23,8 @@ export function ListStrings(props: Props) {
     arrayHelper,
     hiddenLabel,
     header,
-    controlComponent
+    controlComponent,
+    appendToHiddenLabel
   } = props;
 
   const valuesLen = values.length;
@@ -34,7 +36,7 @@ export function ListStrings(props: Props) {
       {header || null}
 
       {values.map((value, index) => {
-        const fieldName = `${parentFieldName}[${index}]`;
+        const fieldName = makeListStringFiledName(parentFieldName, index);
         const index1 = index + 1;
 
         return (
@@ -93,6 +95,12 @@ export function ListStrings(props: Props) {
                   )}
                 </div>
 
+                {appendToHiddenLabel && (
+                  <label className="visually-hidden" htmlFor={fieldName}>
+                    {fieldName + appendToHiddenLabel}
+                  </label>
+                )}
+
                 {hiddenLabel && (
                   <label className="visually-hidden" htmlFor={fieldName}>
                     {hiddenLabel}
@@ -111,3 +119,10 @@ export function ListStrings(props: Props) {
 }
 
 export default ListStrings;
+
+export function makeListStringFiledName(
+  parentFieldName: string,
+  index: number
+) {
+  return `${parentFieldName}[${index}]`;
+}
