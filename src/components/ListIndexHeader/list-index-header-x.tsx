@@ -1,10 +1,10 @@
 import React from "react";
 import { Card, Icon } from "semantic-ui-react";
 
-import { CircularLabel } from "../../styles/mixins";
+import "./list-index-header-styles.scss";
 import { SetFieldValue } from "../utils";
-import { Container } from "./list-index-header-styles";
 import { FormContext } from "../ResumeForm/resume-form";
+import { CircularLabel } from "../circular-label";
 
 interface Props<TValues> {
   index: number;
@@ -38,7 +38,7 @@ export class ListIndexHeader<
     const len = values.length;
 
     return (
-      <Container>
+      <Card.Content className="components-list-index-header">
         <Card.Header id={id}>
           {`${label ? label + " #" + index : "#" + index}`}
         </Card.Header>
@@ -108,7 +108,7 @@ export class ListIndexHeader<
             </CircularLabel>
           )}
         </div>
-      </Container>
+      </Card.Content>
     );
   }
 }

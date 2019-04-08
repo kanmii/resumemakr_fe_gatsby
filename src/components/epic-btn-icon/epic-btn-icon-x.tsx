@@ -8,9 +8,18 @@ import "./epic-btn-icon-styles.scss";
 
 export function EpicBtnIcon({
   children,
+  className,
   ...props
 }: PropsWithChildren<
   DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>
 >) {
-  return <i {...props}>{children}</i>;
+  className = className
+    ? `components-epic-btn-icon ${className}`
+    : "components-epic-btn-icon";
+
+  return (
+    <i className={className} {...props}>
+      {children}
+    </i>
+  );
 }

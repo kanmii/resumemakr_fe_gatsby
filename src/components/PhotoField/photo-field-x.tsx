@@ -2,15 +2,7 @@ import React from "react";
 import { FieldProps } from "formik";
 import { Icon, Modal, Button } from "semantic-ui-react";
 
-import {
-  FileChooser,
-  Thumb,
-  EditorContainer,
-  ChangePhoto,
-  UploadPhotoIconWrap,
-  InputFile
-} from "./photo-field-styles";
-
+import "./styles.scss";
 import { AppModal } from "../../styles/mixins";
 import { toServerUrl } from "../utils";
 import { FormContext } from "../ResumeForm/resume-form";
@@ -79,13 +71,13 @@ export class PhotoField extends React.Component<Props, State> {
           this.renderThumb()}
 
         {(fileState === FileState.clean || fileState === FileState.deleted) && (
-          <FileChooser>
-            <UploadPhotoIconWrap>
+          <div className="components-photo-field file-chooser">
+            <div className="upload-photo-icon-wrapper">
               <Icon name="camera" />
-            </UploadPhotoIconWrap>
+            </div>
 
             {this.renderFileInput("Upload Photo")}
-          </FileChooser>
+          </div>
         )}
 
         {this.renderModal()}
@@ -101,28 +93,32 @@ export class PhotoField extends React.Component<Props, State> {
     }
 
     return (
-      <Thumb
-        url={url}
+      <div
+        className="components-photo-field thumb"
         data-testid="photo-preview"
         onClick={this.touch}
         onMouseLeave={this.unTouch}
         onMouseEnter={this.touch}
+        style={{
+          backgroundImage: url
+        }}
       >
         {fileState === FileState.touched && (
-          <EditorContainer data-testid="edit-btns">
+          <div className="editor-container" data-testid="edit-btns">
             {this.renderFileInput("Change photo")}
 
-            <ChangePhoto
+            <label
+              className="change-photo"
               onClick={evt => {
                 evt.stopPropagation();
                 this.setState({ open: true });
               }}
             >
               <Icon name="delete" /> Remove
-            </ChangePhoto>
-          </EditorContainer>
+            </label>
+          </div>
         )}
-      </Thumb>
+      </div>
     );
   };
 
@@ -133,11 +129,14 @@ export class PhotoField extends React.Component<Props, State> {
 
     return (
       <>
-        <ChangePhoto htmlFor={fieldName}>
+        <label className="change-photo" htmlFor={fieldName}>
           <Icon name="upload" /> {label}
-        </ChangePhoto>
+        </label>
 
-        <InputFile
+        <input
+          type="file"
+          accept="image/*"
+          className="input-file"
           name={fieldName}
           id={fieldName}
           onChange={this.handleFileUpload}

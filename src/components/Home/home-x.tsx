@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Modal, Button, Label, Icon, Popup } from "semantic-ui-react";
 import { MutationUpdaterFn, ApolloError } from "apollo-client";
 import dateFormat from "date-fns/format";
@@ -7,8 +7,7 @@ import lodashIsEmpty from "lodash/isEmpty";
 import "styled-components/macro";
 import { NavigateFn } from "@reach/router";
 
-import "./home-styles.scss";
-import { FormField } from "./home-styles";
+import "./styles.scss";
 import {
   ResumeTitles,
   ResumeTitlesVariables,
@@ -25,6 +24,7 @@ import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../ResumeForm/resume-form";
 import { Mode as PreviewMode } from "../Preview/preview";
 import AutoTextarea from "../AutoTextarea";
+import { useSetParentClassNameOnMount as useSetParentAttrsOnMount } from "../hooks";
 
 let initialValues = emptyVal;
 let action = Action.createResume;
@@ -74,6 +74,10 @@ export function Home(merkmale: Props) {
   );
 
   const deleteTriggerRefs = useRef<{ id?: undefined | HTMLElement }>({});
+
+  const componentChildRef = useRef<HTMLDivElement>(null);
+
+  useSetParentAttrsOnMount(componentChildRef, "components-home");
 
   function handleConfirmDeletePopup() {
     einstellenBestatigenLoschenId(undefined);
@@ -296,7 +300,11 @@ export function Home(merkmale: Props) {
                   {gqlFehler && gqlFehler.graphQLErrors[0].message}
 
                   <Modal.Description>
-                    <FormField className={`field ${titleError ? "error" : ""}`}>
+                    <div
+                      className={`field home-form-field ${
+                        titleError ? "error" : ""
+                      }`}
+                    >
                       <label htmlFor="resume-title">
                         Title e.g. name of company to send to
                       </label>
@@ -308,9 +316,12 @@ export function Home(merkmale: Props) {
                       />
 
                       {titleError && <div>{titleError}</div>}
-                    </FormField>
+                    </div>
 
-                    <FormField className="field" style={{ marginTop: "15px" }}>
+                    <div
+                      className="field home-form-field"
+                      style={{ marginTop: "15px" }}
+                    >
                       <label htmlFor="resume-description">
                         Description{" "}
                         <span style={{ opacity: 0.6 }}>(optional)</span>
@@ -328,7 +339,7 @@ export function Home(merkmale: Props) {
                           { maxHeight: "400px" } as React.CSSProperties
                         }
                       />
-                    </FormField>
+                    </div>
                   </Modal.Description>
                 </Modal.Content>
 
@@ -569,15 +580,13 @@ export function Home(merkmale: Props) {
     );
   }
 
-  if (loading) {
-    return <Loading data-testid="loading resume titles" />;
-  }
+  function render() {
+    if (loading) {
+      return <Loading data-testid="loading resume titles" />;
+    }
 
-  return (
-    <div className="components-home">
-      {header}
-
-      <div className="main">
+    return (
+      <>
         <div className="main-content">
           {error && <div>{error.message}</div>}
 
@@ -589,9 +598,19 @@ export function Home(merkmale: Props) {
             <span>+</span>
           </div>
         )}
-      </div>
 
-      {renderModal()}
+        {renderModal()}
+      </>
+    );
+  }
+
+  return (
+    <div className="components-home">
+      {header}
+
+      <div className="main" ref={componentChildRef}>
+        {render()}
+      </div>
     </div>
   );
 }

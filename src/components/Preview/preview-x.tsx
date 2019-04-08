@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon } from "semantic-ui-react";
 
+import "./styles.scss";
 import {
   GetResume_getResume_personalInfo,
   GetResume_getResume_skills,
@@ -10,11 +11,16 @@ import {
 } from "../../graphql/apollo/types/GetResume";
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
 import { Props, Mode } from "./preview";
-import { Container, Img, GlobalStyle } from "./preview-styles";
 import { toServerUrl } from "../utils";
 
 export class Preview extends React.Component<Props> {
   containerRef = React.createRef<HTMLDivElement>();
+
+  componentDidMount() {
+    if (this.props.mode === Mode.download) {
+      require("./override-globals.scss");
+    }
+  }
 
   componentDidUpdate() {
     const els = document.querySelectorAll(".right .break-here");
@@ -93,87 +99,81 @@ export class Preview extends React.Component<Props> {
     const hobbies = (getResume.hobbies || []).filter(s => s && s.trim());
 
     return (
-      <>
-        {mode === Mode.download && <GlobalStyle />}
+      <div
+        className={`components-preview ${
+          mode === Mode.download ? "download" : ""
+        }`}
+        ref={this.containerRef}
+        data-testid="preview-resume-section"
+      >
+        <div className="main-column left">
+          {personalInfo && <PersonalInfo personalInfo={personalInfo} />}
 
-        <Container
-          ref={this.containerRef}
-          data-testid="preview-resume-section"
-          mode={mode}
-        >
-          <div className="main-column left">
-            {personalInfo && <PersonalInfo personalInfo={personalInfo} />}
+          {additionalSkills && !!additionalSkills.length && (
+            <div className="section-container">
+              <h3 className="break-here section-title left">
+                Additional Skills
+              </h3>
 
-            {additionalSkills && !!additionalSkills.length && (
-              <div className="section-container">
-                <h3 className="break-here section-title left">
-                  Additional Skills
-                </h3>
+              {additionalSkills.map((s, index) => {
+                const { description, level } = s;
 
-                {additionalSkills.map((s, index) => {
-                  const { description, level } = s;
+                if (!description) {
+                  return null;
+                }
 
-                  if (!description) {
-                    return null;
-                  }
-
-                  return (
-                    <div key={index} className="break-here has-level">
-                      {description} {level && `[${level}]`}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {languages && !!languages.length && (
-              <div className="section-container">
-                <h3 className="break-here section-title left">Languages</h3>
-
-                {languages.map((s, index) => {
-                  const { description, level } = s;
-
-                  return (
-                    <div key={index} className="break-here has-level">
-                      {description} {level && `[${level}]`}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-
-            {hobbies && !!hobbies.length && (
-              <div className="section-container">
-                <h3 className="break-here section-title left">Hobbies</h3>
-
-                {hobbies.map((s, index) => (
-                  <div key={index} className="break-here  has-level">
-                    {s}
+                return (
+                  <div key={index} className="break-here has-level">
+                    {description} {level && `[${level}]`}
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                );
+              })}
+            </div>
+          )}
 
-          <div className="main-column right">
-            {skills && (
-              <Skills skills={skills as GetResume_getResume_skills[]} />
-            )}
+          {languages && !!languages.length && (
+            <div className="section-container">
+              <h3 className="break-here section-title left">Languages</h3>
 
-            {experiences && !!experiences.length && (
-              <Experiences
-                experiences={experiences as CreateExperienceInput[]}
-              />
-            )}
+              {languages.map((s, index) => {
+                const { description, level } = s;
 
-            {education && !!education.length && (
-              <Educations
-                educations={education as GetResume_getResume_education[]}
-              />
-            )}
-          </div>
-        </Container>
-      </>
+                return (
+                  <div key={index} className="break-here has-level">
+                    {description} {level && `[${level}]`}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {hobbies && !!hobbies.length && (
+            <div className="section-container">
+              <h3 className="break-here section-title left">Hobbies</h3>
+
+              {hobbies.map((s, index) => (
+                <div key={index} className="break-here  has-level">
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="main-column right">
+          {skills && <Skills skills={skills as GetResume_getResume_skills[]} />}
+
+          {experiences && !!experiences.length && (
+            <Experiences experiences={experiences as CreateExperienceInput[]} />
+          )}
+
+          {education && !!education.length && (
+            <Educations
+              educations={education as GetResume_getResume_education[]}
+            />
+          )}
+        </div>
+      </div>
     );
   }
 }
@@ -241,10 +241,12 @@ function PersonalInfo({
       </div>
 
       {photo && (
-        <Img
+        <div
           className="photo"
-          backgroundImg={`url(${toServerUrl(photo)})`}
           data-testid={`${firstName} ${lastName} photo`}
+          style={{
+            backgroundImage: `url(${toServerUrl(photo)})`
+          }}
         />
       )}
     </>

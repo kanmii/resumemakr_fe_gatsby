@@ -1,21 +1,4 @@
-import styled, { css, createGlobalStyle } from "styled-components";
-
-import { Mode } from "./preview";
-
-export const GlobalStyle = createGlobalStyle`
-  html,
-  body,
-  #root {
-    overflow: auto;
-    height: initial;
-  }
-`;
-
-interface ContainerProps {
-  mode: Mode;
-}
-
-export const Container = styled.div`
+.components-preview {
   font-family: "Arimo" !important;
   display: flex;
   overflow-wrap: break-word;
@@ -25,17 +8,12 @@ export const Container = styled.div`
   box-shadow: 0 0.5em 2.5em 0 rgba(0, 0, 0, 0.25);
   margin-top: 1.7rem !important;
 
-  ${({ mode }: ContainerProps) =>
-    mode === Mode.download &&
-    css`
-      margin-top: 0 !important;
-      box-shadow: none;
-      min-height: 100%;
-      border: 1px solid #d6cdcd;
-    `};
-
-  position: relative;
-  color: #292b2c;
+  &.download {
+    margin-top: 0 !important;
+    box-shadow: none;
+    min-height: 100%;
+    border: 1px solid #d6cdcd;
+  }
 
   .experience-container {
     & + .experience-container {
@@ -197,14 +175,12 @@ export const Container = styled.div`
       margin-top: 10px;
     }
   }
-`;
 
-export const Img = styled.div`
-  background-image: ${({ backgroundImg }: { backgroundImg: string }) =>
-    backgroundImg};
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center;
-  width: 100%;
-  min-height: 170px;
-`;
+  .photo {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 100%;
+    min-height: 170px;
+  }
+}

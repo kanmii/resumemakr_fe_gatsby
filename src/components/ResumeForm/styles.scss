@@ -77,7 +77,7 @@ $nav-btn-max-width: 12.5rem;
   }
 
   .preview-btn {
-    @extend %navBtn;
+    @extend %nav-btn;
     color: #09f !important;
     background: #f4f4f4;
     border-color: currentColor;
@@ -85,7 +85,7 @@ $nav-btn-max-width: 12.5rem;
   }
 
   .next-btn {
-    @extend %navBtn;
+    @extend %nav-btn;
     color: #fff !important;
     background: #09f;
     border-color: transparent;
@@ -95,7 +95,7 @@ $nav-btn-max-width: 12.5rem;
   }
 
   .edit-btn {
-    @extend %navBtn;
+    @extend %nav-btn;
     color: #fff !important;
     background: #ff6d67;
     border-color: transparent;
@@ -107,19 +107,19 @@ $nav-btn-max-width: 12.5rem;
 
   .preview-btn-icon {
     &:before {
-      content: "\\e28f";
+      content: "\e28f";
     }
   }
 
   .prev-btn-icon {
     &:before {
-      content: "\\e195";
+      content: "\e195";
     }
   }
 
   .next-btn-icon {
     &:before {
-      content: "\\e270";
+      content: "\e270";
     }
   }
 }

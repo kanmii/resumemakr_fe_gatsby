@@ -1,0 +1,6 @@
+@import "../../styles/extensions";
+
+.components-tool-tip {
+  @extend %visually-hidden;
+  color: #ffffff;
+}

@@ -1,7 +1,7 @@
 import React from "react";
-import { Label } from "semantic-ui-react";
+import { Label, Segment } from "semantic-ui-react";
 
-import { Container } from "./section-label.style";
+import "./styles.scss";
 
 interface Props extends React.Props<{}> {
   ico: JSX.Element;
@@ -10,7 +10,7 @@ interface Props extends React.Props<{}> {
 
 export function SectionLabel({ children, label, ico, ...props }: Props) {
   return (
-    <Container {...props} raised={true}>
+    <Segment className="component-section-label" {...props} raised={true}>
       <Label as="div" ribbon={true} className="segment-label">
         <div className="icon-container">{ico}</div>
 
@@ -18,7 +18,7 @@ export function SectionLabel({ children, label, ico, ...props }: Props) {
       </Label>
 
       {children}
-    </Container>
+    </Segment>
   );
 }
 

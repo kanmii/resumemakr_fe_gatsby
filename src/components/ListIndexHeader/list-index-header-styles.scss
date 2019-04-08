@@ -1,0 +1,9 @@
+@import "../../styles/extensions";
+
+.components-list-index-header {
+  @extend %with-controls;
+
+  &:after {
+    display: none !important;
+  }
+}

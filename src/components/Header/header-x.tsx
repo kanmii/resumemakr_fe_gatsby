@@ -9,7 +9,7 @@ import {
 } from "semantic-ui-react";
 import { Link, navigate, WindowLocation } from "@reach/router";
 
-import "./header-styles.scss";
+import "./styles.scss";
 import {
   LOGIN_URL,
   ROOT_URL,
@@ -18,7 +18,6 @@ import {
   removeTrailingSlash,
   RESUMES_HOME_PATH
 } from "../../routing";
-import { LogoAnchor, LogoSpan } from "./header-styles";
 import { Props } from "./header";
 import { UserFragment } from "../../graphql/apollo/types/UserFragment";
 
@@ -47,9 +46,9 @@ export function Header(merkmale: Props) {
   let homeLinkProps = {};
 
   if (HOME_URLS.includes(pathname)) {
-    homeLinkProps = { as: LogoSpan };
+    homeLinkProps = { as: "span" };
   } else {
-    homeLinkProps = { as: LogoAnchor, to: homeUrl };
+    homeLinkProps = { as: Link, to: homeUrl };
   }
 
   const showAuthLinks =
@@ -58,13 +57,23 @@ export function Header(merkmale: Props) {
   return (
     <div className="components-header">
       <Menu secondary={true}>
-        <Menu.Item
-          {...homeLinkProps}
-          className="logo"
-          name="home"
-          active={aktiveArtikel === "home"}
-          {...logoAttrs}
-        />
+        <>
+          <style>
+            {`#components-header-logo{ background: url(${
+              logoAttrs.src
+            }) no-repeat 0 !important; background-size: ${logoAttrs.width}px ${
+              logoAttrs.height
+            }px !important;}`}
+          </style>
+
+          <Menu.Item
+            {...homeLinkProps}
+            id="components-header-logo"
+            className="logo"
+            name="home"
+            active={aktiveArtikel === "home"}
+          />
+        </>
         {leftMenuItems.map(l => l)}
 
         <Menu.Menu position="right">

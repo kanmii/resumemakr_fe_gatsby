@@ -6,7 +6,7 @@ import Home from "../../components/Home";
 import Resume from "../../components/Resume";
 import { RESUMES_HOME_PATH, RESUME_PATH } from "../../routing";
 
-const NotFound = (props: { default: boolean }) => (
+const NotFound = (props: RouteComponentProps & { default: boolean }) => (
   <div>Sorry, nothing here.</div>
 );
 

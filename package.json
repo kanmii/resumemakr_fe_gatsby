@@ -7,7 +7,7 @@
   "scripts": {
     "build": "gatsby build",
     "build:staging": "env-cmd .env.staging yarn build",
-    "build:production": "env-cmd .env.production yarn build",
+    "build:production": "env-cmd .env.xproduction yarn build",
     "develop": "env-cmd .env.dev gatsby develop --port 3023",
     "start": "yarn develop",
     "start:e2e": "env-cmd .env.staging gatsby develop --port 3023",

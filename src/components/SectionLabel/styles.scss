@@ -1,11 +1,4 @@
-import styled from "styled-components/macro";
-import { Segment } from "semantic-ui-react";
-
-import { wrapped } from "../../styles/mixins";
-
-const wrappedSegment = wrapped(Segment);
-
-export const Container = styled(wrappedSegment)`
+.component-section-label {
   margin-left: 15px !important;
 
   .segment-label {
@@ -31,4 +24,4 @@ export const Container = styled(wrappedSegment)`
       display: inline-block;
     }
   }
-`;
+}

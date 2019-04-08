@@ -6,7 +6,7 @@ import lodashIsEqual from "lodash/isEqual";
 import update from "immutability-helper";
 import { FieldArray } from "formik";
 
-import "./resume-form-styles.scss";
+import "./styles.scss";
 import {
   FormValues,
   Section,
@@ -17,16 +17,6 @@ import {
   State,
   FormContextProvider
 } from "./resume-form";
-import {
-  PreviewBtn,
-  PreviewBtnIcon,
-  EditBtn,
-  PrevBtnIcon,
-  NextBtn,
-  NextBtnIcon,
-  Container
-} from "./resume-form-styles";
-import { ToolTip } from "../../styles/mixins";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import PersonalInfo from "../PersonalInfo";
@@ -41,6 +31,9 @@ import logger from "../../logger";
 import Rated from "../Rated";
 import SectionLabel from "../SectionLabel";
 import ListStrings from "../ListStrings";
+import { NavBtn } from "../nav-btn";
+import { EpicBtnIcon } from "../epic-btn-icon/epic-btn-icon-x";
+import { ToolTip } from "../tool-tip";
 
 let valuesTracker: FormValues | null = null;
 let debounceUpdateResume: (ResumeForm["updateResume"] & Cancelable) | undefined;
@@ -108,57 +101,72 @@ export class ResumeForm extends React.Component<Props, State> {
             {currentSection !== Section.preview ? (
               <>
                 {nextSection !== Section.preview && (
-                  <PreviewBtn href={this.urlFromSection(Section.preview)}>
+                  <NavBtn
+                    className="preview-btn"
+                    href={this.urlFromSection(Section.preview)}
+                  >
                     <ToolTip>Partial: preview your resume</ToolTip>
 
-                    <PreviewBtnIcon />
+                    <EpicBtnIcon className="preview-btn-icon" />
 
                     <span>Preview</span>
-                  </PreviewBtn>
+                  </NavBtn>
                 )}
 
                 {sectionIndex > 0 && (
-                  <EditBtn href={this.urlFromSection(prevSection)}>
+                  <NavBtn
+                    className="edit-btn"
+                    href={this.urlFromSection(prevSection)}
+                  >
                     <ToolTip>
                       {`Previous resume section ${prevSection.toLowerCase()}`}
                     </ToolTip>
 
-                    <PrevBtnIcon />
+                    <EpicBtnIcon className="prev-btn-icon" />
 
                     <span>Previous</span>
-                  </EditBtn>
+                  </NavBtn>
                 )}
 
                 {nextSection !== Section.preview && (
-                  <NextBtn href={this.urlFromSection(nextSection)}>
+                  <NavBtn
+                    className="next-btn"
+                    href={this.urlFromSection(nextSection)}
+                  >
                     <ToolTip>
                       {`Next resume section ${nextSection.toLowerCase()}`}
                     </ToolTip>
 
                     <span>Next</span>
 
-                    <NextBtnIcon />
-                  </NextBtn>
+                    <EpicBtnIcon className="next-btn-icon" />
+                  </NavBtn>
                 )}
 
                 {nextSection === Section.preview && (
-                  <NextBtn href={this.urlFromSection(Section.preview)}>
+                  <NavBtn
+                    className="next-btn"
+                    href={this.urlFromSection(Section.preview)}
+                  >
                     <ToolTip>End: preview your resume</ToolTip>
 
                     <span>Preview Your resume</span>
 
-                    <NextBtnIcon />
-                  </NextBtn>
+                    <EpicBtnIcon className="preview-btn-icon" />
+                  </NavBtn>
                 )}
               </>
             ) : (
-              <EditBtn href={this.urlFromSection(backToSection)}>
+              <NavBtn
+                className="edit-btn"
+                href={this.urlFromSection(backToSection)}
+              >
                 <ToolTip>Show resume editor</ToolTip>
 
-                <PrevBtnIcon />
+                <EpicBtnIcon className="prev-btn-icon" />
 
                 <span>Back to Editor</span>
-              </EditBtn>
+              </NavBtn>
             )}
           </div>
         </Form>

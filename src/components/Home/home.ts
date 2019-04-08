@@ -15,6 +15,7 @@ export interface ResumeTitlesProps {
 
 export interface OwnProps extends RouteComponentProps<{}> {
   header?: JSX.Element;
+  className?: string;
 }
 
 export interface Props

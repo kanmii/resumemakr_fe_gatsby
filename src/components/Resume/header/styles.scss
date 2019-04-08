@@ -1,0 +1,10 @@
+@import "../../../styles/extensions";
+
+.download-btn {
+  @extend %nav-btn;
+  color: #09f !important;
+  background: #f4f4f4 !important;
+  border-color: currentColor !important;
+  border-width: 2px !important;
+  line-height: 2rem !important;
+}
