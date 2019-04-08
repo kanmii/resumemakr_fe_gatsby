@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import { FieldProps } from "formik";
 import { Icon, Modal, Button } from "semantic-ui-react";
 
@@ -10,11 +10,6 @@ import { FormContext } from "../ResumeForm/resume-form";
 export interface Props extends FieldProps<{ photo: string | null }> {
   removeFilePreview?: () => void;
 }
-interface State {
-  url?: string;
-  fileState: FileState;
-  open?: boolean;
-}
 
 enum FileState {
   previewing = "previewing",
@@ -23,109 +18,99 @@ enum FileState {
   deleted = "deleted"
 }
 
-export class PhotoField extends React.Component<Props, State> {
-  static contextType = FormContext;
-  context!: React.ContextType<typeof FormContext>;
-
-  state: State = {
-    fileState: FileState.clean
-  };
+export function PhotoField(props: Props) {
+  const { field, form } = props;
+  const formContext = useContext(FormContext);
+  const [fileState, setFileState] = useState(FileState.clean);
+  const [url, setUrl] = useState<string | undefined>();
+  const [openModal, setOpenModal] = useState(false);
 
   /**
-   * The value of the photo field path on the server
+   * Initialized with the value of the photo field path on the server
    */
-  serverValue: string | null = null;
+  const currentValueRef = useRef<string | null>(field.value);
 
-  constructor(props: Props) {
-    super(props);
-    this.serverValue = props.field.value;
-  }
+  useEffect(() => {
+    toUrl(field.value);
+  }, []);
 
-  componentDidMount() {
-    const {
-      field: { value }
-    } = this.props;
+  useEffect(() => {
+    const { value } = field;
 
-    this.toUrl(value);
-  }
-
-  componentDidUpdate() {
-    const {
-      field: { value }
-    } = this.props;
-
-    if (value && this.serverValue !== value) {
-      this.toUrl(value);
+    /**
+     * We only update state if user selected a different photo than the one
+     * currently in state
+     */
+    if (value && currentValueRef.current !== value) {
+      toUrl(value);
     }
 
-    this.serverValue = value;
-  }
+    currentValueRef.current = value;
+  }, [field.value]);
 
-  render() {
-    const { fileState } = this.state;
-
-    return (
-      <>
-        {(fileState === FileState.previewing ||
-          fileState === FileState.touched) &&
-          this.renderThumb()}
-
-        {(fileState === FileState.clean || fileState === FileState.deleted) && (
-          <div className="components-photo-field file-chooser">
-            <div className="upload-photo-icon-wrapper">
-              <Icon name="camera" />
-            </div>
-
-            {this.renderFileInput("Upload Photo")}
-          </div>
-        )}
-
-        {this.renderModal()}
-      </>
-    );
-  }
-
-  renderThumb = () => {
-    const { fileState, url } = this.state;
-
-    if (!url) {
-      return null;
+  function toUrl(file: File | null | string) {
+    if (!file) {
+      return;
     }
 
-    return (
-      <div
-        className="components-photo-field thumb"
-        data-testid="photo-preview"
-        onClick={this.touch}
-        onMouseLeave={this.unTouch}
-        onMouseEnter={this.touch}
-        style={{
-          backgroundImage: url
-        }}
-      >
-        {fileState === FileState.touched && (
-          <div className="editor-container" data-testid="edit-btns">
-            {this.renderFileInput("Change photo")}
+    /**
+     * The file may either be a path string from server or base64 encoded
+     * string from client file
+     */
+    if ("string" === typeof file) {
+      setUrl(`url(${toServerUrl(file)})`);
+      setFileState(FileState.previewing);
+      return;
+    }
 
-            <label
-              className="change-photo"
-              onClick={evt => {
-                evt.stopPropagation();
-                this.setState({ open: true });
-              }}
-            >
-              <Icon name="delete" /> Remove
-            </label>
-          </div>
-        )}
-      </div>
-    );
-  };
+    /**
+     * If we are selecting using browser file picker, then we get a File
+     * instance
+     */
+    const reader = new FileReader();
 
-  private renderFileInput = (label: string) => {
-    const {
-      field: { name: fieldName }
-    } = this.props;
+    reader.onloadend = () => {
+      const base64Encoded = reader.result as string;
+      valueChanged(base64Encoded);
+      setUrl(`url(${base64Encoded})`);
+      setFileState(FileState.previewing);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function valueChanged(file: string | null) {
+    form.setFieldValue(field.name, file);
+    formContext.valueChanged();
+  }
+
+  function touch() {
+    setFileState(FileState.touched);
+  }
+
+  function unTouch() {
+    setFileState(FileState.previewing);
+  }
+
+  function onDelete() {
+    setFileState(FileState.deleted);
+    setUrl(undefined);
+    setOpenModal(false);
+    valueChanged(null);
+  }
+
+  function handleFileUpload(evt: React.SyntheticEvent<HTMLInputElement>) {
+    const file = (evt.currentTarget.files || [])[0];
+
+    if (!file) {
+      return;
+    }
+
+    toUrl(file);
+  }
+
+  function renderFileInput(label: string) {
+    const { name: fieldName } = field;
 
     return (
       <>
@@ -139,15 +124,50 @@ export class PhotoField extends React.Component<Props, State> {
           className="input-file"
           name={fieldName}
           id={fieldName}
-          onChange={this.handleFileUpload}
+          onChange={handleFileUpload}
         />
       </>
     );
-  };
+  }
 
-  private renderModal = () => {
+  function renderThumb() {
+    if (!url) {
+      return null;
+    }
+
     return (
-      <AppModal open={this.state.open}>
+      <div
+        className="components-photo-field thumb"
+        data-testid="photo-preview"
+        onClick={touch}
+        onMouseLeave={unTouch}
+        onMouseEnter={touch}
+        style={{
+          backgroundImage: url
+        }}
+      >
+        {fileState === FileState.touched && (
+          <div className="editor-container" data-testid="edit-btns">
+            {renderFileInput("Change photo")}
+
+            <label
+              className="change-photo"
+              onClick={evt => {
+                evt.stopPropagation();
+                setOpenModal(true);
+              }}
+            >
+              <Icon name="delete" /> Remove
+            </label>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function renderModal() {
+    return (
+      <AppModal open={openModal}>
         <Modal.Header>Removing photo</Modal.Header>
 
         <Modal.Content>
@@ -163,7 +183,7 @@ export class PhotoField extends React.Component<Props, State> {
             labelPosition="right"
             content="No"
             onClick={() => {
-              this.setState({ open: false });
+              setOpenModal(false);
             }}
           />
 
@@ -172,80 +192,32 @@ export class PhotoField extends React.Component<Props, State> {
             icon="checkmark"
             labelPosition="right"
             content="Yes"
-            onClick={this.onDelete}
+            onClick={onDelete}
           />
         </Modal.Actions>
       </AppModal>
     );
-  };
+  }
 
-  private touch = () => {
-    this.setState({ fileState: FileState.touched });
-  };
+  return (
+    <>
+      {(fileState === FileState.previewing ||
+        fileState === FileState.touched) &&
+        renderThumb()}
 
-  private unTouch = () => {
-    this.setState({ fileState: FileState.previewing });
-  };
+      {(fileState === FileState.clean || fileState === FileState.deleted) && (
+        <div className="components-photo-field file-chooser">
+          <div className="upload-photo-icon-wrapper">
+            <Icon name="camera" />
+          </div>
 
-  private handleFileUpload = (evt: React.SyntheticEvent<HTMLInputElement>) => {
-    const file = (evt.currentTarget.files || [])[0];
+          {renderFileInput("Upload Photo")}
+        </div>
+      )}
 
-    if (!file) {
-      return;
-    }
-
-    this.toUrl(file);
-  };
-
-  private toUrl = (file: File | null | string) => {
-    if (!file) {
-      return;
-    }
-
-    /**
-     * The file may either be a path string from server or base64 encoded
-     * string from client file
-     */
-    if ("string" === typeof file) {
-      this.setState({
-        url: `url(${toServerUrl(file)})`,
-        fileState: FileState.previewing
-      });
-      return;
-    }
-
-    /**
-     * If we are selecting using browser file picker, then we get a File
-     * instance
-     */
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      const base64Encoded = reader.result as string;
-      this.valueChanged(base64Encoded);
-
-      this.setState({
-        url: `url(${base64Encoded})`,
-        fileState: FileState.previewing
-      });
-    };
-
-    reader.readAsDataURL(file);
-  };
-
-  private onDelete = () => {
-    this.setState({
-      fileState: FileState.deleted,
-      url: undefined,
-      open: false
-    });
-    this.valueChanged(null);
-  };
-
-  private valueChanged = (file: string | null) => {
-    this.props.form.setFieldValue(this.props.field.name, file);
-    this.context.valueChanged();
-  };
+      {renderModal()}
+    </>
+  );
 }
 
 export default PhotoField;
