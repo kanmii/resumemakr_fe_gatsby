@@ -119,7 +119,7 @@ it("deletes photo", async () => {
   expect(queryByTestId("photo-preview")).not.toBeInTheDocument();
 });
 
-xit("changes photo", async () => {
+it("changes photo", async () => {
   const { mockSetFieldValue, ui, fieldName } = setUp();
   const { getByLabelText, getByTestId } = render(ui);
 
@@ -128,7 +128,10 @@ xit("changes photo", async () => {
   uploadFile(getByLabelText("Upload Photo"), file1);
 
   await wait(() =>
-    expect(mockSetFieldValue.mock.calls[0]).toEqual([fieldName, file1])
+    expect(mockSetFieldValue.mock.calls[0]).toEqual([
+      fieldName,
+      "data:image/jpeg;base64,"
+    ])
   );
 
   await wait(() => fireEvent.mouseEnter(getByTestId("photo-preview")));
@@ -136,7 +139,10 @@ xit("changes photo", async () => {
   uploadFile(getByLabelText("Change photo"), file2);
 
   await wait(() =>
-    expect(mockSetFieldValue.mock.calls[1]).toEqual([fieldName, file2])
+    expect(mockSetFieldValue.mock.calls[1]).toEqual([
+      fieldName,
+      "data:image/jpeg;base64,"
+    ])
   );
 });
 
