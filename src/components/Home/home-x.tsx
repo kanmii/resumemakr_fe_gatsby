@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { Modal, Button, Label, Icon, Popup } from "semantic-ui-react";
 import { MutationUpdaterFn, ApolloError } from "apollo-client";
 import dateFormat from "date-fns/format";
