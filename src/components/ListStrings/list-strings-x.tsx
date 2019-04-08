@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { TextArea, Icon } from "semantic-ui-react";
 import { FieldArrayRenderProps, Field } from "formik";
 
@@ -15,104 +15,99 @@ interface Props {
   controlComponent?: React.ComponentClass | React.FunctionComponent;
 }
 
-export class ListStrings extends React.Component<Props> {
-  static contextType = FormContext;
-  context!: React.ContextType<typeof FormContext>;
+export function ListStrings(props: Props) {
+  const {
+    values,
+    fieldName: parentFieldName,
+    arrayHelper,
+    hiddenLabel,
+    header,
+    controlComponent
+  } = props;
 
-  render() {
-    const {
-      values,
-      fieldName: parentFieldName,
-      arrayHelper,
-      hiddenLabel,
-      header,
-      controlComponent
-    } = this.props;
+  const valuesLen = values.length;
 
-    const { valueChanged } = this.context;
+  const { valueChanged } = useContext(FormContext);
 
-    const valuesLen = values.length;
+  return (
+    <div>
+      {header || null}
 
-    return (
-      <div>
-        {header && header}
+      {values.map((value, index) => {
+        const fieldName = `${parentFieldName}[${index}]`;
+        const index1 = index + 1;
 
-        {values.map((value, index) => {
-          const fieldName = `${parentFieldName}[${index}]`;
-          const index1 = index + 1;
+        return (
+          <Field
+            key={index}
+            name={fieldName}
+            label={
+              <div className="with-controls list-string-header">
+                {`# ${index1}`}
 
-          return (
-            <Field
-              key={index}
-              name={fieldName}
-              label={
-                <div className="with-controls list-string-header ">
-                  {`# ${index1}`}
-
-                  <div>
-                    {valuesLen > 1 && (
-                      <CircularLabel
-                        color="blue"
-                        onClick={function onSwapAchievementsUp() {
-                          arrayHelper.swap(index, index1);
-                          valueChanged();
-                        }}
-                      >
-                        <Icon name="arrow down" />
-                      </CircularLabel>
-                    )}
-
-                    {valuesLen > 1 && (
-                      <CircularLabel
-                        color="red"
-                        onClick={function onRemoveAchievement() {
-                          arrayHelper.remove(index);
-                          valueChanged();
-                        }}
-                      >
-                        <Icon name="remove" />
-                      </CircularLabel>
-                    )}
-
+                <div>
+                  {valuesLen > 1 && (
                     <CircularLabel
-                      color="green"
-                      onClick={function onAddAchievement() {
-                        arrayHelper.insert(index1, "");
+                      color="blue"
+                      onClick={function onSwapAchievementsUp() {
+                        arrayHelper.swap(index, index1);
                         valueChanged();
                       }}
                     >
-                      <Icon name="add" />
+                      <Icon name="arrow down" />
                     </CircularLabel>
+                  )}
 
-                    {index1 > 1 && (
-                      <CircularLabel
-                        color="blue"
-                        onClick={function onSwapAchievementsUp() {
-                          arrayHelper.swap(index, index - 1);
-                          valueChanged();
-                        }}
-                      >
-                        <Icon name="arrow up" />
-                      </CircularLabel>
-                    )}
-                  </div>
+                  {valuesLen > 1 && (
+                    <CircularLabel
+                      color="red"
+                      onClick={function onRemoveAchievement() {
+                        arrayHelper.remove(index);
+                        valueChanged();
+                      }}
+                    >
+                      <Icon name="remove" />
+                    </CircularLabel>
+                  )}
 
-                  {hiddenLabel && (
-                    <label className="visually-hidden" htmlFor={fieldName}>
-                      {hiddenLabel}
-                    </label>
+                  <CircularLabel
+                    color="green"
+                    onClick={function onAddAchievement() {
+                      arrayHelper.insert(index1, "");
+                      valueChanged();
+                    }}
+                  >
+                    <Icon name="add" />
+                  </CircularLabel>
+
+                  {index1 > 1 && (
+                    <CircularLabel
+                      color="blue"
+                      onClick={function onSwapAchievementsUp() {
+                        arrayHelper.swap(index, index - 1);
+                        valueChanged();
+                      }}
+                    >
+                      <Icon name="arrow up" />
+                    </CircularLabel>
                   )}
                 </div>
-              }
-              defaultValue={value}
-              comp={controlComponent || TextArea}
-              component={RegularField}
-            />
-          );
-        })}
-      </div>
-    );
-  }
+
+                {hiddenLabel && (
+                  <label className="visually-hidden" htmlFor={fieldName}>
+                    {hiddenLabel}
+                  </label>
+                )}
+              </div>
+            }
+            defaultValue={value}
+            comp={controlComponent || TextArea}
+            component={RegularField}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 export default ListStrings;
