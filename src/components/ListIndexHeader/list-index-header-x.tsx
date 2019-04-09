@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Card, Icon } from "semantic-ui-react";
 
 import "./list-index-header-styles.scss";
@@ -16,101 +16,91 @@ interface Props<TValues> {
   idPrefix?: string;
 }
 
-export class ListIndexHeader<
-  TValues extends { index: number }
-> extends React.Component<Props<TValues>> {
-  static contextType = FormContext;
-  context!: React.ContextType<typeof FormContext>;
+export function ListIndexHeader<TValues extends { index: number }>(
+  props: Props<TValues>
+) {
+  const {
+    index,
+    label,
+    setFieldValue,
+    fieldName,
+    values,
+    empty,
+    idPrefix
+  } = props;
 
-  render() {
-    const {
-      index,
-      label,
-      setFieldValue,
-      fieldName,
-      values,
-      empty,
-      idPrefix
-    } = this.props;
+  const { valueChanged, formValues } = useContext(FormContext);
 
-    const { valueChanged } = this.context;
-    const id = (idPrefix || label) + "-" + index;
-    const len = values.length;
+  const id = (idPrefix || label) + "-" + index;
+  const len = values.length;
 
-    return (
-      <Card.Content className="components-list-index-header">
-        <Card.Header id={id}>
-          {`${label ? label + " #" + index : "#" + index}`}
-        </Card.Header>
+  return (
+    <Card.Content className="components-list-index-header">
+      <Card.Header id={id}>
+        {`${label ? label + " #" + index : "#" + index}`}
+      </Card.Header>
 
-        <div>
-          {len > index && (
-            <CircularLabel
-              color="blue"
-              onClick={function onSwapExperienceDown() {
-                setFieldValue(
-                  fieldName,
-                  swap<TValues>(values, index, index + 1)
-                );
-
-                setTimeout(() => {
-                  valueChanged();
-                });
-              }}
-            >
-              <Icon name="arrow down" />
-            </CircularLabel>
-          )}
-
-          {len > 1 && (
-            <CircularLabel
-              color="red"
-              onClick={function onRemoveItem() {
-                setFieldValue(fieldName, remove<TValues>(values, index));
-
-                setTimeout(() => {
-                  valueChanged();
-                });
-              }}
-            >
-              <Icon name="remove" />
-            </CircularLabel>
-          )}
-
+      <div>
+        {len > index && (
           <CircularLabel
-            color="green"
-            onClick={function onAddItem() {
-              setFieldValue(fieldName, add<TValues>(values, index, empty));
+            color="blue"
+            onClick={function onSwapExperienceDown() {
+              setFieldValue(fieldName, swap<TValues>(values, index, index + 1));
 
               setTimeout(() => {
-                valueChanged();
+                valueChanged(formValues);
               });
             }}
           >
-            <Icon name="add" />
+            <Icon name="arrow down" />
           </CircularLabel>
+        )}
 
-          {index > 1 && (
-            <CircularLabel
-              color="blue"
-              onClick={function onSwapExperienceUp() {
-                setFieldValue(
-                  fieldName,
-                  swap<TValues>(values, index, index - 1)
-                );
+        {len > 1 && (
+          <CircularLabel
+            color="red"
+            onClick={function onRemoveItem() {
+              setFieldValue(fieldName, remove<TValues>(values, index));
 
-                setTimeout(() => {
-                  valueChanged();
-                });
-              }}
-            >
-              <Icon name="arrow up" />
-            </CircularLabel>
-          )}
-        </div>
-      </Card.Content>
-    );
-  }
+              setTimeout(() => {
+                valueChanged(formValues);
+              });
+            }}
+          >
+            <Icon name="remove" />
+          </CircularLabel>
+        )}
+
+        <CircularLabel
+          color="green"
+          onClick={function onAddItem() {
+            setFieldValue(fieldName, add<TValues>(values, index, empty));
+
+            setTimeout(() => {
+              valueChanged(formValues);
+            });
+          }}
+        >
+          <Icon name="add" />
+        </CircularLabel>
+
+        {index > 1 && (
+          <CircularLabel
+            color="blue"
+            onClick={function onSwapExperienceUp() {
+              setFieldValue(fieldName, swap<TValues>(values, index, index - 1));
+
+              setTimeout(() => {
+                valueChanged(formValues);
+              });
+            }}
+          >
+            <Icon name="arrow up" />
+          </CircularLabel>
+        )}
+      </div>
+    </Card.Content>
+  );
 }
 
 export default ListIndexHeader;
