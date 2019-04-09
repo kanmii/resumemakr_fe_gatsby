@@ -48,5 +48,7 @@ export const uiTexts = {
 
   phoneLabel: "Phone",
 
-  emailLabel: "Email"
+  emailLabel: "Email",
+
+  dateOfBirthLabel: "Date of birth yyyy-mm-dd"
 };

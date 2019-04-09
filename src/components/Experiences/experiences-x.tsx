@@ -78,35 +78,35 @@ export class Experiences extends React.Component<Props, {}> {
 
         <Card.Content>
           <FastField
-            name={makeName(index, "position")}
+            name={makeExperienceFieldName(index, "position")}
             label={uiTexts.positionLabel}
             defaultValue={exp.position}
             component={RegularField}
           />
 
           <FastField
-            name={makeName(index, "companyName")}
+            name={makeExperienceFieldName(index, "companyName")}
             label={uiTexts.companyNameLabel}
             defaultValue={exp.companyName}
             component={RegularField}
           />
 
           <FastField
-            name={makeName(index, "fromDate")}
+            name={makeExperienceFieldName(index, "fromDate")}
             label={uiTexts.fromDateLabel}
             defaultValue={exp.fromDate}
             component={RegularField}
           />
 
           <FastField
-            name={makeName(index, "toDate")}
+            name={makeExperienceFieldName(index, "toDate")}
             label={uiTexts.toDateLabel}
             defaultValue={exp.toDate}
             component={RegularField}
           />
 
           <FieldArray
-            name={makeName(index, "achievements")}
+            name={makeExperienceFieldName(index, "achievements")}
             render={helper => {
               return (
                 <ListStrings
@@ -115,10 +115,11 @@ export class Experiences extends React.Component<Props, {}> {
                   header={
                     <div>
                       {uiTexts.achievementsLabels1}
-                      <span> {uiTexts.achievementsLabels2}</span>
+                      <span>{uiTexts.achievementsLabels2}</span>
                     </div>
                   }
-                  fieldName={makeName(index, "achievements")}
+                  fieldName={makeExperienceFieldName(index, "achievements")}
+                  appendToHiddenLabel={uiTexts.achievementsLabels2}
                 />
               );
             }}
@@ -159,6 +160,9 @@ export default Experiences;
 /**
  * index is 1-based
  */
-function makeName(index: number, key: keyof CreateExperienceInput) {
+export function makeExperienceFieldName(
+  index: number,
+  key: keyof CreateExperienceInput
+) {
   return `experiences[${index - 1}].${key}`;
 }

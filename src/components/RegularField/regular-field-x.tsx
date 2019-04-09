@@ -15,7 +15,7 @@ export function RegularField<Values>(props: Props<Values>) {
 
   const { value, name } = field;
 
-  const formContext = useContext(FormContext);
+  const { valueChanged, formValues } = useContext(FormContext);
 
   return (
     <Form.Field>
@@ -29,7 +29,9 @@ export function RegularField<Values>(props: Props<Values>) {
         {...field}
         value={value || ""}
         id={field.name}
-        onBlur={formContext.valueChanged}
+        onBlur={() => {
+          valueChanged(formValues);
+        }}
       />
     </Form.Field>
   );

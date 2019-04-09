@@ -3,6 +3,7 @@ import { MatchRenderProps } from "@reach/router";
 import { FormikProps } from "formik";
 import { WithFormikConfig } from "formik";
 import { createContext } from "react";
+import { Cancelable } from "lodash";
 
 import {
   validationSchema as expSchema,
@@ -34,8 +35,11 @@ import { UpdateResumeProps } from "../../graphql/apollo/update-resume.mutation";
 import { GetResumeProps } from "../../graphql/apollo/get-resume.query";
 import { stripTypeName, SetFieldValue } from "../utils";
 import { ResumePathMatch } from "../../routing";
+import { noOp } from "../../constants";
 
-export interface OwnProps extends MatchRenderProps<ResumePathMatch> {}
+export interface OwnProps extends MatchRenderProps<ResumePathMatch> {
+  debounceTime?: number;
+}
 
 export type Props = OwnProps &
   UpdateResumeProps &
@@ -105,25 +109,18 @@ export const toSection = (current: Section, to: "next" | "prev") => {
 
 export function getInitialValues(
   getResume: GetResume_getResume | undefined | null
-) {
+): GetResume_getResume {
   const initial = { ...initialFormValues };
 
   if (!getResume) {
-    return initial;
+    return initial as GetResume_getResume;
   }
 
   return Object.entries(getResume).reduce(
     (acc, [k, v]) => {
       const key = k as keyof GetResume_getResume;
 
-      if (k === "__typename") {
-        return acc;
-      }
-
-      if (!v || (v && typeof v.map === "function" && v.length === 0)) {
-        (acc as GetResume_getResume)[key] = (initial as GetResume_getResume)[
-          key
-        ];
+      if (!v || k === "__typename") {
         return acc;
       }
 
@@ -135,9 +132,11 @@ export function getInitialValues(
 }
 
 export const formikConfig: WithFormikConfig<Props, FormValues> = {
-  handleSubmit: () => null,
+  handleSubmit: noOp,
 
-  mapPropsToValues: ({ getResume }) => {
+  mapPropsToValues: props => {
+    const { getResume } = props;
+
     return getResume as FormValues;
   },
 
@@ -152,9 +151,15 @@ export interface ChildProps {
   setFieldValue: SetFieldValue<CreateExperienceInput>;
 }
 
+type ValueChangedFn = ((values: Partial<UpdateResumeInput>) => Promise<void>) &
+  Cancelable;
+
 export interface State {
   updatingResume?: boolean;
-  valueChanged: () => void;
+
+  valueChanged: ValueChangedFn;
+
+  formValues: Partial<UpdateResumeInput>;
 }
 
 export const FormContext = createContext<State>({} as State);
@@ -167,3 +172,11 @@ export function nextTooltipText(section: Section) {
 export function prevTooltipText(section: Section) {
   return "Previous resume section " + section.toLowerCase();
 }
+
+export const uiTexts = {
+  partialPreviewResumeTooltipText: "Partial: preview your resume",
+
+  endPreviewResumeTooltipText: "End: preview your resume",
+
+  backToEditorBtnText: "Back to Editor"
+};

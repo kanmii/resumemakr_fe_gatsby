@@ -113,7 +113,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
 
         <FastField
           name={makeName("dateOfBirth")}
-          label="Date of birth yyyy-mm-dd"
+          label={uiTexts.dateOfBirthLabel}
           component={RegularField}
           value={values.dateOfBirth}
         />

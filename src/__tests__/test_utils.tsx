@@ -14,7 +14,8 @@ export function makeClient() {
 }
 
 export function renderWithApollo<TProps>(
-  Ui: FunctionComponent<TProps> | ComponentClass<TProps>
+  Ui: FunctionComponent<TProps> | ComponentClass<TProps>,
+  initialProps: Partial<TProps> = {}
 ) {
   const client = makeClient();
 
@@ -22,7 +23,7 @@ export function renderWithApollo<TProps>(
     client,
     Ui: (props: TProps) => (
       <ApolloProvider client={client}>
-        <Ui client={client} {...props} />
+        <Ui client={client} {...initialProps} {...props} />
       </ApolloProvider>
     )
   };

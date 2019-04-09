@@ -18,8 +18,13 @@ export const updateResume = gql`
 
 export default updateResume;
 
+export type UpdateResumeMutationFn = MutationFn<
+  UpdateResume,
+  UpdateResumeVariables
+>;
+
 export interface UpdateResumeProps {
-  updateResume?: MutationFn<UpdateResume, UpdateResumeVariables>;
+  updateResume?: UpdateResumeMutationFn;
 }
 
 export const updateResumeGql = graphql<
