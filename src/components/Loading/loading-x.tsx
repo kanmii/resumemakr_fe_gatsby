@@ -1,4 +1,4 @@
-import React from "react";
+import React, { PropsWithChildren } from "react";
 import styled, { keyframes } from "styled-components/macro";
 
 const bounce = keyframes`
@@ -22,7 +22,7 @@ const Spinner = styled.div`
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-color: #333;
+    background-color: #f595a5;
     opacity: 0.6;
     position: absolute;
     top: 0;
@@ -42,14 +42,17 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 `;
 
-export const Loading = (props = {}) => (
+export const Loading = ({ children, ...props }: PropsWithChildren<{}>) => (
   <Container>
     <Spinner {...props}>
       <div className="double-bounce1" />
       <div className="double-bounce2" />
     </Spinner>
+
+    {children}
   </Container>
 );
 
