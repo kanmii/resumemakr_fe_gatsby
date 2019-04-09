@@ -8,15 +8,35 @@ $nav-btn-max-width: 12.5rem;
 }
 
 .component-resume-form {
+  position: relative;
+  margin-right: 5px;
+
   &.container--loading {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     width: 100%;
     height: 100%;
   }
 
-  margin-right: 5px;
+  .gql-errors {
+    position: absolute;
+    top: 80px;
+    z-index: 2;
+    background: red;
+    color: white;
+    width: 100%;
+    text-align: center;
+    font-weight: 900;
+    font-size: 1.5rem;
+    padding: 10px 0;
+  }
+
+  .loading-too-long {
+    max-width: 300px;
+    padding: 0 5px;
+    text-align: justify;
+  }
 
   form {
     width: 100%;

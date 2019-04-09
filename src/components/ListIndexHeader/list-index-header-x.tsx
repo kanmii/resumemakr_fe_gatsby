@@ -29,7 +29,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
     idPrefix
   } = props;
 
-  const { valueChanged, formValues } = useContext(FormContext);
+  const { valueChanged } = useContext(FormContext);
 
   const id = (idPrefix || label) + "-" + index;
   const len = values.length;
@@ -48,7 +48,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
               setFieldValue(fieldName, swap<TValues>(values, index, index + 1));
 
               setTimeout(() => {
-                valueChanged(formValues);
+                valueChanged();
               });
             }}
           >
@@ -63,7 +63,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
               setFieldValue(fieldName, remove<TValues>(values, index));
 
               setTimeout(() => {
-                valueChanged(formValues);
+                valueChanged();
               });
             }}
           >
@@ -77,7 +77,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
             setFieldValue(fieldName, add<TValues>(values, index, empty));
 
             setTimeout(() => {
-              valueChanged(formValues);
+              valueChanged();
             });
           }}
         >
@@ -91,7 +91,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
               setFieldValue(fieldName, swap<TValues>(values, index, index - 1));
 
               setTimeout(() => {
-                valueChanged(formValues);
+                valueChanged();
               });
             }}
           >

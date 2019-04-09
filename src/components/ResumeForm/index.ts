@@ -28,11 +28,7 @@ const getResumeGql = graphql<
       return data;
     }
 
-    const { loading, error, getResume } = data;
-
-    if (loading || error) {
-      return data;
-    }
+    const { getResume } = data;
 
     return {
       ...data,

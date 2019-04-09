@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, memo, useState } from "react";
 import { TextArea, Icon } from "semantic-ui-react";
 import { FieldArrayRenderProps, Field } from "formik";
 
@@ -16,7 +16,11 @@ interface Props {
   appendToHiddenLabel?: string;
 }
 
-export function ListStrings(props: Props) {
+export const ListStrings = memo(ListStrings0, arePropsEqual);
+
+export default ListStrings;
+
+export function ListStrings0(props: Props) {
   const {
     values,
     fieldName: parentFieldName,
@@ -29,14 +33,16 @@ export function ListStrings(props: Props) {
 
   const valuesLen = values.length;
 
-  const { valueChanged, formValues } = useContext(FormContext);
+  const [swapped, setSwapped] = useState(ListStringsCtrlNames.none);
 
-  // tslint:disable-next-line:no-console
-  console.log(
-    "\n\t\tLogging start\n\n\n\n ListStrings formValues\n",
-    formValues,
-    "\n\n\n\n\t\tLogging ends\n"
-  );
+  const { valueChanged } = useContext(FormContext);
+
+  useEffect(() => {
+    if (swapped !== ListStringsCtrlNames.none) {
+      setSwapped(ListStringsCtrlNames.none);
+      valueChanged();
+    }
+  }, [swapped]);
 
   return (
     <div>
@@ -64,7 +70,7 @@ export function ListStrings(props: Props) {
                       color="blue"
                       onClick={function onSwapAchievementsUp() {
                         arrayHelper.swap(index, index1);
-                        valueChanged(formValues);
+                        setSwapped(ListStringsCtrlNames.moveDown);
                       }}
                     >
                       <Icon name="arrow down" />
@@ -80,7 +86,7 @@ export function ListStrings(props: Props) {
                       color="red"
                       onClick={function onRemoveAchievement() {
                         arrayHelper.remove(index);
-                        valueChanged(formValues);
+                        setSwapped(ListStringsCtrlNames.remove);
                       }}
                     >
                       <Icon name="remove" />
@@ -95,7 +101,7 @@ export function ListStrings(props: Props) {
                     color="green"
                     onClick={function onAddAchievement() {
                       arrayHelper.insert(index1, "");
-                      valueChanged(formValues);
+                      setSwapped(ListStringsCtrlNames.add);
                     }}
                   >
                     <Icon name="add" />
@@ -110,7 +116,7 @@ export function ListStrings(props: Props) {
                       color="blue"
                       onClick={function onSwapAchievementsUp() {
                         arrayHelper.swap(index, index - 1);
-                        valueChanged(formValues);
+                        setSwapped(ListStringsCtrlNames.moveUp);
                       }}
                     >
                       <Icon name="arrow up" />
@@ -144,7 +150,22 @@ export function ListStrings(props: Props) {
   );
 }
 
-export default ListStrings;
+function arePropsEqual({ values: values1 }: Props, { values: values2 }: Props) {
+  const len1 = values1.length;
+  const len2 = values2.length;
+
+  if (len1 !== len2) {
+    return false;
+  }
+
+  for (let i = 0; i < len1; i++) {
+    if (values1[i].trim() !== values2[i].trim()) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export function makeListStringFieldName(
   parentFieldName: string,
@@ -174,5 +195,7 @@ export enum ListStringsCtrlNames {
 
   moveUp = "move up",
 
-  moveDown = "move down"
+  moveDown = "move down",
+
+  none = "none"
 }

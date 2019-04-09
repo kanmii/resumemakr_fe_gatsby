@@ -77,3 +77,7 @@ export function uploadFile($input: HTMLElement, file?: File) {
 export interface WithData<TData> {
   data: TData;
 }
+
+export const jpegMime = "image/jpeg";
+
+export const jpegBase64StringPrefix = "data:image/jpeg;base64,";

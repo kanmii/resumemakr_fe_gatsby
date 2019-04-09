@@ -3,7 +3,6 @@ import { MatchRenderProps } from "@reach/router";
 import { FormikProps } from "formik";
 import { WithFormikConfig } from "formik";
 import { createContext } from "react";
-import { Cancelable } from "lodash";
 
 import {
   validationSchema as expSchema,
@@ -151,18 +150,19 @@ export interface ChildProps {
   setFieldValue: SetFieldValue<CreateExperienceInput>;
 }
 
-type ValueChangedFn = ((values: Partial<UpdateResumeInput>) => Promise<void>) &
-  Cancelable;
+type ValueChangedFn = () => void;
 
-export interface State {
+export interface ResumeFormContextValue {
   updatingResume?: boolean;
 
   valueChanged: ValueChangedFn;
 
-  formValues: Partial<UpdateResumeInput>;
+  prevFormValues: Partial<UpdateResumeInput>;
 }
 
-export const FormContext = createContext<State>({} as State);
+export const FormContext = createContext<ResumeFormContextValue>(
+  {} as ResumeFormContextValue
+);
 export const FormContextProvider = FormContext.Provider;
 
 export function nextTooltipText(section: Section) {

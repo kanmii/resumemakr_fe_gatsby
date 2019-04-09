@@ -1,10 +1,11 @@
-import React, { useRef, useEffect, useState, MutableRefObject } from "react";
+import React, { useRef, useEffect, MutableRefObject, useState } from "react";
 import { Form, Icon, Input } from "semantic-ui-react";
 import lodashDebounce from "lodash/debounce";
 import lodashIsEqual from "lodash/isEqual";
 import update from "immutability-helper";
 import { FieldArray } from "formik";
 import { Cancelable } from "lodash";
+import { ApolloError } from "apollo-client";
 
 import "./styles.scss";
 import {
@@ -18,8 +19,7 @@ import {
   sectionLabelToHeader,
   nextTooltipText,
   prevTooltipText,
-  uiTexts,
-  State
+  uiTexts
 } from "./resume-form";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
@@ -31,7 +31,6 @@ import Loading from "../Loading";
 import { ALREADY_UPLOADED } from "../../constants";
 import { UpdateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { ResumePathHash } from "../../routing";
-import logger from "../../logger";
 import Rated from "../Rated";
 import SectionLabel from "../SectionLabel";
 import ListStrings from "../ListStrings";
@@ -46,11 +45,22 @@ export function ResumeForm(props: Props) {
     error: graphQlLoadingError,
     location: { pathname, hash },
     setFieldValue,
-    debounceTime = 250,
-    values
+    debounceTime: propDebounceTime,
+    values,
+    match
   } = props;
 
+  // istanbul ignore next: trust @reach/router to properly inject match
+  const resumeTitle = match && match.title;
+
+  // istanbul ignore next
+  const debounceTime = propDebounceTime || 250;
+
   const updateResume = props.updateResume as UpdateResumeMutationFn;
+
+  const [gqlError, setGqlError] = useState<ApolloError | null>(null);
+
+  const [loadingTooLong, setLoadingTooLong] = useState(false);
 
   const valuesTrackerRef = useRef<FormValues>({ ...values });
   const backToSectionRef = useRef(Section.personalInfo);
@@ -60,24 +70,22 @@ export function ResumeForm(props: Props) {
     lodashDebounce(updateResumeFn, debounceTime)
   );
 
-  const [formContextValue] = useState<State>({
-    valueChanged: () => null
-
-    // tslint:disable-next-line: no-any
-  } as any);
-
-  useEffect(() => {
-    updateResumeFnDebounced.current({
-      formValues: values,
-      valuesTrackerRef,
-      updateResume,
-      section: currentSectionRef.current
-    });
-  }, [values, hash]);
-
   useEffect(() => {
     return updateResumeFnDebounced.current.cancel;
   }, []);
+
+  useEffect(() => {
+    if (loading && !loadingTooLong) {
+      let timer: number;
+
+      timer = setTimeout(() => {
+        setLoadingTooLong(true);
+        clearTimeout(timer);
+      }, 10000);
+    } else {
+      setLoadingTooLong(false);
+    }
+  }, [loading]);
 
   function urlFromSection(section: Section) {
     return `${pathname}${makeUrlHashSegment(ResumePathHash.edit, section)}`;
@@ -99,6 +107,39 @@ export function ResumeForm(props: Props) {
         : backToSectionRef.current;
 
     return currentSection;
+  }
+
+  function renderGqlError(errors: ApolloError | null) {
+    if (!errors) {
+      return null;
+    }
+
+    const { graphQLErrors, networkError } = errors;
+
+    let error;
+
+    // istanbul ignore next
+    if (networkError) {
+      error = networkError.message;
+    } else {
+      error = graphQLErrors.map(({ message }, index) => {
+        return <div key={"gql-error-" + index}>{message}</div>;
+      });
+    }
+
+    return (
+      <div data-testid="gql-errors" className="gql-errors">
+        <div
+          style={{
+            fontWeight: "normal",
+            fontSize: "1rem"
+          }}
+        >
+          Error updating data!
+        </div>
+        {error}
+      </div>
+    );
   }
 
   function renderCurrEditingSection() {
@@ -198,15 +239,25 @@ export function ResumeForm(props: Props) {
     if (graphQlLoadingError) {
       return (
         <div data-testid="component-resume-update-loading-error">
-          {JSON.stringify(graphQlLoadingError)}
+          {renderGqlError(graphQlLoadingError)}
         </div>
       );
-    }
-
-    if (loading) {
+    } else if (loading && !loadingTooLong) {
       return (
         <div className="component-resume-form container--loading">
-          <Loading data-testid="component-resume-update-loading" />
+          <Loading data-testid="component-resume-update-loading">
+            <div>{resumeTitle}</div>
+            loading...
+          </Loading>
+        </div>
+      );
+    } else if (loadingTooLong) {
+      return (
+        <div className="component-resume-form container--loading">
+          <div className="loading-too-long">
+            I am deeply sorry. It looks like <b>"{resumeTitle}"</b> is taking
+            too long to load. I will display it as soon as it arrives.
+          </div>
         </div>
       );
     }
@@ -219,8 +270,23 @@ export function ResumeForm(props: Props) {
 
   return (
     <div className="component-resume-form">
+      {renderGqlError(gqlError)}
+
       <Form>
-        <FormContextProvider value={formContextValue}>
+        <FormContextProvider
+          value={{
+            prevFormValues: valuesTrackerRef.current,
+
+            valueChanged: () => {
+              updateResumeFnDebounced.current({
+                formValues: values,
+                valuesTrackerRef,
+                updateResume,
+                setGqlError
+              });
+            }
+          }}
+        >
           {renderCurrEditingSection()}
         </FormContextProvider>
 
@@ -301,7 +367,7 @@ interface UpdateResumeFnArgs {
   formValues: Partial<UpdateResumeInput>;
   valuesTrackerRef: MutableRefObject<Partial<UpdateResumeInput>>;
   updateResume: UpdateResumeMutationFn;
-  section: Section;
+  setGqlError: React.Dispatch<React.SetStateAction<ApolloError | null>>;
 }
 
 type UpdateResumeFn = ((args: UpdateResumeFnArgs) => Promise<void>) &
@@ -311,19 +377,8 @@ async function updateResumeFn({
   formValues,
   valuesTrackerRef,
   updateResume,
-  section
+  setGqlError
 }: UpdateResumeFnArgs) {
-  // tslint:disable-next-line:no-console
-  console.log(
-    "\n\t\tLogging start\n\n\n\n update fn formValues\n",
-    formValues,
-    "\n\n\n\n\t\tLogging ends\n"
-  );
-
-  if (section === Section.preview) {
-    return;
-  }
-
   const photo = formValues.personalInfo && formValues.personalInfo.photo;
 
   /**
@@ -331,7 +386,8 @@ async function updateResumeFn({
    * We know we are uploading a fresh photo when the photo field is a base64
    * encoded string.
    */
-  if (photo && !photo.startsWith("data:")) {
+
+  if (photo && !isBase64String(photo)) {
     formValues = update(formValues, {
       personalInfo: {
         photo: {
@@ -364,6 +420,7 @@ async function updateResumeFn({
       }
     });
 
+    // istanbul ignore next: just satisfying typescript
     const resume =
       result &&
       result.data &&
@@ -374,12 +431,31 @@ async function updateResumeFn({
       return;
     }
 
+    /**
+     * Formik will call getInitialValues(resume) when react updates props.
+     * So here, we are essentially setting
+     * valuesTrackerRef.current = {...formValues}
+     */
     valuesTrackerRef.current = getInitialValues(resume);
   } catch (error) {
-    logger("error", "update catch error", error);
+    setGqlError(error);
   }
 }
 
 export function makeUrlHashSegment(hash: ResumePathHash, section: Section) {
   return `${hash}/${section}`;
+}
+
+export function isBase64String(input: string) {
+  if (!input.startsWith("data:image/")) {
+    return false;
+  }
+
+  const [, b] = input.split(";");
+
+  if (!b || !b.startsWith("base64,")) {
+    return false;
+  }
+
+  return true;
 }

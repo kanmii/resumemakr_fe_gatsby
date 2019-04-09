@@ -5,12 +5,17 @@ import { render, wait, fireEvent } from "react-testing-library";
 import { getByText as domGetByText, waitForElement } from "dom-testing-library";
 
 import { PhotoField } from "../components/PhotoField/photo-field-x";
-import { createFile, uploadFile } from "./test_utils";
-import { FormContextProvider } from "../components/ResumeForm/resume-form";
+import {
+  createFile,
+  uploadFile,
+  jpegMime,
+  jpegBase64StringPrefix
+} from "./test_utils";
+import {
+  FormContextProvider,
+  ResumeFormContextValue
+} from "../components/ResumeForm/resume-form";
 import { uiTexts, Props } from "../components/PhotoField/photo-field";
-
-const uploadPhotoRegexp = new RegExp(uiTexts.uploadPhotoText);
-const imageMime = "image/jpeg";
 
 it("changes to preview on file select", async () => {
   /**
@@ -36,15 +41,15 @@ it("changes to preview on file select", async () => {
    * When user selects a photo
    */
   uploadFile(
-    getByLabelText(uploadPhotoRegexp),
-    createFile("dog.jpg", 1234, imageMime)
+    getByLabelText(uiTexts.uploadPhotoText),
+    createFile("dog.jpg", 1234, jpegMime)
   );
 
   /**
    * Then the upload field should no longer be visible
    */
   await wait(() => {
-    expect(queryByLabelText(uploadPhotoRegexp)).not.toBeInTheDocument();
+    expect(queryByLabelText(uiTexts.uploadPhotoText)).not.toBeInTheDocument();
   });
 
   /**
@@ -66,8 +71,8 @@ it("toggles edit buttons on mouse move on preview", async () => {
    * And user selects a photo
    */
   uploadFile(
-    getByLabelText(uploadPhotoRegexp),
-    createFile("dog.jpg", 1234, imageMime)
+    getByLabelText(uiTexts.uploadPhotoText),
+    createFile("dog.jpg", 1234, jpegMime)
   );
 
   /**
@@ -114,8 +119,8 @@ it("shows edit buttons when preview clicked", async () => {
    * And user selects a photo
    */
   uploadFile(
-    getByLabelText(uploadPhotoRegexp),
-    createFile("dog.jpg", 1234, imageMime)
+    getByLabelText(uiTexts.uploadPhotoText),
+    createFile("dog.jpg", 1234, jpegMime)
   );
 
   /**
@@ -146,8 +151,8 @@ it("deletes photo", async () => {
    * And user selects a photo
    */
   uploadFile(
-    getByLabelText(uploadPhotoRegexp),
-    createFile("dog.jpg", 1234, imageMime)
+    getByLabelText(uiTexts.uploadPhotoText),
+    createFile("dog.jpg", 1234, jpegMime)
   );
 
   await wait(() => {
@@ -192,14 +197,14 @@ it("changes photo", async () => {
   const { mockSetFieldValue, ui, fieldName } = setUp();
   const { getByLabelText, getByTestId } = render(ui);
 
-  const file1 = createFile("dog.jpg", 1234, imageMime);
-  const file2 = createFile("cat.jpg", 2345, imageMime);
-  uploadFile(getByLabelText(uploadPhotoRegexp), file1);
+  const file1 = createFile("dog.jpg", 1234, jpegMime);
+  const file2 = createFile("cat.jpg", 2345, jpegMime);
+  uploadFile(getByLabelText(uiTexts.uploadPhotoText), file1);
 
   await wait(() =>
     expect(mockSetFieldValue.mock.calls[0]).toEqual([
       fieldName,
-      "data:image/jpeg;base64,"
+      jpegBase64StringPrefix
     ])
   );
 
@@ -210,7 +215,7 @@ it("changes photo", async () => {
   await wait(() =>
     expect(mockSetFieldValue.mock.calls[1]).toEqual([
       fieldName,
-      "data:image/jpeg;base64,"
+      jpegBase64StringPrefix
     ])
   );
 });
@@ -220,7 +225,7 @@ it("does not set field value if no file selected", async () => {
 
   const { getByLabelText } = render(ui);
 
-  uploadFile(getByLabelText(uploadPhotoRegexp));
+  uploadFile(getByLabelText(uiTexts.uploadPhotoText));
   await wait(() => expect(mockSetFieldValue).not.toBeCalled());
 });
 
@@ -232,7 +237,9 @@ it("does not set field value if no file selected", async () => {
 
 function ResumeForm(props: React.PropsWithChildren<{}>) {
   return (
-    <FormContextProvider value={{ valueChanged: jest.fn() }}>
+    <FormContextProvider
+      value={({ valueChanged: jest.fn() } as unknown) as ResumeFormContextValue}
+    >
       {props.children}
     </FormContextProvider>
   );
