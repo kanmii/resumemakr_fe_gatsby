@@ -19,8 +19,7 @@ import {
 import {
   Props,
   formikConfig,
-  Section,
-  getInitialValues
+  Section
 } from "../components/UpdateResumeForm/update-resume-form";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
@@ -30,9 +29,9 @@ import {
   GetResume_getResume_experiences
 } from "../graphql/apollo/types/GetResume";
 import {
-  defaultVal as experiencesDefaultVal,
-  emptyVal as experiencesEmptyVal,
-  uiTexts as experiencesUiText
+  defaultVal,
+  emptyVal,
+  uiTexts
 } from "../components/Experiences/experiences";
 import { makeExperienceFieldName } from "../components/Experiences/experiences-x";
 import {
@@ -56,21 +55,36 @@ jest.mock("../components/Preview", () => {
   return () => <div data-testid="preview-resume-section">1</div>;
 });
 
-describe("Experiences", () => {
-  const initial = getInitialValues(null);
+const location = {
+  hash: makeUrlHashSegment(ResumePathHash.edit, Section.experiences),
+  pathname: makeResumeRoute("updates experiences", "")
+} as WindowLocation;
+
+let mockUpdateResume: jest.Mock;
+const fieldName = "experiences";
+
+let getByTestId: (
+  text: Matcher,
+  options?: MatcherOptions | undefined
+) => HTMLElement;
+
+let getByLabelText: (
+  text: Matcher,
+  options?: SelectorMatcherOptions | undefined
+) => HTMLElement;
+
+let queryByLabelText: (
+  text: Matcher,
+  options?: SelectorMatcherOptions | undefined
+) => HTMLElement | null;
+
+describe("Experiences pre-fill/achievements", () => {
+  const initial = {
+    experiences: [defaultVal]
+  } as GetResume_getResume;
+
   let experience: GetResume_getResume_experiences;
   let achievements: string[];
-  let mockUpdateResume: jest.Mock;
-
-  let getByTestId: (
-    text: Matcher,
-    options?: MatcherOptions | undefined
-  ) => HTMLElement;
-
-  let getByLabelText: (
-    text: Matcher,
-    options?: SelectorMatcherOptions | undefined
-  ) => HTMLElement;
 
   const achievementsPrefixFieldName = makeExperienceFieldName(
     0,
@@ -94,30 +108,20 @@ describe("Experiences", () => {
 
   const achievement0Label = makeListStringHiddenLabelText(
     achievement0FieldName,
-    experiencesUiText.achievementsLabels2
+    uiTexts.achievementsLabels2
   );
 
   const achievement1Label = makeListStringHiddenLabelText(
     achievement1FieldName,
-    experiencesUiText.achievementsLabels2
-  );
-
-  const experiencesHash = makeUrlHashSegment(
-    ResumePathHash.edit,
-    Section.experiences
+    uiTexts.achievementsLabels2
   );
 
   const achievement2Label = makeListStringHiddenLabelText(
     achievement2FieldName,
-    experiencesUiText.achievementsLabels2
+    uiTexts.achievementsLabels2
   );
 
   beforeEach(() => {
-    const location = {
-      hash: experiencesHash,
-      pathname: makeResumeRoute("updates experiences", "")
-    } as WindowLocation;
-
     [experience] = initial.experiences as GetResume_getResume_experiences[];
 
     achievements = experience.achievements as string[];
@@ -453,53 +457,19 @@ describe("Experiences", () => {
 });
 
 describe("Experiences - add/remove/swap", () => {
-  const fieldName = "experiences";
-
   const experiences = [
-    { ...experiencesDefaultVal, companyName: "company 1" },
-
-    { ...experiencesDefaultVal, companyName: "company 2", index: 2 },
-
-    { ...experiencesDefaultVal, companyName: "company 3", index: 3 }
+    { ...defaultVal, companyName: "company 1" },
+    { ...defaultVal, companyName: "company 2", index: 2 },
+    { ...defaultVal, companyName: "company 3", index: 3 }
   ] as GetResume_getResume_experiences[];
 
   const initial = { experiences } as GetResume_getResume;
-
-  let mockUpdateResume: jest.Mock;
-
-  let getByTestId: (
-    text: Matcher,
-    options?: MatcherOptions | undefined
-  ) => HTMLElement;
-
-  let getByLabelText: (
-    text: Matcher,
-    options?: SelectorMatcherOptions | undefined
-  ) => HTMLElement;
-
-  let queryByLabelText: (
-    text: Matcher,
-    options?: SelectorMatcherOptions | undefined
-  ) => HTMLElement | null;
 
   const company0LabelText = makeExperienceFieldName(0, "companyName");
   const company1LabelText = makeExperienceFieldName(1, "companyName");
   const company2LabelText = makeExperienceFieldName(2, "companyName");
 
-  const experiencesHash = makeUrlHashSegment(
-    ResumePathHash.edit,
-    Section.experiences
-  );
-
-  // let debug: (baseElement?: HTMLElement | DocumentFragment | undefined) => void;
-  // let container: HTMLElement;
-
   beforeEach(() => {
-    const location = {
-      hash: experiencesHash,
-      pathname: makeResumeRoute("updates experiences", "")
-    } as WindowLocation;
-
     mockUpdateResume = jest.fn();
 
     const props = {
@@ -523,10 +493,6 @@ describe("Experiences - add/remove/swap", () => {
     getByLabelText = renderArgs.getByLabelText;
 
     queryByLabelText = renderArgs.queryByLabelText;
-
-    // debug = renderArgs.debug;
-
-    // container = renderArgs.container;
   });
 
   it("adds experience in middle", async () => {
@@ -550,7 +516,7 @@ describe("Experiences - add/remove/swap", () => {
     fireEvent.click(getByTestId(experience1AddCtrlBtnId));
 
     /**
-     * Then company that was at position 2 should move to position 3
+     * Then company was at position 2 should move to position 3
      */
     const company3LabelText = makeExperienceFieldName(3, "companyName");
 
@@ -571,11 +537,8 @@ describe("Experiences - add/remove/swap", () => {
     const input = {
       experiences: [
         experiences[0],
-
         experiences[1],
-
-        { ...experiencesEmptyVal, index: 3 },
-
+        { ...emptyVal, index: 3 },
         { ...experiences[2], index: 4 }
       ]
     } as GetResume_getResume;
@@ -613,13 +576,11 @@ describe("Experiences - add/remove/swap", () => {
      */
     expect($company3.value).toBe("");
 
-    // done();
-
     /**
      * And correct data should be uploaded to the server
      */
     const input = {
-      experiences: [...experiences, { ...experiencesEmptyVal, index: 4 }]
+      experiences: [...experiences, { ...emptyVal, index: 4 }]
     } as GetResume_getResume;
 
     await wait(() => {
@@ -676,7 +637,6 @@ describe("Experiences - add/remove/swap", () => {
     const input = {
       experiences: [
         { ...experiences[1], index: 1 },
-
         { ...experiences[2], index: 2 }
       ]
     } as GetResume_getResume;
