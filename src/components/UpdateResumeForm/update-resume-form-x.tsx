@@ -26,7 +26,7 @@ import {
   nextTooltipText,
   prevTooltipText,
   uiTexts
-} from "./resume-form";
+} from "./update-resume-form";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import PersonalInfo from "../PersonalInfo";

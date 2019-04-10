@@ -8,7 +8,7 @@ import { uiTexts } from "../../src/components/Home/home";
 import {
   Section,
   nextTooltipText
-} from "../../src/components/ResumeForm/resume-form";
+} from "../../src/components/UpdateResumeForm/update-resume-form";
 import {
   defaultVal as personalInfoVals,
   uiTexts as personalInfoUiTexts

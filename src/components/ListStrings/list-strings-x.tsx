@@ -4,7 +4,7 @@ import { FieldArrayRenderProps, Field } from "formik";
 
 import { CircularLabel } from "../circular-label";
 import RegularField from "../RegularField";
-import { FormContext } from "../ResumeForm/resume-form";
+import { FormContext } from "../UpdateResumeForm/update-resume-form";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
 
 interface Props {

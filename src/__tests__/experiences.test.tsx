@@ -15,13 +15,13 @@ import update from "immutability-helper";
 import {
   ResumeForm,
   makeUrlHashSegment
-} from "../components/ResumeForm/resume-form-x";
+} from "../components/UpdateResumeForm/update-resume-form-x";
 import {
   Props,
   formikConfig,
   Section,
   getInitialValues
-} from "../components/ResumeForm/resume-form";
+} from "../components/UpdateResumeForm/update-resume-form";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
 import { UpdateResumeVariables } from "../graphql/apollo/types/UpdateResume";

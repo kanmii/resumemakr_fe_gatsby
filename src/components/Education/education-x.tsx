@@ -4,11 +4,11 @@ import { FastField, FieldArray } from "formik";
 
 import { EducationInput } from "../../graphql/apollo/types/globalTypes";
 
-import { Section } from "../ResumeForm/resume-form";
+import { Section } from "../UpdateResumeForm/update-resume-form";
 import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
 import { emptyVal } from "./education";
-import { ChildProps } from "../ResumeForm/resume-form";
+import { ChildProps } from "../UpdateResumeForm/update-resume-form";
 import ListIndexHeader from "../ListIndexHeader";
 import ListStrings from "../ListStrings";
 

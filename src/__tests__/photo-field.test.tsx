@@ -14,7 +14,7 @@ import {
 import {
   FormContextProvider,
   ResumeFormContextValue
-} from "../components/ResumeForm/resume-form";
+} from "../components/UpdateResumeForm/update-resume-form";
 import { uiTexts, Props } from "../components/PhotoField/photo-field";
 
 it("changes to preview on file select", async () => {

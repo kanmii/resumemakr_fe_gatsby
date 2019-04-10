@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { FieldProps } from "formik";
 import { Input, Form } from "semantic-ui-react";
 
-import { FormContext } from "../ResumeForm/resume-form";
+import { FormContext } from "../UpdateResumeForm/update-resume-form";
 
 interface Props<Values> extends FieldProps<Values> {
   label: string | JSX.Element;

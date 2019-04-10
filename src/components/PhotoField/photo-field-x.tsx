@@ -4,7 +4,7 @@ import { Icon, Modal, Button } from "semantic-ui-react";
 import "./styles.scss";
 import { AppModal } from "../../styles/mixins";
 import { toServerUrl } from "../utils";
-import { FormContext } from "../ResumeForm/resume-form";
+import { FormContext } from "../UpdateResumeForm/update-resume-form";
 import { Props, PhotoFieldState, uiTexts } from "./photo-field";
 
 export const PhotoField = memo(PhotoField0, arePropsEqual);

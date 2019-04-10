@@ -3,7 +3,7 @@ import { Card, Icon } from "semantic-ui-react";
 
 import "./list-index-header-styles.scss";
 import { SetFieldValue } from "../utils";
-import { FormContext } from "../ResumeForm/resume-form";
+import { FormContext } from "../UpdateResumeForm/update-resume-form";
 import { CircularLabel } from "../circular-label";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
 

@@ -21,7 +21,7 @@ import { makeResumeRoute } from "../../routing";
 import { Props, validationSchema, Action, emptyVal, uiTexts } from "./home";
 import Loading from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
-import { initialFormValues } from "../ResumeForm/resume-form";
+import { initialFormValues } from "../UpdateResumeForm/update-resume-form";
 import { Mode as PreviewMode } from "../Preview/preview";
 import AutoTextarea from "../AutoTextarea";
 import { useSetParentClassNameOnMount as useSetParentAttrsOnMount } from "../hooks";

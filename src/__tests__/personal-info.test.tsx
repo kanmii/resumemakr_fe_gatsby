@@ -5,12 +5,12 @@ import { render, fireEvent, wait } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 import update from "immutability-helper";
-import { ResumeForm } from "../components/ResumeForm/resume-form-x";
+import { ResumeForm } from "../components/UpdateResumeForm/update-resume-form-x";
 import {
   Props,
   formikConfig,
   getInitialValues
-} from "../components/ResumeForm/resume-form";
+} from "../components/UpdateResumeForm/update-resume-form";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute } from "../routing";
 import {

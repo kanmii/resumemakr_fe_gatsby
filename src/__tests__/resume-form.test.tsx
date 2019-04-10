@@ -18,7 +18,7 @@ import {
   ResumeForm,
   makeUrlHashSegment,
   isBase64String
-} from "../components/ResumeForm/resume-form-x";
+} from "../components/UpdateResumeForm/update-resume-form-x";
 import {
   Props,
   formikConfig,
@@ -26,7 +26,7 @@ import {
   Section,
   prevTooltipText,
   uiTexts
-} from "../components/ResumeForm/resume-form";
+} from "../components/UpdateResumeForm/update-resume-form";
 import {
   renderWithApollo,
   fillField,

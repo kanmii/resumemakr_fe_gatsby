@@ -6,9 +6,9 @@ import { PersonalInfoInput } from "../../graphql/apollo/types/globalTypes";
 import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
 import PhotoField from "../PhotoField";
-import { Section } from "../ResumeForm/resume-form";
+import { Section } from "../UpdateResumeForm/update-resume-form";
 import { emptyVal, uiTexts } from "./personal-info";
-import { FormContext } from "../ResumeForm/resume-form";
+import { FormContext } from "../UpdateResumeForm/update-resume-form";
 
 interface Props {
   values: PersonalInfoInput | null | undefined;

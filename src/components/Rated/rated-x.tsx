@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "semantic-ui-react";
 import { FieldArrayRenderProps, FastField, FieldArray } from "formik";
 
-import { Section, ChildProps } from "../ResumeForm/resume-form";
+import { Section, ChildProps } from "../UpdateResumeForm/update-resume-form";
 import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
 import { emptyVal } from "../Rated/rated";
