@@ -1,4 +1,10 @@
-import React, { useRef, useEffect, MutableRefObject, useState } from "react";
+import React, {
+  useRef,
+  useEffect,
+  MutableRefObject,
+  useReducer,
+  Reducer
+} from "react";
 import { Form, Icon, Input } from "semantic-ui-react";
 import lodashDebounce from "lodash/debounce";
 import lodashIsEqual from "lodash/isEqual";
@@ -39,6 +45,10 @@ import { EpicBtnIcon } from "../epic-btn-icon/epic-btn-icon-x";
 import { ToolTip } from "../tool-tip";
 import { UpdateResumeMutationFn } from "../../graphql/apollo/update-resume.mutation";
 
+const reducer: Reducer<State, State> = (prevState, state = {}) => {
+  return { ...prevState, ...state };
+};
+
 export function ResumeForm(props: Props) {
   const {
     loading,
@@ -58,10 +68,9 @@ export function ResumeForm(props: Props) {
 
   const updateResume = props.updateResume as UpdateResumeMutationFn;
 
-  const [gqlError, setGqlError] = useState<ApolloError | null>(null);
+  const [state, dispatch] = useReducer(reducer, {});
 
-  const [loadingTooLong, setLoadingTooLong] = useState(false);
-
+  const timerRef = useRef<number | null>(null);
   const valuesTrackerRef = useRef<FormValues>({ ...values });
   const backToSectionRef = useRef(Section.personalInfo);
   const currentSectionRef = useRef(Section.personalInfo);
@@ -75,16 +84,29 @@ export function ResumeForm(props: Props) {
   }, []);
 
   useEffect(() => {
-    if (loading && !loadingTooLong) {
-      let timer: number;
-
-      timer = setTimeout(() => {
-        setLoadingTooLong(true);
-        clearTimeout(timer);
+    if (loading) {
+      timerRef.current = setTimeout(() => {
+        dispatch({
+          loadingTooLong: true
+        });
       }, 10000);
     } else {
-      setLoadingTooLong(false);
+      dispatch({
+        loadingTooLong: false
+      });
+
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
   }, [loading]);
 
   function urlFromSection(section: Section) {
@@ -109,7 +131,7 @@ export function ResumeForm(props: Props) {
     return currentSection;
   }
 
-  function renderGqlError(errors: ApolloError | null) {
+  function renderGqlError(errors: ApolloError | null | undefined) {
     if (!errors) {
       return null;
     }
@@ -242,21 +264,22 @@ export function ResumeForm(props: Props) {
           {renderGqlError(graphQlLoadingError)}
         </div>
       );
-    } else if (loading && !loadingTooLong) {
+    } else if (loading && !state.loadingTooLong) {
       return (
         <div className="component-resume-form container--loading">
           <Loading data-testid="component-resume-update-loading">
             <div>{resumeTitle}</div>
-            loading...
+
+            {uiTexts.loadingText}
           </Loading>
         </div>
       );
-    } else if (loadingTooLong) {
+    } else if (state.loadingTooLong) {
       return (
         <div className="component-resume-form container--loading">
           <div className="loading-too-long">
-            I am deeply sorry. It looks like <b>"{resumeTitle}"</b> is taking
-            too long to load. I will display it as soon as it arrives.
+            {uiTexts.takingTooLongPrefix} <b>"{resumeTitle}"</b>
+            {uiTexts.takingTooLongSuffix}
           </div>
         </div>
       );
@@ -270,7 +293,7 @@ export function ResumeForm(props: Props) {
 
   return (
     <div className="component-resume-form">
-      {renderGqlError(gqlError)}
+      {renderGqlError(state.gqlError)}
 
       <Form>
         <FormContextProvider
@@ -282,7 +305,7 @@ export function ResumeForm(props: Props) {
                 formValues: values,
                 valuesTrackerRef,
                 updateResume,
-                setGqlError
+                dispatch
               });
             }
           }}
@@ -367,7 +390,7 @@ interface UpdateResumeFnArgs {
   formValues: Partial<UpdateResumeInput>;
   valuesTrackerRef: MutableRefObject<Partial<UpdateResumeInput>>;
   updateResume: UpdateResumeMutationFn;
-  setGqlError: React.Dispatch<React.SetStateAction<ApolloError | null>>;
+  dispatch: React.Dispatch<State>;
 }
 
 type UpdateResumeFn = ((args: UpdateResumeFnArgs) => Promise<void>) &
@@ -377,7 +400,7 @@ async function updateResumeFn({
   formValues,
   valuesTrackerRef,
   updateResume,
-  setGqlError
+  dispatch
 }: UpdateResumeFnArgs) {
   const photo = formValues.personalInfo && formValues.personalInfo.photo;
 
@@ -407,6 +430,7 @@ async function updateResumeFn({
     }
   }
 
+  // istanbul ignore next: unable to simulate in test
   if (lodashIsEqual(formValues, valuesTrackerRef.current)) {
     return;
   }
@@ -434,11 +458,18 @@ async function updateResumeFn({
     /**
      * Formik will call getInitialValues(resume) when react updates props.
      * So here, we are essentially setting
-     * valuesTrackerRef.current = {...formValues}
+     * valuesTrackerRef.current = {...formValues}.
+     *
+     * Ideally, this sort of thing is done in componentDidUpdate, but in this
+     * case, we only want to set these values to be the same when we return
+     * successfully from server. All other updates should make the values
+     * different.
      */
     valuesTrackerRef.current = getInitialValues(resume);
   } catch (error) {
-    setGqlError(error);
+    dispatch({
+      gqlError: error
+    });
   }
 }
 
@@ -458,4 +489,10 @@ export function isBase64String(input: string) {
   }
 
   return true;
+}
+
+interface State {
+  readonly gqlError?: ApolloError | null;
+
+  readonly loadingTooLong?: boolean;
 }

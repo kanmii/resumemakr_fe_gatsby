@@ -43,10 +43,7 @@ import {
   uiTexts as personalInfoUiTexts,
   defaultVal as personalInfoDefaultVal
 } from "../components/PersonalInfo/personal-info";
-import {
-  UpdateResumeVariables,
-  UpdateResume
-} from "../graphql/apollo/types/UpdateResume";
+import { UpdateResumeVariables } from "../graphql/apollo/types/UpdateResume";
 import {
   GetResume_getResume,
   GetResume_getResume_experiences,
@@ -1099,7 +1096,7 @@ describe("update logic", () => {
         pathname: makeResumeRoute("something", "")
       } as WindowLocation,
 
-      debounceTime: 0,
+      debounceTime,
 
       updateResume: mockUpdateResume as UpdateResumeMutationFn,
 
@@ -1159,7 +1156,7 @@ describe("update logic", () => {
         pathname: makeResumeRoute("something", "")
       } as WindowLocation,
 
-      debounceTime: 0,
+      debounceTime,
 
       updateResume: mockUpdateResume as UpdateResumeMutationFn,
 
@@ -1218,7 +1215,7 @@ describe("update logic", () => {
         pathname: makeResumeRoute("something", "")
       } as WindowLocation,
 
-      debounceTime: 0,
+      debounceTime,
 
       updateResume: mockUpdateResume as UpdateResumeMutationFn,
 
@@ -1265,90 +1262,6 @@ describe("update logic", () => {
           }
         } as UpdateResumeVariables
       });
-    });
-  });
-
-  it("does not upload to server if form values do not change", async () => {
-    const oldAddress = "old address";
-    const newAddress = "new address";
-
-    const formValues = {
-      personalInfo: { address: oldAddress }
-    } as GetResume_getResume;
-
-    const serverReturnedVal = {
-      personalInfo: { address: newAddress }
-    };
-
-    const mockUpdateResume = jest.fn(() =>
-      Promise.resolve({
-        data: {
-          updateResume: {
-            resume: serverReturnedVal
-          }
-        } as UpdateResume
-      })
-    ) as jest.Mock;
-
-    const props = {
-      location: {
-        hash: "",
-        pathname: makeResumeRoute("something", "")
-      } as WindowLocation,
-
-      debounceTime: 0,
-
-      updateResume: mockUpdateResume as UpdateResumeMutationFn,
-
-      getResume: formValues
-    } as Props;
-
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-
-    const Ui = withFormik(formikConfig)(ui);
-
-    /**
-     * Given a user is at the update resume page
-     */
-    const { getByLabelText } = render(<Ui {...props} />);
-
-    /**
-     * And user edits the address field
-     */
-    let $address = getByLabelText(personalInfoUiTexts.addressLabel);
-    fillField($address, newAddress);
-
-    /**
-     * And user blurs the address field
-     */
-    fireEvent.blur($address);
-
-    /**
-     * Then updated data should be uploaded to server with photo field flagged
-     */
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input: serverReturnedVal } as UpdateResumeVariables
-      });
-    });
-
-    /**
-     * When user edits the address field again but supplying same data
-     */
-    $address = getByLabelText(personalInfoUiTexts.addressLabel);
-    fillField($address, newAddress);
-
-    /**
-     * And user blurs the address field
-     */
-    fireEvent.blur($address);
-
-    /**
-     * Then no upload to the server should happen
-     */
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls.length).toBe(1);
     });
   });
 
@@ -1433,5 +1346,63 @@ describe("isBase64String", () => {
 
   it("returns true for base64 encoded encoded string", () => {
     expect(isBase64String("data:image/jpeg;base64,you and me")).toBe(true);
+  });
+});
+
+describe("loading takes too long", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+  });
+
+  it("shows loading takes too long", async () => {
+    const takingTooLongText = new RegExp(
+      uiTexts.takingTooLongPrefix.slice(0, 10),
+      "i"
+    );
+
+    const props = {
+      location: {
+        hash: "",
+        pathname: ""
+      } as WindowLocation,
+
+      getResume: {},
+
+      loading: true
+    } as Props;
+
+    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
+
+    const Ui = withFormik(formikConfig)(ui);
+
+    /**
+     * Given a user is at the update resume page
+     */
+    const { getByText, queryByText } = render(<Ui {...props} />);
+
+    /**
+     * Then user should see loading indicator
+     */
+    expect(getByText(uiTexts.loadingText)).toBeInTheDocument();
+
+    /**
+     * After a long period
+     */
+    jest.advanceTimersByTime(50000);
+    jest.runAllTimers();
+
+    /**
+     * Then user should see message that loading is taking too long
+     */
+    getByText(takingTooLongText);
+
+    /**
+     * And user should no longer see loading indicator
+     */
+    expect(queryByText(uiTexts.loadingText)).not.toBeInTheDocument();
   });
 });

@@ -178,5 +178,14 @@ export const uiTexts = {
 
   endPreviewResumeTooltipText: "End: preview your resume",
 
-  backToEditorBtnText: "Back to Editor"
+  backToEditorBtnText: "Back to Editor",
+
+  takingTooLongPrefix: "I am deeply sorry. It looks like",
+
+  takingTooLongSuffix:
+    "is taking too long to load. I will display it as soon as it arrives.",
+
+  loadingText: "loading...",
+
+  formValuesSameText: "form values are same"
 };
