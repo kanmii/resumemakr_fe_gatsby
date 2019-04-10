@@ -430,18 +430,6 @@ async function updateResumeFn({
     }
   }
 
-  const { experiences } = formValues;
-
-  if (experiences) {
-    formValues = update(formValues, {
-      experiences: {
-        $set: experiences.map(
-          (exp, index) => exp && { ...exp, index: index + 1 }
-        )
-      }
-    });
-  }
-
   // istanbul ignore next: unable to simulate in test
   if (lodashIsEqual(formValues, valuesTrackerRef.current)) {
     return;

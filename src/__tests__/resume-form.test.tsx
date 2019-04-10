@@ -8,7 +8,8 @@ import {
   Matcher,
   MatcherOptions,
   SelectorMatcherOptions,
-  getByText as domGetByText
+  getByText as domGetByText,
+  act
 } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
@@ -701,7 +702,7 @@ describe("Experiences", () => {
   ) => HTMLElement;
 
   const achievementsPrefixFieldName = makeExperienceFieldName(
-    1, // experience index 1-based
+    0,
     "achievements"
   );
 
@@ -777,26 +778,26 @@ describe("Experiences", () => {
     /**
      * User should see that 'position input' has been filled with sample
      */
-    const $position = getByLabelText(makeExperienceFieldName(1, "position"));
+    const $position = getByLabelText(makeExperienceFieldName(0, "position"));
 
     expect($position.getAttribute("value")).toEqual(experience.position);
 
     /**
      * And that 'company input' has been filled with sample texts
      */
-    const $company = getByLabelText(makeExperienceFieldName(1, "companyName"));
+    const $company = getByLabelText(makeExperienceFieldName(0, "companyName"));
     expect($company.getAttribute("value")).toEqual(experience.companyName);
 
     /**
      * And that 'from date input' has been filled with sample texts
      */
-    const $fromDate = getByLabelText(makeExperienceFieldName(1, "fromDate"));
+    const $fromDate = getByLabelText(makeExperienceFieldName(0, "fromDate"));
     expect($fromDate.getAttribute("value")).toEqual(experience.fromDate);
 
     /**
      * And that 'to date input' has been filled with sample texts
      */
-    const $toDate = getByLabelText(makeExperienceFieldName(1, "toDate"));
+    const $toDate = getByLabelText(makeExperienceFieldName(0, "toDate"));
     expect($toDate.getAttribute("value")).toEqual(experience.toDate);
 
     /**
@@ -1127,7 +1128,9 @@ describe("update logic", () => {
     /**
      * And user blurs the address field
      */
-    fireEvent.blur($address);
+    act(() => {
+      fireEvent.blur($address);
+    });
 
     /**
      * Then updated data should be uploaded to server with photo field flagged
@@ -1355,64 +1358,6 @@ describe("isBase64String", () => {
   });
 });
 
-describe("loading takes too long", () => {
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-
-  afterEach(() => {
-    jest.clearAllTimers();
-  });
-
-  it("shows loading takes too long", async () => {
-    const takingTooLongText = new RegExp(
-      uiTexts.takingTooLongPrefix.slice(0, 10),
-      "i"
-    );
-
-    const props = {
-      location: {
-        hash: "",
-        pathname: ""
-      } as WindowLocation,
-
-      getResume: {},
-
-      loading: true
-    } as Props;
-
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-
-    const Ui = withFormik(formikConfig)(ui);
-
-    /**
-     * Given a user is at the update resume page
-     */
-    const { getByText, queryByText } = render(<Ui {...props} />);
-
-    /**
-     * Then user should see loading indicator
-     */
-    expect(getByText(uiTexts.loadingText)).toBeInTheDocument();
-
-    /**
-     * After a long period
-     */
-    jest.advanceTimersByTime(50000);
-    jest.runAllTimers();
-
-    /**
-     * Then user should see message that loading is taking too long
-     */
-    getByText(takingTooLongText);
-
-    /**
-     * And user should no longer see loading indicator
-     */
-    expect(queryByText(uiTexts.loadingText)).not.toBeInTheDocument();
-  });
-});
-
 describe("Experiences - add/remove/swap", () => {
   const fieldName = "experiences";
 
@@ -1518,7 +1463,7 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Given that a user sees company 2 at position 2
      */
-    const company2LabelText = makeExperienceFieldName(3, "companyName");
+    const company2LabelText = makeExperienceFieldName(2, "companyName");
 
     expect(
       (getByLabelText(company2LabelText) as HTMLInputElement).value
@@ -1530,7 +1475,7 @@ describe("Experiences - add/remove/swap", () => {
     const experience1AddCtrlBtnId = makeListDisplayCtrlTestId(
       fieldName,
       ListDisplayCtrlNames.add,
-      2 // 1-based
+      1
     );
 
     fireEvent.click(getByTestId(experience1AddCtrlBtnId));
@@ -1538,7 +1483,7 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was at position 2 should move to position 3
      */
-    const company3LabelText = makeExperienceFieldName(4, "companyName");
+    const company3LabelText = makeExperienceFieldName(3, "companyName");
 
     expect(
       (getByLabelText(company3LabelText) as HTMLInputElement).value
@@ -1560,9 +1505,9 @@ describe("Experiences - add/remove/swap", () => {
 
         experiences[1],
 
-        { ...experiencesEmptyVal, index: 2 },
+        { ...experiencesEmptyVal, index: 3 },
 
-        { ...experiences[2], index: 3 }
+        { ...experiences[2], index: 4 }
       ]
     } as GetResume_getResume;
 
@@ -1571,5 +1516,67 @@ describe("Experiences - add/remove/swap", () => {
         variables: { input }
       });
     });
+  });
+});
+
+/**
+ * The timer is affecting other tests, but not when this is the last test
+ * in the file.
+ */
+describe("loading takes too long", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+  });
+
+  it("shows loading takes too long", async () => {
+    const takingTooLongText = new RegExp(
+      uiTexts.takingTooLongPrefix.slice(0, 10),
+      "i"
+    );
+
+    const props = {
+      location: {
+        hash: "",
+        pathname: ""
+      } as WindowLocation,
+
+      getResume: {},
+
+      loading: true
+    } as Props;
+
+    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
+
+    const Ui = withFormik(formikConfig)(ui);
+
+    /**
+     * Given a user is at the update resume page
+     */
+    const { getByText, queryByText } = render(<Ui {...props} />);
+
+    /**
+     * Then user should see loading indicator
+     */
+    expect(getByText(uiTexts.loadingText)).toBeInTheDocument();
+
+    /**
+     * After a long period
+     */
+    jest.advanceTimersByTime(50000);
+    jest.runAllTimers();
+
+    /**
+     * Then user should see message that loading is taking too long
+     */
+    getByText(takingTooLongText);
+
+    /**
+     * And user should no longer see loading indicator
+     */
+    expect(queryByText(uiTexts.loadingText)).not.toBeInTheDocument();
   });
 });
