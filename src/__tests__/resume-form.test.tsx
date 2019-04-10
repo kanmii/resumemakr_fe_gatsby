@@ -1388,40 +1388,9 @@ describe("Experiences - add/remove/swap", () => {
     options?: SelectorMatcherOptions | undefined
   ) => HTMLElement | null;
 
-  // const achievementsPrefixFieldName = makeExperienceFieldName(
-  //   1, // experience index 1-based
-  //   "achievements"
-  // );
-
-  // const achievement0FieldName = makeListStringFieldName(
-  //   achievementsPrefixFieldName,
-  //   0
-  // );
-
-  // const achievement1FieldName = makeListStringFieldName(
-  //   achievementsPrefixFieldName,
-  //   1
-  // );
-
-  // const achievement2FieldName = makeListStringFieldName(
-  //   achievementsPrefixFieldName,
-  //   2
-  // );
-
-  // const achievement0Label = makeListStringHiddenLabelText(
-  //   achievement0FieldName,
-  //   experiencesUiText.achievementsLabels2
-  // );
-
-  // const achievement1Label = makeListStringHiddenLabelText(
-  //   achievement1FieldName,
-  //   experiencesUiText.achievementsLabels2
-  // );
-
-  // const achievement2Label = makeListStringHiddenLabelText(
-  //   achievement2FieldName,
-  //   experiencesUiText.achievementsLabels2
-  // );
+  const company0LabelText = makeExperienceFieldName(0, "companyName");
+  const company1LabelText = makeExperienceFieldName(1, "companyName");
+  const company2LabelText = makeExperienceFieldName(2, "companyName");
 
   const experiencesHash = makeUrlHashSegment(
     ResumePathHash.edit,
@@ -1466,11 +1435,10 @@ describe("Experiences - add/remove/swap", () => {
     // container = renderArgs.container;
   });
 
-  it("adds experience", async () => {
+  it("adds experience in middle", async () => {
     /**
      * Given that a user sees company 2 at position 2
      */
-    const company2LabelText = makeExperienceFieldName(2, "companyName");
 
     expect(
       (getByLabelText(company2LabelText) as HTMLInputElement).value
@@ -1525,11 +1493,52 @@ describe("Experiences - add/remove/swap", () => {
     });
   });
 
+  it("adds experience to the end", async () => {
+    /**
+     * Given that user does not see any company position 3
+     */
+    const company3LabelText = makeExperienceFieldName(3, "companyName");
+    expect(queryByLabelText(company3LabelText)).not.toBeInTheDocument();
+
+    /**
+     * When user clicks the add button of experience 2
+     */
+    fireEvent.click(
+      getByTestId(
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 2)
+      )
+    );
+
+    /**
+     * Then user should see a company at position 3
+     */
+    const $company3 = getByLabelText(company3LabelText) as HTMLInputElement;
+
+    /**
+     * And the input box of the company should be empty
+     */
+    expect($company3.value).toBe("");
+
+    // done();
+
+    /**
+     * And correct data should be uploaded to the server
+     */
+    const input = {
+      experiences: [...experiences, { ...experiencesEmptyVal, index: 4 }]
+    } as GetResume_getResume;
+
+    await wait(() => {
+      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
+        variables: { input } as UpdateResumeVariables
+      });
+    });
+  });
+
   it("removes first experience", async () => {
     /**
      * Given that user sees company 0 at position 0
      */
-    const company0LabelText = makeExperienceFieldName(0, "companyName");
 
     expect(
       (getByLabelText(company0LabelText) as HTMLInputElement).value
@@ -1538,7 +1547,6 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * And user sees company 1 at position 1
      */
-    const company1LabelText = makeExperienceFieldName(1, "companyName");
 
     expect(
       (getByLabelText(company1LabelText) as HTMLInputElement).value
@@ -1590,7 +1598,6 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Given that user sees company 2 in the document
      */
-    const company2LabelText = makeExperienceFieldName(2, "companyName");
 
     expect(getByLabelText(company2LabelText)).toBeInTheDocument();
 
@@ -1627,7 +1634,6 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Given that user sees company 1 at position 1
      */
-    const company1LabelText = makeExperienceFieldName(1, "companyName");
 
     expect(
       (getByLabelText(company1LabelText) as HTMLInputElement).value
@@ -1636,7 +1642,6 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * And user sees company 2 at position 2
      */
-    const company2LabelText = makeExperienceFieldName(2, "companyName");
 
     expect(
       (getByLabelText(company2LabelText) as HTMLInputElement).value
@@ -1669,6 +1674,266 @@ describe("Experiences - add/remove/swap", () => {
     await wait(() => {
       expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
         variables: { input }
+      });
+    });
+  });
+
+  it("moves experience up from middle", async () => {
+    /**
+     * Given that user sees company 0 at position 0
+     */
+    expect(
+      (getByLabelText(company0LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[0].companyName);
+
+    /**
+     * And user sees company 1 at position 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And user sees company 2 at position 2
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * When user clicks on move up button of experience 1
+     */
+    fireEvent.click(
+      getByTestId(
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 1)
+      )
+    );
+
+    /**
+     * Then company that was formerly at position 0 should move to position 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[0].companyName);
+
+    /**
+     * And company that was formerly at position 1 should move to position 0
+     */
+    expect(
+      (getByLabelText(company0LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And company at position 2 should not move
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * And the right values have been sent to the server
+     */
+    const input = {
+      experiences: [
+        { ...experiences[1], index: 1 },
+        { ...experiences[0], index: 2 },
+        experiences[2]
+      ]
+    } as GetResume_getResume;
+
+    await wait(() => {
+      expect(mockUpdateResume.mock.calls[0][0]).toEqual({
+        variables: { input } as UpdateResumeVariables
+      });
+    });
+  });
+
+  it("moves last experience up", async () => {
+    /**
+     * Given that user sees company 1 at position 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And user sees company 2 at position 2
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * When user clicks on experience 2 move up button
+     */
+    fireEvent.click(
+      getByTestId(
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 2)
+      )
+    );
+
+    /**
+     * Then company that was formerly at position 1 should move to position 2
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And company that was formerly at position 2 should move to position 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * And company at position 0 should not move
+     */
+    expect(
+      (getByLabelText(company0LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[0].companyName);
+
+    /**
+     * And correct data should be uploaded to the server
+     */
+    const input = {
+      experiences: [
+        experiences[0],
+        { ...experiences[2], index: 2 },
+        { ...experiences[1], index: 3 }
+      ]
+    } as GetResume_getResume;
+
+    await wait(() => {
+      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
+        variables: { input } as UpdateResumeVariables
+      });
+    });
+  });
+
+  it("moves experience down from the middle", async () => {
+    /**
+     * Given that user sees company 1 at postion 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And user sees company 2 at position 2
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * When user clicks move down button on experience 1
+     */
+    fireEvent.click(
+      getByTestId(
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 1)
+      )
+    );
+
+    /**
+     * Then company that was formerly at postion 1 should move to 2
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And company that was formerly at position 2 should move to 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * And company at 0 should not move
+     */
+    expect(
+      (getByLabelText(company0LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[0].companyName);
+
+    /**
+     * And correct data should be uploaded to the server
+     */
+
+    const input = {
+      experiences: [
+        experiences[0],
+        { ...experiences[2], index: 2 },
+        { ...experiences[1], index: 3 }
+      ]
+    } as GetResume_getResume;
+
+    await wait(() => {
+      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
+        variables: { input } as UpdateResumeVariables
+      });
+    });
+  });
+
+  it("moves first experience down", async () => {
+    /**
+     * Given user sees company 0 at postion 0
+     */
+    expect(
+      (getByLabelText(company0LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[0].companyName);
+
+    /**
+     * And user sees company 1 at postion 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * When user clicks the move down button on experience at position 0
+     */
+    fireEvent.click(
+      getByTestId(
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 0)
+      )
+    );
+
+    /**
+     * Then company that was formerly at position 0 should move to 1
+     */
+    expect(
+      (getByLabelText(company1LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[0].companyName);
+
+    /**
+     * And company that was formerly at position 1 should move to 0
+     */
+    expect(
+      (getByLabelText(company0LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[1].companyName);
+
+    /**
+     * And company at position two should not move
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * And correct data should be uploaded to the server
+     */
+    const input = {
+      experiences: [
+        { ...experiences[1], index: 1 },
+        { ...experiences[0], index: 2 },
+        experiences[2]
+      ]
+    } as GetResume_getResume;
+
+    await wait(() => {
+      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
+        variables: { input } as UpdateResumeVariables
       });
     });
   });

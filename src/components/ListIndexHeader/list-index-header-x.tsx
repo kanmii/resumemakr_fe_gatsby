@@ -153,36 +153,54 @@ enum SwapDirection {
 /**
  * Indices indexA and indexB are 0-based while value.index is 1-based
  */
-function swap<TValues extends { index: number }>(
-  fields: TValues[],
+function swap<TValue extends { index: number }>(
+  fields: TValue[],
   indexA: number,
   indexB: number
-): TValues[] {
-  const swapDirection = indexB - indexA;
+): TValue[] {
+  const swapDirection = indexA - indexB;
 
-  return fields.map((value, iterationIndex) => {
-    const { index: valueIndex } = value;
-    const valueIndexDown = valueIndex + 1;
-    const valueIndexUp = valueIndex - 1;
-
-    if (iterationIndex === indexA) {
+  return fields.reduce(
+    (acc, value, iterationIndex) => {
       /**
        * For instance if we are swapping indexA=2 and indexB=3 (down). Then
        * valueA.index = 3 and
        * valueB.index = 4 (value.index is 1-based).
        * So at the end of the day,
-       * valueA.index changes from 3 to 4 i.e (valueA.index + 1) = down, and
-       * valueB.index changes from 4 to 3 i.e (valueB.index - 1) = up
+       * valueA.index changes from 3 to 4 i.e (indexA=2 + 2) = down, and
+       * valueB.index changes from 4 to 3 i.e (indexB=3) = up
        */
-      value.index =
-        swapDirection === SwapDirection.down ? valueIndexDown : valueIndexUp;
-    } else if (iterationIndex === indexB) {
-      value.index =
-        swapDirection === SwapDirection.down ? valueIndexUp : valueIndexDown;
-    }
+      const valueIndexDown = iterationIndex + 2;
+      const valueIndexUp = iterationIndex;
 
-    return value;
-  });
+      const swapIndexDown = iterationIndex + 1;
+      const swapIndexUp = iterationIndex - 1;
+
+      if (iterationIndex === indexA) {
+        if (swapDirection === SwapDirection.down) {
+          value.index = valueIndexDown;
+          acc[swapIndexDown] = value;
+        } else {
+          value.index = valueIndexUp;
+          acc[swapIndexUp] = value;
+        }
+      } else if (iterationIndex === indexB) {
+        if (swapDirection === SwapDirection.down) {
+          value.index = valueIndexUp;
+          acc[swapIndexUp] = value;
+        } else {
+          value.index = valueIndexDown;
+          acc[swapIndexDown] = value;
+        }
+      } else {
+        value.index = iterationIndex + 1;
+        acc[iterationIndex] = value;
+      }
+
+      return acc;
+    },
+    Array(fields.length) as TValue[]
+  );
 }
 
 function remove<TValues extends { index: number }>(

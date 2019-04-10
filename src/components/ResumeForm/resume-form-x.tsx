@@ -95,6 +95,7 @@ export function ResumeForm(props: Props) {
         loadingTooLong: false
       });
 
+      // istanbul ignore next: can not figure out a way to test
       if (timerRef.current) {
         clearTimeout(timerRef.current);
         timerRef.current = null;
