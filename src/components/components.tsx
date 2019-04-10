@@ -56,3 +56,23 @@ export function withUserHOC<TProps extends WithUser>(
     return <Component user={getUser()} {...props} />;
   };
 }
+
+export enum ListDisplayCtrlNames {
+  add = "add",
+
+  remove = "remove",
+
+  moveUp = "move up",
+
+  moveDown = "move down",
+
+  none = "none"
+}
+
+export function makeListDisplayCtrlTestId(
+  fieldName: string,
+  ctrlName: ListDisplayCtrlNames,
+  ...others: Array<number | string>
+) {
+  return fieldName + " " + ctrlName + (others || []).join(" ");
+}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Icon } from "semantic-ui-react";
-import { FastField, FieldArray } from "formik";
+import { FastField, FieldArray, FieldArrayRenderProps } from "formik";
 
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
 import RegularField from "../RegularField";
@@ -44,18 +44,22 @@ export class Experiences extends React.Component<Props, {}> {
 
         <FieldArray
           name="experiences"
-          render={arrayHelper => values.map(this.renderExperience)}
+          render={helper =>
+            values.map((exp, index) => {
+              return this.renderExperience(exp, index, helper);
+            })
+          }
         />
       </>
     );
   }
 
-  private renderExperience = (exp: CreateExperienceInput) => {
+  private renderExperience = (
+    exp: CreateExperienceInput,
+    iterationIndex: number,
+    arrayHelper: FieldArrayRenderProps
+  ) => {
     const { setFieldValue } = this.props;
-    /**
-     * index is 1-based
-     */
-    const { index } = exp;
 
     let achievements = exp.achievements || [""];
 
@@ -66,47 +70,71 @@ export class Experiences extends React.Component<Props, {}> {
     const fieldName = "experiences";
 
     return (
-      <Card key={index}>
+      <Card key={iterationIndex}>
         <ListIndexHeader
-          index={index}
+          index={iterationIndex}
           label={HeaderLabelText}
           fieldName={fieldName}
           setFieldValue={setFieldValue}
           values={cachedValues as CreateExperienceInput[]}
           empty={emptyVal}
+          arrayHelper={arrayHelper}
         />
 
         <Card.Content>
           <FastField
-            name={makeExperienceFieldName(index, "position")}
-            label={uiTexts.positionLabel}
+            name={makeExperienceFieldName(iterationIndex, "position")}
+            label={
+              <SubFieldLabel
+                text={uiTexts.positionLabel}
+                fieldName={makeExperienceFieldName(iterationIndex, "position")}
+              />
+            }
             defaultValue={exp.position}
             component={RegularField}
           />
 
           <FastField
-            name={makeExperienceFieldName(index, "companyName")}
-            label={uiTexts.companyNameLabel}
+            name={makeExperienceFieldName(iterationIndex, "companyName")}
+            label={
+              <SubFieldLabel
+                text={uiTexts.companyNameLabel}
+                fieldName={makeExperienceFieldName(
+                  iterationIndex,
+                  "companyName"
+                )}
+              />
+            }
             defaultValue={exp.companyName}
             component={RegularField}
           />
 
           <FastField
-            name={makeExperienceFieldName(index, "fromDate")}
-            label={uiTexts.fromDateLabel}
+            name={makeExperienceFieldName(iterationIndex, "fromDate")}
+            label={
+              <SubFieldLabel
+                text={uiTexts.fromDateLabel}
+                fieldName={makeExperienceFieldName(iterationIndex, "fromDate")}
+              />
+            }
             defaultValue={exp.fromDate}
             component={RegularField}
           />
 
           <FastField
-            name={makeExperienceFieldName(index, "toDate")}
-            label={uiTexts.toDateLabel}
+            name={makeExperienceFieldName(iterationIndex, "toDate")}
+            label={
+              <SubFieldLabel
+                text={uiTexts.toDateLabel}
+                fieldName={makeExperienceFieldName(iterationIndex, "toDate")}
+              />
+            }
             defaultValue={exp.toDate}
             component={RegularField}
           />
 
           <FieldArray
-            name={makeExperienceFieldName(index, "achievements")}
+            name={makeExperienceFieldName(iterationIndex, "achievements")}
             render={helper => {
               return (
                 <ListStrings
@@ -118,7 +146,10 @@ export class Experiences extends React.Component<Props, {}> {
                       <span>{uiTexts.achievementsLabels2}</span>
                     </div>
                   }
-                  fieldName={makeExperienceFieldName(index, "achievements")}
+                  fieldName={makeExperienceFieldName(
+                    iterationIndex,
+                    "achievements"
+                  )}
                   appendToHiddenLabel={uiTexts.achievementsLabels2}
                 />
               );
@@ -158,11 +189,28 @@ export class Experiences extends React.Component<Props, {}> {
 export default Experiences;
 
 /**
- * index is 1-based
+ * index is 0-based
  */
 export function makeExperienceFieldName(
   index: number,
   key: keyof CreateExperienceInput
 ) {
-  return `experiences[${index - 1}].${key}`;
+  return `experiences[${index}].${key}`;
+}
+
+function SubFieldLabel({
+  fieldName,
+  text
+}: {
+  fieldName: string;
+  text: string;
+}) {
+  return (
+    <>
+      <label htmlFor={fieldName} className="visually-hidden">
+        {fieldName}
+      </label>
+      <label>{text}</label>
+    </>
+  );
 }

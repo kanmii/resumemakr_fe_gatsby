@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Card, Icon } from "semantic-ui-react";
 
 import "./list-index-header-styles.scss";
 import { SetFieldValue } from "../utils";
 import { FormContext } from "../ResumeForm/resume-form";
 import { CircularLabel } from "../circular-label";
+import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
+import { FieldArrayRenderProps } from "formik";
 
 interface Props<TValues> {
   index: number;
@@ -14,6 +16,7 @@ interface Props<TValues> {
   values: TValues[];
   empty: TValues;
   idPrefix?: string;
+  arrayHelper: FieldArrayRenderProps;
 }
 
 export function ListIndexHeader<TValues extends { index: number }>(
@@ -22,35 +25,47 @@ export function ListIndexHeader<TValues extends { index: number }>(
   const {
     index,
     label,
-    setFieldValue,
     fieldName,
     values,
     empty,
-    idPrefix
+    idPrefix,
+    arrayHelper
   } = props;
+
+  const [swapped, setSwapped] = useState(ListDisplayCtrlNames.none);
 
   const { valueChanged } = useContext(FormContext);
 
   const id = (idPrefix || label) + "-" + index;
   const len = values.length;
+  const index1 = index + 1;
+
+  useEffect(() => {
+    if (swapped !== ListDisplayCtrlNames.none) {
+      setSwapped(ListDisplayCtrlNames.none);
+      valueChanged();
+    }
+  }, [swapped]);
 
   return (
     <Card.Content className="components-list-index-header">
       <Card.Header id={id}>
-        {`${label ? label + " #" + index : "#" + index}`}
+        {label ? label + " #" + index1 : "#" + index1}
       </Card.Header>
 
       <div>
-        {len > index && (
+        {!(len === 1 || len === index1) && (
           <CircularLabel
             color="blue"
             onClick={function onSwapExperienceDown() {
-              setFieldValue(fieldName, swap<TValues>(values, index, index + 1));
-
-              setTimeout(() => {
-                valueChanged();
-              });
+              arrayHelper.swap(index, index1);
+              setSwapped(ListDisplayCtrlNames.moveDown);
             }}
+            data-testid={makeListDisplayCtrlTestId(
+              fieldName,
+              ListDisplayCtrlNames.moveDown,
+              index
+            )}
           >
             <Icon name="arrow down" />
           </CircularLabel>
@@ -60,12 +75,14 @@ export function ListIndexHeader<TValues extends { index: number }>(
           <CircularLabel
             color="red"
             onClick={function onRemoveItem() {
-              setFieldValue(fieldName, remove<TValues>(values, index));
-
-              setTimeout(() => {
-                valueChanged();
-              });
+              arrayHelper.remove(index);
+              setSwapped(ListDisplayCtrlNames.remove);
             }}
+            data-testid={makeListDisplayCtrlTestId(
+              fieldName,
+              ListDisplayCtrlNames.remove,
+              index
+            )}
           >
             <Icon name="remove" />
           </CircularLabel>
@@ -74,26 +91,30 @@ export function ListIndexHeader<TValues extends { index: number }>(
         <CircularLabel
           color="green"
           onClick={function onAddItem() {
-            setFieldValue(fieldName, add<TValues>(values, index, empty));
-
-            setTimeout(() => {
-              valueChanged();
-            });
+            arrayHelper.insert(index1, empty);
+            setSwapped(ListDisplayCtrlNames.add);
           }}
+          data-testid={makeListDisplayCtrlTestId(
+            fieldName,
+            ListDisplayCtrlNames.add,
+            index
+          )}
         >
           <Icon name="add" />
         </CircularLabel>
 
-        {index > 1 && (
+        {index1 > 1 && (
           <CircularLabel
             color="blue"
             onClick={function onSwapExperienceUp() {
-              setFieldValue(fieldName, swap<TValues>(values, index, index - 1));
-
-              setTimeout(() => {
-                valueChanged();
-              });
+              arrayHelper.swap(index, index - 1);
+              setSwapped(ListDisplayCtrlNames.moveUp);
             }}
+            data-testid={makeListDisplayCtrlTestId(
+              fieldName,
+              ListDisplayCtrlNames.moveUp,
+              index
+            )}
           >
             <Icon name="arrow up" />
           </CircularLabel>
@@ -104,71 +125,3 @@ export function ListIndexHeader<TValues extends { index: number }>(
 }
 
 export default ListIndexHeader;
-
-function swap<TValues extends { index: number }>(
-  fields: TValues[],
-  indexA: number,
-  indexB: number
-): TValues[] {
-  return fields.map(value => {
-    const index = value.index;
-
-    if (index === indexA) {
-      value.index = indexB;
-    } else if (index === indexB) {
-      value.index = indexA;
-    }
-
-    return value;
-  });
-}
-
-function remove<TValues extends { index: number }>(
-  fields: TValues[],
-  index: number
-): TValues[] {
-  return fields.reduce(
-    (acc, value, iterationIndex) => {
-      const valueIndex = value.index;
-
-      if (valueIndex < index) {
-        acc[iterationIndex] = value;
-      } else if (valueIndex > index) {
-        value.index = iterationIndex;
-        acc[iterationIndex - 1] = value;
-      }
-
-      return acc;
-    },
-    [] as TValues[]
-  );
-}
-
-function add<TValues extends { index: number }>(
-  fields: TValues[],
-  index: number,
-  empty: TValues
-): TValues[] {
-  if (fields.length === index) {
-    return [...fields, { ...empty, index: index + 1 }];
-  }
-
-  return fields.reduce(
-    (acc, value, iterationIndex) => {
-      const expInd = value.index;
-
-      if (expInd < index) {
-        acc[iterationIndex] = value;
-      } else if (expInd === index) {
-        acc[iterationIndex] = value;
-        acc[iterationIndex + 1] = { ...empty, index: index + 1 };
-      } else if (expInd > index) {
-        value.index = expInd + 1;
-        acc[iterationIndex + 1] = value;
-      }
-
-      return acc;
-    },
-    [] as TValues[]
-  );
-}

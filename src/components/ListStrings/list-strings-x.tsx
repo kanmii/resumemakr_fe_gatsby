@@ -2,9 +2,10 @@ import React, { useContext, useEffect, memo, useState } from "react";
 import { TextArea, Icon } from "semantic-ui-react";
 import { FieldArrayRenderProps, Field } from "formik";
 
-import { CircularLabel } from "../../styles/mixins";
+import { CircularLabel } from "../circular-label";
 import RegularField from "../RegularField";
 import { FormContext } from "../ResumeForm/resume-form";
+import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
 
 interface Props {
   values: string[];
@@ -31,15 +32,15 @@ export function ListStrings0(props: Props) {
     appendToHiddenLabel
   } = props;
 
-  const valuesLen = values.length;
+  const len = values.length;
 
-  const [swapped, setSwapped] = useState(ListStringsCtrlNames.none);
+  const [swapped, setSwapped] = useState(ListDisplayCtrlNames.none);
 
   const { valueChanged } = useContext(FormContext);
 
   useEffect(() => {
-    if (swapped !== ListStringsCtrlNames.none) {
-      setSwapped(ListStringsCtrlNames.none);
+    if (swapped !== ListDisplayCtrlNames.none) {
+      setSwapped(ListDisplayCtrlNames.none);
       valueChanged();
     }
   }, [swapped]);
@@ -61,32 +62,32 @@ export function ListStrings0(props: Props) {
                 {`# ${index1}`}
 
                 <div>
-                  {valuesLen > 1 && (
+                  {!(len === 1 || len === index1) && (
                     <CircularLabel
-                      data-testid={makeListStringCtrlTestId(
+                      data-testid={makeListDisplayCtrlTestId(
                         fieldName,
-                        ListStringsCtrlNames.moveDown
+                        ListDisplayCtrlNames.moveDown
                       )}
                       color="blue"
                       onClick={function onSwapAchievementsUp() {
                         arrayHelper.swap(index, index1);
-                        setSwapped(ListStringsCtrlNames.moveDown);
+                        setSwapped(ListDisplayCtrlNames.moveDown);
                       }}
                     >
                       <Icon name="arrow down" />
                     </CircularLabel>
                   )}
 
-                  {valuesLen > 1 && (
+                  {len > 1 && (
                     <CircularLabel
-                      data-testid={makeListStringCtrlTestId(
+                      data-testid={makeListDisplayCtrlTestId(
                         fieldName,
-                        ListStringsCtrlNames.remove
+                        ListDisplayCtrlNames.remove
                       )}
                       color="red"
                       onClick={function onRemoveAchievement() {
                         arrayHelper.remove(index);
-                        setSwapped(ListStringsCtrlNames.remove);
+                        setSwapped(ListDisplayCtrlNames.remove);
                       }}
                     >
                       <Icon name="remove" />
@@ -94,14 +95,14 @@ export function ListStrings0(props: Props) {
                   )}
 
                   <CircularLabel
-                    data-testid={makeListStringCtrlTestId(
+                    data-testid={makeListDisplayCtrlTestId(
                       fieldName,
-                      ListStringsCtrlNames.add
+                      ListDisplayCtrlNames.add
                     )}
                     color="green"
                     onClick={function onAddAchievement() {
                       arrayHelper.insert(index1, "");
-                      setSwapped(ListStringsCtrlNames.add);
+                      setSwapped(ListDisplayCtrlNames.add);
                     }}
                   >
                     <Icon name="add" />
@@ -109,14 +110,14 @@ export function ListStrings0(props: Props) {
 
                   {index1 > 1 && (
                     <CircularLabel
-                      data-testid={makeListStringCtrlTestId(
+                      data-testid={makeListDisplayCtrlTestId(
                         fieldName,
-                        ListStringsCtrlNames.moveUp
+                        ListDisplayCtrlNames.moveUp
                       )}
                       color="blue"
                       onClick={function onSwapAchievementsUp() {
                         arrayHelper.swap(index, index - 1);
-                        setSwapped(ListStringsCtrlNames.moveUp);
+                        setSwapped(ListDisplayCtrlNames.moveUp);
                       }}
                     >
                       <Icon name="arrow up" />
@@ -179,23 +180,4 @@ export function makeListStringHiddenLabelText(
   suffix: string
 ) {
   return fieldName + suffix;
-}
-
-export function makeListStringCtrlTestId(
-  fieldName: string,
-  ctrlName: ListStringsCtrlNames
-) {
-  return fieldName + " " + ctrlName;
-}
-
-export enum ListStringsCtrlNames {
-  add = "add",
-
-  remove = "remove",
-
-  moveUp = "move up",
-
-  moveDown = "move down",
-
-  none = "none"
 }

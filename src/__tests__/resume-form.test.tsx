@@ -49,17 +49,23 @@ import {
   GetResume_getResume_experiences,
   GetResume_getResume_personalInfo
 } from "../graphql/apollo/types/GetResume";
-import { uiTexts as experiencesUiText } from "../components/Experiences/experiences";
+import {
+  uiTexts as experiencesUiText,
+  defaultVal as experiencesDefaultVal,
+  emptyVal as experiencesEmptyVal
+} from "../components/Experiences/experiences";
 import {
   makeListStringFieldName,
-  makeListStringHiddenLabelText,
-  makeListStringCtrlTestId,
-  ListStringsCtrlNames
+  makeListStringHiddenLabelText
 } from "../components/ListStrings/list-strings-x";
 import { makeExperienceFieldName } from "../components/Experiences/experiences-x";
 import { UpdateResumeMutationFn } from "../graphql/apollo/update-resume.mutation";
 import { ALREADY_UPLOADED } from "../constants";
 import { uiTexts as photoFieldUiText } from "../components/PhotoField/photo-field";
+import {
+  ListDisplayCtrlNames,
+  makeListDisplayCtrlTestId
+} from "../components/components";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = ResumeForm as P;
@@ -771,26 +777,26 @@ describe("Experiences", () => {
     /**
      * User should see that 'position input' has been filled with sample
      */
-    const $position = getByLabelText(experiencesUiText.positionLabel);
+    const $position = getByLabelText(makeExperienceFieldName(1, "position"));
 
     expect($position.getAttribute("value")).toEqual(experience.position);
 
     /**
      * And that 'company input' has been filled with sample texts
      */
-    const $company = getByLabelText(experiencesUiText.companyNameLabel);
+    const $company = getByLabelText(makeExperienceFieldName(1, "companyName"));
     expect($company.getAttribute("value")).toEqual(experience.companyName);
 
     /**
      * And that 'from date input' has been filled with sample texts
      */
-    const $fromDate = getByLabelText(experiencesUiText.fromDateLabel);
+    const $fromDate = getByLabelText(makeExperienceFieldName(1, "fromDate"));
     expect($fromDate.getAttribute("value")).toEqual(experience.fromDate);
 
     /**
      * And that 'to date input' has been filled with sample texts
      */
-    const $toDate = getByLabelText(experiencesUiText.toDateLabel);
+    const $toDate = getByLabelText(makeExperienceFieldName(1, "toDate"));
     expect($toDate.getAttribute("value")).toEqual(experience.toDate);
 
     /**
@@ -823,7 +829,7 @@ describe("Experiences", () => {
      * When user clicks on achievement 0 add button
      */
     const $achievement0CtrlAddBtn = getByTestId(
-      makeListStringCtrlTestId(achievement0FieldName, ListStringsCtrlNames.add)
+      makeListDisplayCtrlTestId(achievement0FieldName, ListDisplayCtrlNames.add)
     );
 
     fireEvent.click($achievement0CtrlAddBtn);
@@ -904,9 +910,9 @@ describe("Experiences", () => {
      * When user clicks on achievement 1 remove button
      */
     const $achievement1CtrlRemoveBtn = getByTestId(
-      makeListStringCtrlTestId(
+      makeListDisplayCtrlTestId(
         achievement1FieldName,
-        ListStringsCtrlNames.remove
+        ListDisplayCtrlNames.remove
       )
     );
 
@@ -954,9 +960,9 @@ describe("Experiences", () => {
      * When user clicks on 'move up' button of achievement 1
      */
     const $achievement1CtrlUpBtn = getByTestId(
-      makeListStringCtrlTestId(
+      makeListDisplayCtrlTestId(
         achievement1FieldName,
-        ListStringsCtrlNames.moveUp
+        ListDisplayCtrlNames.moveUp
       )
     );
 
@@ -1016,9 +1022,9 @@ describe("Experiences", () => {
      * When user clicks on 'move down' button of achievement 1
      */
     const $achievement1CtrlDownBtn = getByTestId(
-      makeListStringCtrlTestId(
+      makeListDisplayCtrlTestId(
         achievement1FieldName,
-        ListStringsCtrlNames.moveDown
+        ListDisplayCtrlNames.moveDown
       )
     );
 
@@ -1404,5 +1410,166 @@ describe("loading takes too long", () => {
      * And user should no longer see loading indicator
      */
     expect(queryByText(uiTexts.loadingText)).not.toBeInTheDocument();
+  });
+});
+
+describe("Experiences - add/remove/swap", () => {
+  const fieldName = "experiences";
+
+  const experiences = [
+    { ...experiencesDefaultVal, companyName: "company 1" },
+
+    { ...experiencesDefaultVal, companyName: "company 2", index: 2 },
+
+    { ...experiencesDefaultVal, companyName: "company 3", index: 3 }
+  ] as GetResume_getResume_experiences[];
+
+  const initial = { experiences } as GetResume_getResume;
+
+  let mockUpdateResume: jest.Mock;
+
+  let getByTestId: (
+    text: Matcher,
+    options?: MatcherOptions | undefined
+  ) => HTMLElement;
+
+  let getByLabelText: (
+    text: Matcher,
+    options?: SelectorMatcherOptions | undefined
+  ) => HTMLElement;
+
+  // const achievementsPrefixFieldName = makeExperienceFieldName(
+  //   1, // experience index 1-based
+  //   "achievements"
+  // );
+
+  // const achievement0FieldName = makeListStringFieldName(
+  //   achievementsPrefixFieldName,
+  //   0
+  // );
+
+  // const achievement1FieldName = makeListStringFieldName(
+  //   achievementsPrefixFieldName,
+  //   1
+  // );
+
+  // const achievement2FieldName = makeListStringFieldName(
+  //   achievementsPrefixFieldName,
+  //   2
+  // );
+
+  // const achievement0Label = makeListStringHiddenLabelText(
+  //   achievement0FieldName,
+  //   experiencesUiText.achievementsLabels2
+  // );
+
+  // const achievement1Label = makeListStringHiddenLabelText(
+  //   achievement1FieldName,
+  //   experiencesUiText.achievementsLabels2
+  // );
+
+  // const achievement2Label = makeListStringHiddenLabelText(
+  //   achievement2FieldName,
+  //   experiencesUiText.achievementsLabels2
+  // );
+
+  const experiencesHash = makeUrlHashSegment(
+    ResumePathHash.edit,
+    Section.experiences
+  );
+
+  // let debug: (baseElement?: HTMLElement | DocumentFragment | undefined) => void;
+  // let container: HTMLElement;
+
+  beforeEach(() => {
+    const location = {
+      hash: experiencesHash,
+      pathname: makeResumeRoute("updates experiences", "")
+    } as WindowLocation;
+
+    mockUpdateResume = jest.fn();
+
+    const props = {
+      getResume: initial,
+      debounceTime,
+      location,
+      updateResume: mockUpdateResume
+    };
+
+    /**
+     * Given user is on update resume page
+     */
+    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
+
+    const Ui = withFormik(formikConfig)(ui) as P;
+
+    const renderArgs = render(<Ui {...props} />);
+
+    getByTestId = renderArgs.getByTestId;
+
+    getByLabelText = renderArgs.getByLabelText;
+
+    // debug = renderArgs.debug;
+
+    // container = renderArgs.container;
+  });
+
+  it("adds experience", async () => {
+    /**
+     * Given that a user sees company 2 at position 2
+     */
+    const company2LabelText = makeExperienceFieldName(3, "companyName");
+
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * When user clicks on add button of experience 1
+     */
+    const experience1AddCtrlBtnId = makeListDisplayCtrlTestId(
+      fieldName,
+      ListDisplayCtrlNames.add,
+      2 // 1-based
+    );
+
+    fireEvent.click(getByTestId(experience1AddCtrlBtnId));
+
+    /**
+     * Then company that was at position 2 should move to position 3
+     */
+    const company3LabelText = makeExperienceFieldName(4, "companyName");
+
+    expect(
+      (getByLabelText(company3LabelText) as HTMLInputElement).value
+    ).toEqual(experiences[2].companyName);
+
+    /**
+     * And an empty company should be rendered at position 2
+     */
+    expect(
+      (getByLabelText(company2LabelText) as HTMLInputElement).value
+    ).toEqual("");
+
+    /**
+     * And values should be uploaded to server
+     */
+    const input = {
+      experiences: [
+        experiences[0],
+
+        experiences[1],
+
+        { ...experiencesEmptyVal, index: 2 },
+
+        { ...experiences[2], index: 3 }
+      ]
+    } as GetResume_getResume;
+
+    await wait(() => {
+      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
+        variables: { input }
+      });
+    });
   });
 });
