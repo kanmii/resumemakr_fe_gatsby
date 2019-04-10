@@ -63,8 +63,54 @@ jest.mock("../components/Preview", () => {
 
 // ---------------------------------TESTS --------------------------------
 
-describe("happy path", () => {
-  it("renders and navigates correctly", () => {
+describe("Resume form sections", () => {
+  const prevTooltipPersonalInfoRegexp = new RegExp(
+    prevTooltipText(Section.personalInfo),
+    "i"
+  );
+
+  const prevTooltipExperiencesRegexp = new RegExp(
+    prevTooltipText(Section.experiences)
+  );
+
+  it("renders loading error", () => {
+    /**
+     * Given user is on update resume page
+     */
+
+    const { getByText } = render(
+      <ResumeFormP
+        location={{} as WindowLocation}
+        error={
+          new ApolloError({
+            networkError: new Error("network error has occurred")
+          })
+        }
+      />
+    );
+
+    /**
+     * Then user should see network error
+     */
+    expect(getByText("network error has occurred")).toBeInTheDocument();
+  });
+
+  it("renders loading indicator", () => {
+    /**
+     * Given user is on update resume page
+     */
+
+    const { getByTestId } = render(
+      <ResumeFormP location={{} as WindowLocation} loading={true} />
+    );
+
+    /**
+     * Then user should see error message
+     */
+    expect(getByTestId("component-resume-update-loading")).toBeInTheDocument();
+  });
+
+  it("renders personal info section", () => {
     const location = {
       hash: "",
       pathname: makeResumeRoute("first resume", "")
@@ -72,83 +118,24 @@ describe("happy path", () => {
 
     const props = {
       getResume: {},
-
-      debounceTime,
-
       location
     } as Partial<Props>;
 
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
+
     /**
-     * Given user is on update resume page
+     * Given user is on personal info section of update resume page
      */
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-    const Ui = withFormik(formikConfig)(ui) as P;
-
-    const {
-      getByTestId,
-      queryByTestId,
-      getByText,
-      queryByText,
-      rerender
-    } = render(<Ui loading={true} />);
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
+    );
 
     /**
-     * She sees that personal info section is not loaded on the page
-     */
-    expect(queryByTestId("personal-info-section")).not.toBeInTheDocument();
-
-    /**
-     * And that loading indicator is on the page
-     */
-    expect(getByTestId("component-resume-update-loading")).toBeInTheDocument();
-
-    /**
-     * And that loading error is not visible on the page
-     */
-    expect(
-      queryByTestId("component-resume-update-loading-error")
-    ).not.toBeInTheDocument();
-
-    /**
-     * When data loading errors
-     */
-    rerender(<Ui error={new ApolloError({ graphQLErrors: [] })} />);
-
-    /**
-     * She sees that personal info section is not loaded on the page
-     */
-    expect(queryByTestId("personal-info-section")).not.toBeInTheDocument();
-
-    /**
-     * And that loading indicator is not visible on the page
-     */
-    expect(
-      queryByTestId("component-resume-update-loading")
-    ).not.toBeInTheDocument();
-
-    /**
-     * And that loading error is visible on the page
-     */
-    expect(
-      getByTestId("component-resume-update-loading-error")
-    ).toBeInTheDocument();
-
-    /**
-     * When data is done loading correctly
-     */
-    rerender(<Ui {...props} />);
-
-    /**
-     * She sees that personal info section is loaded on the page
+     * Then user should see that personal info section is loaded on the page
      */
     expect(getByTestId("personal-info-section")).toBeInTheDocument();
-
-    /**
-     * And that loading indicator is no longer visible in page
-     */
-    expect(
-      queryByTestId("component-resume-update-loading")
-    ).not.toBeInTheDocument();
 
     /**
      * And that education section is not loaded on the page
@@ -163,189 +150,134 @@ describe("happy path", () => {
     ).not.toBeInTheDocument();
 
     /**
-     * And that next button is present on page
+     * And that next button points to experiences section
      */
-    const nextTooltipExperiencesRegexp = new RegExp(
-      nextTooltipText(Section.experiences)
-    );
-    expect(getByText(nextTooltipExperiencesRegexp)).toBeInTheDocument();
 
-    /**
-     * And that preview resume section is not present on the page
-     */
-    expect(queryByTestId("preview-resume-section")).not.toBeInTheDocument();
-
-    /**
-     * When she clicks on 'preview unfinished resume' button
-     */
-    const partialPreviewResumeTooltipRegexp = new RegExp(
-      uiTexts.partialPreviewResumeTooltipText,
-      "i"
-    );
-    const $preview = getByText(partialPreviewResumeTooltipRegexp);
-    fireEvent.click($preview);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.preview)
-        }}
-      />
-    );
-
-    /**
-     * She sees that personal info section is gone from the page
-     */
-    expect(queryByTestId("personal-info-section")).not.toBeInTheDocument();
-
-    /**
-     * And that preview resume section is loaded unto the page
-     */
-    expect(getByTestId("preview-resume-section")).toBeInTheDocument();
-
-    /**
-     * And that 'preview unfinished resume' button is gone from the page
-     */
     expect(
-      queryByText(partialPreviewResumeTooltipRegexp)
-    ).not.toBeInTheDocument();
+      getByText(new RegExp(nextTooltipText(Section.experiences)))
+    ).toBeInTheDocument();
+  });
+
+  it("renders experiences section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.experiences),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
 
     /**
-     * And that next button is gone from the page
+     * Given user is on experiences section of update resume page
      */
-    expect(queryByText(nextTooltipExperiencesRegexp)).not.toBeInTheDocument();
+    const { getByTestId, queryByTestId, getByText } = render(<Ui {...props} />);
 
     /**
-     * When she clicks on 'back to editor' button
-     */
-    fireEvent.click(getByText(uiTexts.backToEditorBtnText));
-
-    rerender(<Ui {...props} location={location} />);
-
-    /**
-     * She sees that personal info section is back on the page
-     */
-    expect(getByTestId("personal-info-section")).toBeInTheDocument();
-
-    /**
-     * And that preview resume section is gone from the page
-     */
-    expect(queryByTestId("preview-resume-section")).not.toBeInTheDocument();
-
-    /**
-     * When she clicks on the next button
-     */
-    let $next = getByText(nextTooltipExperiencesRegexp);
-    fireEvent.click($next);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.experiences)
-        }}
-      />
-    );
-
-    /**
-     * She sees that the personal info section is gone from page
-     */
-    expect(queryByTestId("personal-info-section")).not.toBeInTheDocument();
-
-    /**
-     * And experience section is loaded
+     * Then user should see that experiences section is loaded on the page
      */
     expect(getByTestId("experiences-section")).toBeInTheDocument();
 
     /**
-     * And the previous button points to personal information section
+     * And that personal info section is not loaded on the page
      */
-    const prevTooltipPersonalInfoRegexp = new RegExp(
-      prevTooltipText(Section.personalInfo),
-      "i"
-    );
+    expect(queryByTestId("personal-info-section")).not.toBeInTheDocument();
+
+    /**
+     * And that previous button points to personal information section
+     */
 
     expect(getByText(prevTooltipPersonalInfoRegexp)).toBeInTheDocument();
 
     /**
-     * And that additional skills section has not been loaded
+     * And that next button when hovered points to education section
      */
-    expect(queryByTestId("additional-skills-section")).not.toBeInTheDocument();
+    expect(
+      getByText(new RegExp(nextTooltipText(Section.education), "i"))
+    ).toBeInTheDocument();
+  });
+
+  it("renders education section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.education),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
 
     /**
-     * And the next button when hovered points to education section
+     * Given user is on education section of update resume page
      */
-    $next = getByText(new RegExp(nextTooltipText(Section.education), "i"));
-
-    /**
-     * When she clicks on next button
-     */
-    fireEvent.click($next);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.education)
-        }}
-      />
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
     );
 
     /**
-     * She sees that the experience section is gone from page
-     */
-    expect(queryByTestId("experiences-section")).not.toBeInTheDocument();
-
-    /**
-     * And education section is loaded
+     * Then user should see that education section is loaded on the page
      */
     expect(getByTestId("education-section")).toBeInTheDocument();
 
     /**
-     * And the previous button no longer points to personal information section
+     * And that the experience section is not on the page
+     */
+    expect(queryByTestId("experiences-section")).not.toBeInTheDocument();
+
+    /**
+     * And that previous button no longer points to personal information section
      */
     expect(queryByText(prevTooltipPersonalInfoRegexp)).not.toBeInTheDocument();
 
     /**
      * And that the previous button now points to experiences section
      */
-    const prevTooltipExperiencesRegexp = new RegExp(
-      prevTooltipText(Section.experiences)
-    );
 
     expect(getByText(prevTooltipExperiencesRegexp)).toBeInTheDocument();
 
     /**
      * And that next button points to skills section
      */
-    const nextTooltipSkillsRegexp = new RegExp(
-      nextTooltipText(Section.skills),
-      "i"
-    );
 
-    $next = getByText(nextTooltipSkillsRegexp);
+    expect(
+      getByText(new RegExp(nextTooltipText(Section.skills), "i"))
+    ).toBeInTheDocument();
+  });
+
+  it("renders skills section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.skills),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
 
     /**
-     * When she clicks on the next button
+     * Given user is on skills section of update resume page
      */
-    fireEvent.click($next);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.skills)
-        }}
-      />
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
     );
 
     /**
-     * She sees that education section is gone from page
+     * User should see that education section is gone from page
      */
     expect(queryByTestId("education-section")).not.toBeInTheDocument();
 
@@ -373,30 +305,36 @@ describe("happy path", () => {
     /**
      * And that next button points to additional skills section
      */
-    const nextTooltipAddSkillsRegexp = new RegExp(
-      nextTooltipText(Section.addSkills),
-      "i"
-    );
 
-    $next = getByText(nextTooltipAddSkillsRegexp);
+    expect(
+      getByText(new RegExp(nextTooltipText(Section.addSkills), "i"))
+    ).toBeInTheDocument();
+  });
+
+  it("renders additional skills section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.addSkills),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
 
     /**
-     * When she clicks on the next button
+     * Given user is on additional skills section of update resume page
      */
-    fireEvent.click($next);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.addSkills)
-        }}
-      />
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
     );
 
     /**
-     * She sees that skills section is gone from page
+     * Then user should see that skills section is gone from page
      */
     expect(queryByTestId("skills-section")).not.toBeInTheDocument();
 
@@ -409,7 +347,10 @@ describe("happy path", () => {
     /**
      * And that the previous button no longer points to education sections
      */
-    expect(queryByText(prevTooltipEduRegexp)).not.toBeInTheDocument();
+
+    expect(
+      queryByText(new RegExp(prevTooltipText(Section.education), "i"))
+    ).not.toBeInTheDocument();
 
     /**
      * And that the previous button now points to skills section
@@ -422,27 +363,35 @@ describe("happy path", () => {
      * And that next button points to languages section
      */
 
-    const nextTooltipLangRegexp = new RegExp(nextTooltipText(Section.langs));
+    expect(
+      getByText(new RegExp(nextTooltipText(Section.langs)))
+    ).toBeInTheDocument();
+  });
 
-    $next = getByText(nextTooltipLangRegexp);
+  it("renders languages section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.langs),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
 
     /**
-     * When she clicks on the next button
+     * Given user is on languages section of update resume page
      */
-    fireEvent.click($next);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.langs)
-        }}
-      />
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
     );
 
     /**
-     * She sees that additional skills section is gone from page
+     * Then user should see that additional skills section is gone from page
      */
     expect(queryByTestId("additional-skills-section")).not.toBeInTheDocument();
 
@@ -455,7 +404,9 @@ describe("happy path", () => {
     /**
      * And that the previous button no longer points to skills sections
      */
-    expect(queryByText(prevTooltipSkillsRegexp)).not.toBeInTheDocument();
+    expect(
+      queryByText(new RegExp(prevTooltipText(Section.skills)))
+    ).not.toBeInTheDocument();
 
     /**
      * And that the previous button now points to additional skills section
@@ -466,35 +417,39 @@ describe("happy path", () => {
     );
     expect(getByText(prevTooltipAddSkillsRegexp)).toBeInTheDocument();
 
-    // ----------------------------------------------------------
     /**
      * And that next button points to hobbies section
      */
 
-    const nextTooltipHobbiesRegexp = new RegExp(
-      nextTooltipText(Section.hobbies),
-      "i"
-    );
+    expect(
+      getByText(new RegExp(nextTooltipText(Section.hobbies), "i"))
+    ).toBeInTheDocument();
+  });
 
-    $next = getByText(nextTooltipHobbiesRegexp);
+  it("renders hobbies section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.hobbies),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
 
     /**
-     * When she clicks on the next button
+     * Given user is on hobbies section of update resume page
      */
-    fireEvent.click($next);
-
-    rerender(
-      <Ui
-        {...props}
-        location={{
-          ...location,
-          hash: makeUrlHashSegment(ResumePathHash.edit, Section.hobbies)
-        }}
-      />
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
     );
 
     /**
-     * She sees that languages section is gone from page
+     * Then user should see that languages section is gone from page
      */
     expect(queryByTestId("languages-section")).not.toBeInTheDocument();
 
@@ -507,7 +462,9 @@ describe("happy path", () => {
     /**
      * And that the previous button no longer points to additional skills sections
      */
-    expect(queryByText(prevTooltipAddSkillsRegexp)).not.toBeInTheDocument();
+    expect(
+      queryByText(new RegExp(prevTooltipText(Section.addSkills), "i"))
+    ).not.toBeInTheDocument();
 
     /**
      * And that the previous button now points to languages section
@@ -524,7 +481,7 @@ describe("happy path", () => {
      * present on the page
      */
     expect(
-      queryByText(partialPreviewResumeTooltipRegexp)
+      queryByText(new RegExp(uiTexts.partialPreviewResumeTooltipText, "i"))
     ).not.toBeInTheDocument();
 
     /**
@@ -537,6 +494,58 @@ describe("happy path", () => {
     );
 
     expect(getByText(endPreviewResumeTooltipRegexp)).toBeInTheDocument();
+  });
+
+  it("renders preview section", () => {
+    const location = {
+      hash: makeUrlHashSegment(ResumePathHash.edit, Section.preview),
+      pathname: makeResumeRoute("first resume", "")
+    } as WindowLocation;
+
+    const props = {
+      getResume: {},
+      location
+    } as Partial<Props>;
+
+    const Ui = withFormik(formikConfig)(p => (
+      <ResumeFormP {...props} {...p} />
+    )) as P;
+
+    /**
+     * Given user is on preview section of update resume page
+     */
+    const { getByTestId, queryByTestId, getByText, queryByText } = render(
+      <Ui {...props} />
+    );
+
+    /**
+     * Then user should see that personal info section is not on the page
+     */
+    expect(queryByTestId("personal-info-section")).not.toBeInTheDocument();
+
+    /**
+     * And that preview resume section is loaded unto the page
+     */
+    expect(getByTestId("preview-resume-section")).toBeInTheDocument();
+
+    /**
+     * And that 'preview unfinished resume' button is not on the page
+     */
+    expect(
+      queryByText(new RegExp(uiTexts.partialPreviewResumeTooltipText, "i"))
+    ).not.toBeInTheDocument();
+
+    /**
+     * And that next button is not the page
+     */
+    expect(
+      queryByText(new RegExp(nextTooltipText(Section.experiences)))
+    ).not.toBeInTheDocument();
+
+    /**
+     * And that back to edit button is present on the page
+     */
+    expect(getByText(uiTexts.backToEditorBtnText)).toBeInTheDocument();
   });
 });
 
@@ -574,7 +583,7 @@ describe("update logic", () => {
     const Ui = withFormik(formikConfig)(ui) as P;
 
     /**
-     * Given a user is at the update resume page
+     * Given a user is on the update resume page
      */
     const { getByLabelText } = render(<Ui {...props} />);
 
@@ -837,24 +846,14 @@ describe("loading takes too long", () => {
     );
 
     const props = {
-      location: {
-        hash: "",
-        pathname: ""
-      } as WindowLocation,
-
-      getResume: {},
-
+      location: {} as WindowLocation,
       loading: true
     } as Props;
-
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-
-    const Ui = withFormik(formikConfig)(ui);
 
     /**
      * Given a user is at the update resume page
      */
-    const { getByText, queryByText } = render(<Ui {...props} />);
+    const { getByText, queryByText } = render(<ResumeFormP {...props} />);
 
     /**
      * Then user should see loading indicator

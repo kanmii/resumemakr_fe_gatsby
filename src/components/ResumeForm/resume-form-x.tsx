@@ -141,7 +141,6 @@ export function ResumeForm(props: Props) {
 
     let error;
 
-    // istanbul ignore next
     if (networkError) {
       error = networkError.message;
     } else {
