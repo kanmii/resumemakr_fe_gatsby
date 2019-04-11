@@ -17,7 +17,7 @@
     "gatsby-build-serve": "yarn build:staging && yarn gatsby-serve",
     "test": "env-cmd .env.dev jest --watch --runInBand",
     "test:coverage": "env-cmd .env.dev jest --coverage --runInBand",
-    "test-e2e-run-staging": "start-server-and-test gatsby-build-serve :3022 cy-run-staging",
+    "test-e2e-run-staging": "start-server-and-test start-build-staging :3022 cy-run-staging",
     "test-e2e-open-staging": "start-server-and-test start-build-staging :3022 cy-open-staging",
     "type-check": "tsc --noEmit",
     "lint": "tslint --project .",
