@@ -29,7 +29,10 @@ module.exports = {
   ],
   transformIgnorePatterns: ["node_modules/(?!(gatsby)/)"],
   globals: {
-    __PATH_PREFIX__: ""
+    __PATH_PREFIX__: "",
+    "ts-jest": {
+      tsConfig: "./tsconfig-base.json"
+    }
   },
   testURL: "http://localhost",
   setupFiles: ["<rootDir>/loadershim.js"],
