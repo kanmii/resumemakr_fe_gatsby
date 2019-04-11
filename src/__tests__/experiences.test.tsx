@@ -30,9 +30,9 @@ import {
 import {
   defaultVal,
   emptyVal,
-  uiTexts
+  uiTexts,
+  makeExperienceFieldName
 } from "../components/Experiences/experiences";
-import { makeExperienceFieldName } from "../components/Experiences/experiences-x";
 import {
   ListDisplayCtrlNames,
   makeListDisplayCtrlTestId

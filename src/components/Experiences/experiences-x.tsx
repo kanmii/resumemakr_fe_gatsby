@@ -5,7 +5,12 @@ import { FastField, FieldArray } from "formik";
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
 import RegularField from "../RegularField";
 import SectionLabel from "../SectionLabel";
-import { emptyVal, Props, uiTexts } from "./experiences";
+import {
+  emptyVal,
+  Props,
+  uiTexts,
+  makeExperienceFieldName
+} from "./experiences";
 import ListIndexHeader from "../ListIndexHeader";
 import ListStrings from "../ListStrings";
 
@@ -172,13 +177,6 @@ export class Experiences extends React.Component<Props, {}> {
 }
 
 export default Experiences;
-
-export function makeExperienceFieldName(
-  index: number,
-  key: keyof CreateExperienceInput
-) {
-  return `experiences[${index}].${key}`;
-}
 
 function SubFieldLabel({
   fieldName,

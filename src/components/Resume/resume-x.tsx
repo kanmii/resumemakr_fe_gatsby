@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { WindowLocation } from "@reach/router";
 
 import "./styles.scss";
-import ResumeForm from "../ResumeForm";
+import UpdateResumeForm from "../UpdateResumeForm";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import { ResumePathHash } from "../../routing";
@@ -30,7 +30,7 @@ export function Resume(props: Props) {
             <div className="side-bar">.</div>
 
             <div className="main-container">
-              <ResumeForm />
+              <UpdateResumeForm />
             </div>
           </div>
         </>

@@ -15,7 +15,8 @@ import {
 } from "../../src/components/PersonalInfo/personal-info";
 import {
   uiTexts as experiencesUiTexts,
-  defaultVal as experiencesVals
+  defaultVal as experiencesVals,
+  makeExperienceFieldName
 } from "../../src/components/Experiences/experiences";
 
 describe("create new resume page", function() {
@@ -126,7 +127,8 @@ describe("create new resume page", function() {
     /**
      * Then user should not see any text showing user is on experiences page
      */
-    cy.queryByLabelText(experiencesUiTexts.positionLabel).should("not.exist");
+    const experiencesPositionLabel = makeExperienceFieldName(0, "position");
+    cy.queryByLabelText(experiencesPositionLabel).should("not.exist");
 
     /**
      * When user clicks on the next button to go to experiences section
@@ -138,9 +140,7 @@ describe("create new resume page", function() {
     /**
      * Then user should see texts showing user is on experiences page
      */
-    const $experiencePosition = cy.getByLabelText(
-      experiencesUiTexts.positionLabel
-    );
+    const $experiencePosition = cy.getByLabelText(experiencesPositionLabel);
 
     /**
      * And the experiences position field should be pre-filled with sample
@@ -152,27 +152,10 @@ describe("create new resume page", function() {
      * And the experiences company field should be pre-filled with sample
      * texts
      */
-    cy.getByLabelText(experiencesUiTexts.companyNameLabel).should(
+    const experiencesCompanyLabel = makeExperienceFieldName(0, "companyName");
+    cy.getByLabelText(experiencesCompanyLabel).should(
       "have.value",
       experiencesVals.companyName
-    );
-
-    /**
-     * And the experiences from date field should be pre-filled with sample
-     * texts
-     */
-    cy.getByLabelText(experiencesUiTexts.fromDateLabel).should(
-      "have.value",
-      experiencesVals.fromDate
-    );
-
-    /**
-     * And the experiences to date field should be pre-filled with sample
-     * texts
-     */
-    cy.getByLabelText(experiencesUiTexts.toDateLabel).should(
-      "have.value",
-      experiencesVals.toDate
     );
   });
 });

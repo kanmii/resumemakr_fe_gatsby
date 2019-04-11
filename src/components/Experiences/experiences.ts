@@ -58,3 +58,10 @@ export const uiTexts = {
 
   achievementsLabels2: "(responsibilities, activities)"
 };
+
+export function makeExperienceFieldName(
+  index: number,
+  key: keyof CreateExperienceInput
+) {
+  return `experiences[${index}].${key}`;
+}
