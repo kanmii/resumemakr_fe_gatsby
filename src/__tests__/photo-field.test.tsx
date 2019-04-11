@@ -248,7 +248,7 @@ it("does not set field value if no file selected", async () => {
   const { getByLabelText } = render(ui);
 
   uploadFile(getByLabelText(uiTexts.uploadPhotoText));
-  await wait(() => expect(mockSetFieldValue).not.toBeCalled());
+  expect(mockSetFieldValue).not.toBeCalled();
 });
 
 ///////////////////////////////////////////////////////////////////////////////
