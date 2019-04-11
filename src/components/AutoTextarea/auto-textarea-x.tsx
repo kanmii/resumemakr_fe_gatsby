@@ -1,37 +1,6 @@
 import React, { useState } from "react";
-import styled from "styled-components/macro";
 
-const Behalter = styled.div`
-  position: relative;
-
-  textarea {
-    position: absolute;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    width: 100%;
-    height: 100%;
-    resize: none;
-  }
-
-  textarea,
-  div {
-    padding: 10px;
-    font-size: 16px;
-    font-family: sans-serif;
-    border: 1px solid grey;
-    line-height: 1.3em;
-    white-space: pre-wrap;
-    box-sizing: border-box;
-    margin: 0px;
-  }
-
-  div {
-    word-break: break-all;
-    overflow-y: hidden;
-  }
-`;
+import "./styles.scss";
 
 interface Merkmale
   extends React.DetailedHTMLProps<
@@ -55,7 +24,7 @@ export function AutoTextarea(merkmale: Merkmale) {
   const [benutzerText, einstellenBenutzerText] = useState(value);
 
   return (
-    <Behalter>
+    <div className="components-auto-textarea">
       <textarea
         {...anderes}
         value={benutzerText}
@@ -72,7 +41,7 @@ export function AutoTextarea(merkmale: Merkmale) {
       <div tabIndex={-1} style={hiddenStyles}>
         {benutzerText + "_"}
       </div>
-    </Behalter>
+    </div>
   );
 }
 

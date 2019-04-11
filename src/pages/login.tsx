@@ -7,7 +7,6 @@ import { makeSiteTitle } from "../constants";
 import Layout from "../components/Layout";
 import Login from "../components/Login";
 import Header from "../components/Header";
-import { AppContainer } from "../styles/mixins";
 
 export default function LoginPage(props: RouteComponentProps) {
   return (
@@ -16,9 +15,9 @@ export default function LoginPage(props: RouteComponentProps) {
         <title>{makeSiteTitle("Login")}</title>
       </Helmet>
 
-      <AppContainer>
+      <div className="app-container">
         <Login header={<Header />} {...props} />
-      </AppContainer>
+      </div>
     </Layout>
   );
 }

@@ -82,9 +82,9 @@ body,
 #___gatsby,
 #___gatsby > div {
   /* we don't want any of these to scroll */
-  overflow: hidden;
-  height: 100%;
-  width: 100%;
+  overflow: hidden !important;
+  height: 100% !important;
+  width: 100% !important;
 
   /* others */
   margin: 0;
@@ -114,4 +114,14 @@ li {
 
 .visually-hidden {
   @extend %visually-hidden;
+}
+
+.app-container {
+  @extend %app-container;
+}
+
+.auth-main-app {
+  @extend %app-main;
+  overflow-x: hidden;
+  overflow-y: auto;
 }

@@ -6,6 +6,5 @@
 
 // And to shim assets, use (one file extension per `declare`):
 // declare module "*.png"
-/// <reference types="styled-components/cssprop" />
-declare module "@absinthe/socket"
-declare module "@absinthe/socket-apollo-link"
+declare module "@absinthe/socket";
+declare module "@absinthe/socket-apollo-link";

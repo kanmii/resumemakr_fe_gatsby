@@ -14,10 +14,9 @@ import { NavigateFn } from "@reach/router";
 import { Props, ValidationSchema } from "./login";
 import { LoginInput } from "../../graphql/apollo/types/globalTypes";
 import PwdInput from "../PwdInput";
-import { BerechtigungKarte } from "../../styles/mixins";
+import { AuthCard } from "../AuthCard";
 import refreshToAppDefault from "../../refresh-to-app";
 import getConnDefault from "../../State/get-conn-status";
-import { BerechtigungHaupanwendung } from "../../styles/mixins";
 import { SIGN_UP_URL } from "../../routing";
 import { noOp } from "../../constants";
 import { clearToken } from "../../State/tokens";
@@ -136,7 +135,7 @@ export function Login(merkmale: Props) {
     const { dirty, isSubmitting } = props;
 
     return (
-      <BerechtigungKarte>
+      <AuthCard>
         <Errors
           errors={{ graphQlErrors, otherErrors, formErrors }}
           handleErrorsDismissed={handleErrorsDismissed}
@@ -178,14 +177,14 @@ export function Login(merkmale: Props) {
             Don't have an account? Sign Up
           </Button>
         </Card.Content>
-      </BerechtigungKarte>
+      </AuthCard>
     );
   }
 
   return (
     <>
       {header}
-      <BerechtigungHaupanwendung>
+      <div className="auth-main-app">
         <Formik
           initialValues={{
             email:
@@ -200,7 +199,7 @@ export function Login(merkmale: Props) {
           validationSchema={ValidationSchema}
           validateOnChange={false}
         />
-      </BerechtigungHaupanwendung>{" "}
+      </div>
     </>
   );
 }

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { FieldProps } from "formik";
 import { Form, Input, Icon } from "semantic-ui-react";
-import "styled-components/macro";
 import { Link } from "gatsby";
 
+import "./styles.scss";
 import { PASSWORD_RESET_PATH } from "../../routing";
 
 type PwdType = "password" | "text";
@@ -20,15 +20,8 @@ export function PwdInput<T>(props: Props<T>) {
   const [pwdType, setPwdType] = useState<PwdType>("password");
 
   return (
-    <Form.Field>
-      <label
-        data-testid="pass-input-comp"
-        htmlFor={id}
-        css={`
-          display: flex !important;
-          justify-content: space-between;
-        `}
-      >
+    <Form.Field className="components-pwd-input">
+      <label data-testid="pass-input-comp" htmlFor={id} className="input-label">
         <span>Password</span>
 
         <Link

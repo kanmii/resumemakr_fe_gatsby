@@ -4,7 +4,6 @@ import { MutationUpdaterFn, ApolloError } from "apollo-client";
 import dateFormat from "date-fns/format";
 import { Formik, FastField, FormikProps, FormikErrors } from "formik";
 import lodashIsEmpty from "lodash/isEmpty";
-import "styled-components/macro";
 import { NavigateFn } from "@reach/router";
 
 import "./styles.scss";
@@ -16,7 +15,7 @@ import {
 } from "../../graphql/apollo/types/ResumeTitles";
 import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
-import { AppModal, CircularLabel /*, AppMain1 */ } from "../../styles/mixins";
+import { CircularLabel } from "../circular-label";
 import { makeResumeRoute } from "../../routing";
 import { Props, validationSchema, Action, emptyVal, uiTexts } from "./home";
 import Loading from "../Loading";
@@ -25,6 +24,7 @@ import { initialFormValues } from "../UpdateResumeForm/update-resume-form";
 import { Mode as PreviewMode } from "../Preview/preview";
 import AutoTextarea from "../AutoTextarea";
 import { useSetParentClassNameOnMount as useSetParentAttrsOnMount } from "../hooks";
+import { AppModal } from "../AppModal";
 
 let initialValues = emptyVal;
 let action = Action.createResume;
@@ -265,10 +265,10 @@ export function Home(merkmale: Props) {
         <div>
           <Label horizontal={true}>Dismiss</Label>
           <span
-            css={`
-              font-weight: bolder;
-              margin-right: 5px;
-            `}
+            style={{
+              fontWeight: "bolder",
+              marginRight: "5px"
+            }}
           >
             {nachricht}
           </span>
@@ -537,20 +537,20 @@ export function Home(merkmale: Props) {
       >
         Sure to delete:
         <span
-          css={`
-            font-weight: bolder;
-            margin-left: 5px;
-            word-break: break-all;
-          `}
+          style={{
+            fontWeight: "bolder",
+            marginRight: "5px",
+            wordBreak: "break-all"
+          }}
         >
           {title}?
         </span>
         <div
-          css={`
-            display: flex;
-            justify-content: space-between;
-            margin-top: 5px;
-          `}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginTop: "5px"
+          }}
         >
           <Button
             data-testid={`yes to delete ${title}`}

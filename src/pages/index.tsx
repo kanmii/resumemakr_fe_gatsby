@@ -7,12 +7,11 @@ import Layout from "../components/Layout";
 import Header from "../components/Header";
 import { SIGN_UP_URL } from "../routing";
 import SignUp from "../components/SignUp";
-import { AppContainer } from "../styles/mixins";
 
 export default function IndexPage(props: RouteComponentProps) {
   return (
     <Layout>
-      <AppContainer>
+      <div className="app-container">
         <Header
           rightMenuItems={[
             <Menu.Item
@@ -53,7 +52,7 @@ export default function IndexPage(props: RouteComponentProps) {
 
           <SignUp {...props} />
         </div>
-      </AppContainer>
+      </div>
     </Layout>
   );
 }

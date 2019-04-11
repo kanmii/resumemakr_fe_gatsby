@@ -1,0 +1,16 @@
+@import "../../styles/extensions";
+
+.components-app-modal {
+  &.ui.modal {
+    width: 90%;
+    max-width: 500px;
+
+    & > .header {
+      @extend %open-sans;
+      font-weight: 500;
+      padding: 1rem !important;
+      background: #323942;
+      color: #fff;
+    }
+  }
+}

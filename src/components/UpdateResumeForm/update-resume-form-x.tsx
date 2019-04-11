@@ -70,7 +70,7 @@ export function ResumeForm(props: Props) {
 
   const [state, dispatch] = useReducer(reducer, {});
 
-  const timerRef = useRef<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const valuesTrackerRef = useRef<FormValues>({ ...values });
   const backToSectionRef = useRef(Section.personalInfo);
   const currentSectionRef = useRef(Section.personalInfo);

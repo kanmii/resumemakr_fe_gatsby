@@ -76,3 +76,14 @@ export function makeListDisplayCtrlTestId(
 ) {
   return fieldName + " " + ctrlName + (others || []).join(" ");
 }
+
+export function addClassNames(
+  className1: string,
+  ...otherClassNames: Array<string | undefined>
+) {
+  if (otherClassNames) {
+    return className1 + " " + otherClassNames.join(" ");
+  }
+
+  return className1;
+}

@@ -2,7 +2,7 @@ import React, { useContext, useState, useRef, useEffect, memo } from "react";
 import { Icon, Modal, Button } from "semantic-ui-react";
 
 import "./styles.scss";
-import { AppModal } from "../../styles/mixins";
+import { AppModal } from "../AppModal";
 import { toServerUrl } from "../utils";
 import { FormContext } from "../UpdateResumeForm/update-resume-form";
 import { Props, PhotoFieldState, uiTexts } from "./photo-field";

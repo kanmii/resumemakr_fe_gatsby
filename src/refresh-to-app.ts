@@ -31,7 +31,7 @@ export default function refreshToHome() {
     return;
   }
 
-  let intervalId: number;
+  let intervalId: NodeJS.Timeout;
   let counter = 0;
 
   intervalId = setInterval(() => {

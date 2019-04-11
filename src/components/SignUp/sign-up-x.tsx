@@ -21,14 +21,11 @@ import {
 } from "./sign-up";
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
 import { LOGIN_URL } from "../../routing";
-import {
-  BerechtigungKarte,
-  BerechtigungHaupanwendung
-} from "../../styles/mixins";
 import refreshToAppDefault from "../../refresh-to-app";
 import getConnDefault from "../../State/get-conn-status";
 import { noOp } from "../../constants";
 import { clearToken } from "../../State/tokens";
+import { AuthCard } from "../AuthCard";
 
 export function SignUp(merkmale: Props) {
   const {
@@ -195,7 +192,7 @@ export function SignUp(merkmale: Props) {
     const { dirty, isSubmitting } = props;
 
     return (
-      <BerechtigungKarte>
+      <AuthCard>
         {renderFormErrors()}
 
         <Card.Content style={{ flexShrink: "0" }} extra={true}>
@@ -240,7 +237,7 @@ export function SignUp(merkmale: Props) {
             Already have an account? Login
           </Button>
         </Card.Content>
-      </BerechtigungKarte>
+      </AuthCard>
     );
   }
 
@@ -268,7 +265,7 @@ export function SignUp(merkmale: Props) {
   }
 
   return (
-    <BerechtigungHaupanwendung ref={mainRef}>
+    <div className="auth-main-app" ref={mainRef}>
       <Formik
         initialValues={initialFormValues}
         onSubmit={noOp}
@@ -276,7 +273,7 @@ export function SignUp(merkmale: Props) {
         validationSchema={ValidationSchema}
         validateOnChange={false}
       />
-    </BerechtigungHaupanwendung>
+    </div>
   );
 }
 
