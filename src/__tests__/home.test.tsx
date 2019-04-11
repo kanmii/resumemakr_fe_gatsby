@@ -1,3 +1,4 @@
+// tslint:disable: no-any
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -229,20 +230,28 @@ it("creates resume", async () => {
   /**
    * And clicks on the yes button
    */
-  fireEvent.click(getByText("Yes"));
+  act(() => {
+    fireEvent.click(getByText("Yes"));
+  });
 
   /**
    * She is redirected to the page where she can fill her resume
    */
-  await wait(() => {
-    const args = mockCreateResume.mock.calls[0][0] as ErstellenLebenslaufFnArgs;
-    expect(args.variables && args.variables.input.title).toBe(title);
-  });
+  await wait(
+    () => {
+      expect(
+        (mockCreateResume.mock.calls[0][0] as any).variables.input.title
+      ).toBe(title);
+    },
+    {
+      interval: 1
+    }
+  );
 
   expect(mockNavigate).toBeCalledWith(makeResumeRoute(title));
 });
 
-it("renders error if deleteResume prop not injected", async () => {
+it("renders error if deleteResume prop not injected", () => {
   /**
    * Given there are resumes in the system
    */
@@ -255,8 +264,7 @@ it("renders error if deleteResume prop not injected", async () => {
           id: "1"
         }
       }
-    ],
-    __typename: "ResumeConnection"
+    ]
   } as ResumeTitles_listResumes;
 
   /**
@@ -325,14 +333,14 @@ it("deletes resume", async () => {
     }
   } as WithData<DeleteResume>;
 
-  const deleteResume = jest.fn(() => Promise.resolve(result));
+  const mockDeleteResume = jest.fn(() => Promise.resolve(result));
 
   const { Ui } = setUp();
 
   const { getByText, queryByText, getByTestId } = render(
     <Ui
       {...resumeTitlesGql({ listResumes: resumes })}
-      deleteResume={deleteResume}
+      deleteResume={mockDeleteResume}
     />
   );
 
@@ -352,6 +360,7 @@ it("deletes resume", async () => {
   /**
    * When she clicks to delete one of the displayed resume titles
    */
+
   fireEvent.click(getByText(new RegExp(`delete ${titles[1]}`, "i")));
 
   /**
@@ -371,18 +380,9 @@ it("deletes resume", async () => {
   expect(queryByText(confirmRegexp)).not.toBeInTheDocument();
 
   /**
-   * When she clicks to delete one of the displayed resume titles
+   * When she clicks to delete one of the displayed resume titles and confirms
    */
   fireEvent.click(getByText(new RegExp(`delete ${titles[1]}`, "i")));
-
-  /**
-   * Then she sees no UI showing resume has been deleted
-   */
-  expect(queryByText(successRegexp)).not.toBeInTheDocument();
-
-  /**
-   * When she confirms to delete resume
-   */
 
   act(() => {
     fireEvent.click(getByTestId(`yes to delete ${titles[1]}`));
@@ -491,10 +491,16 @@ it("clones resume", async () => {
   /**
    * She is redirected to the page where she can continue filling her resume
    */
-  await wait(() => {
-    const args = mockCloneResume.mock.calls[0][0] as CloneLebensLaufFnArgs;
-    expect(args.variables && args.variables.input.title).toBe(clonedTitle);
-  });
+  await wait(
+    () => {
+      expect(
+        (mockCloneResume.mock.calls[0][0] as any).variables.input.title
+      ).toBe(clonedTitle);
+    },
+    {
+      interval: 1
+    }
+  );
 
   expect(mockNavigate).toBeCalledWith(makeResumeRoute(clonedTitle));
 });

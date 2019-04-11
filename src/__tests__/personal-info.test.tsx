@@ -1,10 +1,11 @@
+// tslint:disable: no-any
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import { render, fireEvent, wait } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
-import update from "immutability-helper";
+
 import { ResumeForm } from "../components/UpdateResumeForm/update-resume-form-x";
 import {
   Props,
@@ -13,12 +14,7 @@ import {
 } from "../components/UpdateResumeForm/update-resume-form";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute } from "../routing";
-import {
-  uiTexts as personalInfoUiTexts,
-  defaultVal as personalInfoDefaultVal
-} from "../components/PersonalInfo/personal-info";
-import { UpdateResumeVariables } from "../graphql/apollo/types/UpdateResume";
-import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
+import { uiTexts, defaultVal } from "../components/PersonalInfo/personal-info";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = ResumeForm as P;
@@ -33,7 +29,7 @@ jest.mock("../components/Preview", () => {
 });
 
 describe("Personal info", () => {
-  it("updates input blur", async () => {
+  it("updates on input blur", async () => {
     const location = {
       hash: "",
       pathname: makeResumeRoute("first resume", "")
@@ -59,101 +55,101 @@ describe("Personal info", () => {
     const { Ui: ui } = renderWithApollo(ResumeFormP, props);
     const Ui = withFormik(formikConfig)(ui) as P;
 
-    const { /* debug, */ getByLabelText } = render(<Ui {...props} />);
+    const { getByLabelText } = render(<Ui {...props} />);
 
     /**
      * She should see that first name input is empty
      */
-    const $firstName = getByLabelText(personalInfoUiTexts.firstNameLabel);
-    expect($firstName.getAttribute("value")).toBe("");
+
+    const $firstName = getByLabelText(uiTexts.firstNameLabel) as any;
+    expect($firstName.value).toBe("");
 
     /**
      * And that last name input is empty
      */
-    const $lastName = getByLabelText(personalInfoUiTexts.lastNameLabel);
-    expect($lastName.getAttribute("value")).toBe("");
+    const $lastName = getByLabelText(uiTexts.lastNameLabel) as any;
+    expect($lastName.value).toBe("");
 
     /**
      * And that profession input is empty
      */
-    const $profession = getByLabelText(personalInfoUiTexts.professionLabel);
-    expect($profession.getAttribute("value")).toBe("");
+    const $profession = getByLabelText(uiTexts.professionLabel) as any;
+    expect($profession.value).toBe("");
 
     /**
      * And that address input is empty
      */
-    const $address = getByLabelText(personalInfoUiTexts.addressLabel);
-    expect($address.textContent).toBe(""); // textarea!!!!!!
+    const $address = getByLabelText(uiTexts.addressLabel) as any;
+    expect($address.value).toBe("");
 
     /**
      * And that phone input is empty
      */
-    const $phone = getByLabelText(personalInfoUiTexts.phoneLabel);
-    expect($phone.getAttribute("value")).toBe("");
+    const $phone = getByLabelText(uiTexts.phoneLabel) as any;
+    expect($phone.value).toBe("");
 
     /**
      * And that email input is empty
      */
-    const $email = getByLabelText(personalInfoUiTexts.emailLabel);
-    expect($email.getAttribute("value")).toBe("");
+    const $email = getByLabelText(uiTexts.emailLabel) as any;
+    expect($email.value).toBe("");
 
     /**
      * And that date of birth input is empty
      */
-    const $dateOfBirth = getByLabelText(personalInfoUiTexts.dateOfBirthLabel);
-    expect($dateOfBirth.getAttribute("value")).toBe("");
+    const $dateOfBirth = getByLabelText(uiTexts.dateOfBirthLabel) as any;
+    expect($dateOfBirth.value).toBe("");
 
     // -------------------------------------------------------------------
 
     /**
      * When user fills the first name input
      */
-    fillField($firstName, personalInfoDefaultVal.firstName as string);
+    fillField($firstName, defaultVal.firstName as string);
 
     fireEvent.blur($firstName);
 
     /**
      * Then the data should be sent to the server
      */
-    const initial0 = {
-      ...initial,
-      personalInfo: { firstName: personalInfoDefaultVal.firstName }
-    } as GetResume_getResume;
+    await wait(
+      () => {
+        const args =
+          mockUpdateResume.mock.calls[0][0].variables.input.personalInfo;
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input: initial0
-        } as UpdateResumeVariables
-      });
-    });
+        expect([args.firstName, args.lastName]).toEqual([
+          defaultVal.firstName,
+          undefined
+        ]);
+      },
+      {
+        interval: 1
+      }
+    );
 
     // -------------------------------------------------------------------
 
     /**
      * When user fills the last name input
      */
-    fillField($lastName, personalInfoDefaultVal.lastName as string);
+    fillField($lastName, defaultVal.lastName as string);
 
     fireEvent.blur($lastName);
 
     /**
      * Then the data should be sent to the server
      */
-    const initial1 = update(initial0, {
-      personalInfo: {
-        lastName: {
-          $set: personalInfoDefaultVal.lastName as string
-        }
-      }
-    });
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[1][0]).toMatchObject({
-        variables: {
-          input: initial1
-        } as UpdateResumeVariables
-      });
-    });
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[1][0].variables.input.personalInfo
+            .lastName
+        ).toEqual(defaultVal.lastName);
+      },
+      {
+        interval: 1
+      }
+    );
   });
 });

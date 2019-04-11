@@ -1,3 +1,4 @@
+// tslint:disable: no-any
 import React from "react";
 import {
   render,
@@ -57,27 +58,27 @@ it("renders correctly and submits", async () => {
     getByText(/Already have an account\? Login/)
   );
 
-  const $button = getByText(submitBtnPattern);
-  expect($button.getAttribute("name")).toBe("sign-up-submit");
+  const $button = getByText(submitBtnPattern) as any;
+  expect($button.name).toBe("sign-up-submit");
   expect($button).toBeDisabled();
 
-  const $source = getByLabelText("Source");
-  expect($source.getAttribute("value")).toBe("password");
+  const $source = getByLabelText("Source") as any;
+  expect($source.value).toBe("password");
   expect($source).toHaveAttribute("readonly");
-  const $sourceParent = $source.closest(".form-field") as HTMLDivElement;
+  const $sourceParent = $source.closest(".form-field") as any;
   expect($sourceParent.classList).toContain("disabled");
 
   const $name = getByLabelText("Name");
   expect($name).toBe(document.activeElement);
 
-  const $email = getByLabelText("Email");
-  expect($email.getAttribute("type")).toBe("email");
+  const $email = getByLabelText("Email") as any;
+  expect($email.type).toBe("email");
 
-  const $pwd = getByLabelText(passwortMuster);
-  expect($pwd.getAttribute("type")).toBe("password");
+  const $pwd = getByLabelText(passwortMuster) as any;
+  expect($pwd.type).toBe("password");
 
-  const $pwdConfirm = getByLabelText(passBestMuster);
-  expect($pwdConfirm.getAttribute("type")).toBe("password");
+  const $pwdConfirm = getByLabelText(passBestMuster) as any;
+  expect($pwdConfirm.type).toBe("password");
 
   fillField($name, "Kanmii");
   fillField($email, "me@me.com");
@@ -89,8 +90,11 @@ it("renders correctly and submits", async () => {
     fireEvent.click($button);
   });
 
-  await wait(() =>
-    expect(mockUpdateLocalUser).toHaveBeenCalledWith({ variables: { user } })
+  await wait(
+    () => {
+      expect(mockUpdateLocalUser.mock.calls[0][0].variables.user).toEqual(user);
+    },
+    { interval: 1 }
   );
 
   expect(nachgemachtemAktualisierenZuHause).toBeCalled();

@@ -52,8 +52,13 @@ it("renders correctly and submits", async () => {
   expect($button).not.toBeDisabled();
   fireEvent.click($button);
 
-  await wait(() =>
-    expect(mockUpdateLocalUser).toBeCalledWith({ variables: { user } })
+  await wait(
+    () => {
+      expect(mockUpdateLocalUser).toBeCalledWith({ variables: { user } });
+    },
+    {
+      interval: 1
+    }
   );
 
   expect(nachgemachtemAktualisierenZuHause).toBeCalled();
@@ -136,7 +141,7 @@ it("redirects to sign up", () => {
   expect(mockNavigate).toBeCalledWith(SIGN_UP_URL);
 });
 
-it("logs out user if logged in", async () => {
+it("logs out user if logged in", done => {
   const mockUpdateLocalUser = jest.fn();
   const user = {} as UserFragment;
 
@@ -145,15 +150,17 @@ it("logs out user if logged in", async () => {
     userLocal: { user }
   });
 
-  const {} = render(ui);
+  render(ui);
 
-  await wait(() =>
+  setTimeout(() => {
     expect(mockUpdateLocalUser).toBeCalledWith({
       variables: {
         user: null
       }
-    })
-  );
+    });
+  });
+
+  done();
 });
 
 it("does not log out user if user not logged in", async () => {

@@ -729,17 +729,14 @@ describe("update logic", () => {
      * Then updated data should be uploaded to server with photo set to null
      */
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input: {
-            personalInfo: {
-              photo: null
-            }
-          }
-        } as UpdateResumeVariables
-      });
-    });
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[0][0].variables.input.personalInfo.photo
+        ).toBeNull();
+      },
+      { interval: 1 }
+    );
   });
 
   it("renders update error", async () => {
@@ -797,13 +794,14 @@ describe("update logic", () => {
      * Then data should be uploaded to server
      */
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input: { personalInfo: { address: "user address" } }
-        } as UpdateResumeVariables
-      });
-    });
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[0][0].variables.input.personalInfo.address
+        ).toEqual("user address");
+      },
+      { interval: 1 }
+    );
 
     /**
      * And user should not see any error message

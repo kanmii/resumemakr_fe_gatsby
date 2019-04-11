@@ -33,9 +33,8 @@ it("changes to preview on file select", async () => {
   /**
    * Then user should see that the field as no photo
    */
-  await wait(() =>
-    expect(queryByTestId("photo-preview")).not.toBeInTheDocument()
-  );
+
+  expect(queryByTestId("photo-preview")).not.toBeInTheDocument();
 
   /**
    * When user selects a photo
@@ -48,9 +47,14 @@ it("changes to preview on file select", async () => {
   /**
    * Then the upload field should no longer be visible
    */
-  await wait(() => {
-    expect(queryByLabelText(uiTexts.uploadPhotoText)).not.toBeInTheDocument();
-  });
+  await wait(
+    () => {
+      expect(queryByLabelText(uiTexts.uploadPhotoText)).not.toBeInTheDocument();
+    },
+    {
+      interval: 1
+    }
+  );
 
   /**
    * And the preview field should be visible
@@ -155,12 +159,17 @@ it("deletes photo", async () => {
     createFile("dog.jpg", 1234, jpegMime)
   );
 
-  await wait(() => {
-    /**
-     * When she mouses over the photo
-     */
-    fireEvent.mouseEnter(getByTestId("photo-preview"));
-  });
+  /**
+   * When she mouses over the photo
+   */
+  await wait(
+    () => {
+      fireEvent.mouseEnter(getByTestId("photo-preview"));
+    },
+    {
+      interval: 1
+    }
+  );
 
   /**
    * And clicks the photo remove button
@@ -201,22 +210,35 @@ it("changes photo", async () => {
   const file2 = createFile("cat.jpg", 2345, jpegMime);
   uploadFile(getByLabelText(uiTexts.uploadPhotoText), file1);
 
-  await wait(() =>
-    expect(mockSetFieldValue.mock.calls[0]).toEqual([
-      fieldName,
-      jpegBase64StringPrefix
-    ])
+  await wait(
+    () => {
+      expect(mockSetFieldValue.mock.calls[0]).toEqual([
+        fieldName,
+        jpegBase64StringPrefix
+      ]);
+    },
+    { interval: 1 }
   );
 
-  await wait(() => fireEvent.mouseEnter(getByTestId("photo-preview")));
+  await wait(
+    () => {
+      fireEvent.mouseEnter(getByTestId("photo-preview"));
+    },
+    {
+      interval: 1
+    }
+  );
 
   uploadFile(getByLabelText(uiTexts.changePhotoText), file2);
 
-  await wait(() =>
-    expect(mockSetFieldValue.mock.calls[1]).toEqual([
-      fieldName,
-      jpegBase64StringPrefix
-    ])
+  await wait(
+    () => {
+      expect(mockSetFieldValue.mock.calls[1]).toEqual([
+        fieldName,
+        jpegBase64StringPrefix
+      ]);
+    },
+    { interval: 1 }
   );
 });
 

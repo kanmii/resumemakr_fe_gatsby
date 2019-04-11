@@ -1,3 +1,4 @@
+// tslint:disable: no-any
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -11,7 +12,6 @@ import {
 } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
-import update from "immutability-helper";
 import {
   ResumeForm,
   makeUrlHashSegment
@@ -23,7 +23,6 @@ import {
 } from "../components/UpdateResumeForm/update-resume-form";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
-import { UpdateResumeVariables } from "../graphql/apollo/types/UpdateResume";
 import {
   GetResume_getResume,
   GetResume_getResume_experiences
@@ -149,7 +148,7 @@ describe("Experiences pre-fill/achievements", () => {
     getByLabelText = renderArgs.getByLabelText;
   });
 
-  it("pre-fills fields", async () => {
+  it("pre-fills fields", () => {
     /**
      * User should see that 'position input' has been filled with sample
      */
@@ -233,23 +232,18 @@ describe("Experiences pre-fill/achievements", () => {
     /**
      * Then the data should be sent to the server
      */
-    const input = update(initial, {
-      experiences: {
-        0: {
-          achievements: {
-            $splice: [[1, 0, ""]]
-          }
-        }
-      }
-    });
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input
-        } as UpdateResumeVariables
-      });
-    });
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+            .achievements
+        ).toEqual([achievements[0], "", achievements[1], achievements[2]]);
+      },
+      {
+        interval: 1
+      }
+    );
 
     /**
      * When user fills achievement 1 with text
@@ -262,23 +256,22 @@ describe("Experiences pre-fill/achievements", () => {
     /**
      * Then the data should be sent to the server
      */
-    const inputCall1 = update(initial, {
-      experiences: {
-        0: {
-          achievements: {
-            $splice: [[1, 0, "new achievement"]]
-          }
-        }
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[1][0].variables.input.experiences[0]
+            .achievements
+        ).toEqual([
+          achievements[0],
+          "new achievement",
+          achievements[1],
+          achievements[2]
+        ]);
+      },
+      {
+        interval: 1
       }
-    });
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[1][0]).toMatchObject({
-        variables: {
-          input: inputCall1
-        } as UpdateResumeVariables
-      });
-    });
+    );
   });
 
   it("removes achievement", async () => {
@@ -298,23 +291,17 @@ describe("Experiences pre-fill/achievements", () => {
      * Then the data should be sent to the server
      */
 
-    const input = update(initial, {
-      experiences: {
-        0: {
-          achievements: {
-            $set: [achievements[0], achievements[2]]
-          }
-        }
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+            .achievements
+        ).toEqual([achievements[0], achievements[2]]);
+      },
+      {
+        interval: 1
       }
-    });
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input
-        } as UpdateResumeVariables
-      });
-    });
+    );
 
     /**
      * And the previous achievement 2 should move up i.e become 1
@@ -374,23 +361,17 @@ describe("Experiences pre-fill/achievements", () => {
       achievements[2]
     ];
 
-    const input = update(initial, {
-      experiences: {
-        0: {
-          achievements: {
-            $set: inputAchievements
-          }
-        }
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+            .achievements
+        ).toEqual(inputAchievements);
+      },
+      {
+        interval: 1
       }
-    });
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input
-        } as UpdateResumeVariables
-      });
-    });
+    );
   });
 
   it("swaps achievements down", async () => {
@@ -430,29 +411,17 @@ describe("Experiences pre-fill/achievements", () => {
     /**
      * And data should be sent to the server
      */
-    const inputAchievements = [
-      achievements[0],
-      achievements[2],
-      achievements[1]
-    ];
-
-    const input = update(initial, {
-      experiences: {
-        0: {
-          achievements: {
-            $set: inputAchievements
-          }
-        }
+    await wait(
+      () => {
+        expect(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+            .achievements
+        ).toEqual([achievements[0], achievements[2], achievements[1]]);
+      },
+      {
+        interval: 1
       }
-    });
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input
-        } as UpdateResumeVariables
-      });
-    });
+    );
   });
 });
 
@@ -495,14 +464,14 @@ describe("Experiences - add/remove/swap", () => {
     queryByLabelText = renderArgs.queryByLabelText;
   });
 
-  it("adds experience in middle", async () => {
+  it("adds experience in middle", done => {
     /**
      * Given that a user sees company 2 at position 2
      */
 
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * When user clicks on add button of experience 1
@@ -520,37 +489,34 @@ describe("Experiences - add/remove/swap", () => {
      */
     const company3LabelText = makeExperienceFieldName(3, "companyName");
 
-    expect(
-      (getByLabelText(company3LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company3LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And an empty company should be rendered at position 2
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual("");
+    expect((getByLabelText(company2LabelText) as any).value).toEqual("");
 
     /**
      * And values should be uploaded to server
      */
-    const input = {
-      experiences: [
+
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([
         experiences[0],
         experiences[1],
         { ...emptyVal, index: 3 },
         { ...experiences[2], index: 4 }
-      ]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input }
-      });
+      ]);
     });
+
+    done();
   });
 
-  it("adds experience to the end", async () => {
+  it("adds experience to the end", done => {
     /**
      * Given that user does not see any company position 3
      */
@@ -569,7 +535,7 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then user should see a company at position 3
      */
-    const $company3 = getByLabelText(company3LabelText) as HTMLInputElement;
+    const $company3 = getByLabelText(company3LabelText) as any;
 
     /**
      * And the input box of the company should be empty
@@ -579,33 +545,32 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * And correct data should be uploaded to the server
      */
-    const input = {
-      experiences: [...experiences, { ...emptyVal, index: 4 }]
-    } as GetResume_getResume;
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input } as UpdateResumeVariables
-      });
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([...experiences, { ...emptyVal, index: 4 }]);
     });
+
+    done();
   });
 
-  it("removes first experience", async () => {
+  it("removes first experience", done => {
     /**
      * Given that user sees company 0 at position 0
      */
 
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And user sees company 1 at position 1
      */
 
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * When user clicks on remove button of experience 0
@@ -620,35 +585,34 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was at position 1 should move to position 0
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * Then company that was at position 2 should move to position 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And values should be uploaded to server
      */
-    const input = {
-      experiences: [
+
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([
         { ...experiences[1], index: 1 },
         { ...experiences[2], index: 2 }
-      ]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input }
-      });
+      ]);
     });
+
+    done();
   });
 
-  it("removes last experience", async () => {
+  it("removes last experience", done => {
     /**
      * Given that user sees company 2 in the document
      */
@@ -673,33 +637,32 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * And values should be uploaded to server
      */
-    const input = {
-      experiences: [experiences[0], experiences[1]]
-    } as GetResume_getResume;
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input }
-      });
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([experiences[0], experiences[1]]);
     });
+
+    done();
   });
 
-  it("removes experience from the middle", async () => {
+  it("removes experience from the middle", done => {
     /**
      * Given that user sees company 1 at position 1
      */
 
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And user sees company 2 at position 2
      */
 
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * When user clicks on remove button of experience 1
@@ -714,45 +677,43 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was at position 2 should move to position 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And values should be uploaded to server
      */
-    const input = {
-      experiences: [experiences[0], { ...experiences[2], index: 2 }]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input }
-      });
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([experiences[0], { ...experiences[2], index: 2 }]);
     });
+
+    done();
   });
 
-  it("moves experience up from middle", async () => {
+  it("moves experience up from middle", done => {
     /**
      * Given that user sees company 0 at position 0
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And user sees company 1 at position 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And user sees company 2 at position 2
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * When user clicks on move up button of experience 1
@@ -766,56 +727,54 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was formerly at position 0 should move to position 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And company that was formerly at position 1 should move to position 0
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And company at position 2 should not move
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And the right values have been sent to the server
      */
-    const input = {
-      experiences: [
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([
         { ...experiences[1], index: 1 },
         { ...experiences[0], index: 2 },
         experiences[2]
-      ]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toEqual({
-        variables: { input } as UpdateResumeVariables
-      });
+      ]);
     });
+
+    done();
   });
 
-  it("moves last experience up", async () => {
+  it("moves last experience up", done => {
     /**
      * Given that user sees company 1 at position 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And user sees company 2 at position 2
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * When user clicks on experience 2 move up button
@@ -829,56 +788,55 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was formerly at position 1 should move to position 2
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And company that was formerly at position 2 should move to position 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And company at position 0 should not move
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And correct data should be uploaded to the server
      */
-    const input = {
-      experiences: [
+
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([
         experiences[0],
         { ...experiences[2], index: 2 },
         { ...experiences[1], index: 3 }
-      ]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input } as UpdateResumeVariables
-      });
+      ]);
     });
+
+    done();
   });
 
-  it("moves experience down from the middle", async () => {
+  it("moves experience down from the middle", done => {
     /**
      * Given that user sees company 1 at postion 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And user sees company 2 at position 2
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * When user clicks move down button on experience 1
@@ -892,57 +850,55 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was formerly at postion 1 should move to 2
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And company that was formerly at position 2 should move to 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And company at 0 should not move
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And correct data should be uploaded to the server
      */
 
-    const input = {
-      experiences: [
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([
         experiences[0],
         { ...experiences[2], index: 2 },
         { ...experiences[1], index: 3 }
-      ]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input } as UpdateResumeVariables
-      });
+      ]);
     });
+
+    done();
   });
 
-  it("moves first experience down", async () => {
+  it("moves first experience down", done => {
     /**
      * Given user sees company 0 at postion 0
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And user sees company 1 at postion 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * When user clicks the move down button on experience at position 0
@@ -956,39 +912,38 @@ describe("Experiences - add/remove/swap", () => {
     /**
      * Then company that was formerly at position 0 should move to 1
      */
-    expect(
-      (getByLabelText(company1LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[0].companyName);
+    expect((getByLabelText(company1LabelText) as any).value).toEqual(
+      experiences[0].companyName
+    );
 
     /**
      * And company that was formerly at position 1 should move to 0
      */
-    expect(
-      (getByLabelText(company0LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[1].companyName);
+    expect((getByLabelText(company0LabelText) as any).value).toEqual(
+      experiences[1].companyName
+    );
 
     /**
      * And company at position two should not move
      */
-    expect(
-      (getByLabelText(company2LabelText) as HTMLInputElement).value
-    ).toEqual(experiences[2].companyName);
+    expect((getByLabelText(company2LabelText) as any).value).toEqual(
+      experiences[2].companyName
+    );
 
     /**
      * And correct data should be uploaded to the server
      */
-    const input = {
-      experiences: [
+
+    setTimeout(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences
+      ).toEqual([
         { ...experiences[1], index: 1 },
         { ...experiences[0], index: 2 },
         experiences[2]
-      ]
-    } as GetResume_getResume;
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input } as UpdateResumeVariables
-      });
+      ]);
     });
+
+    done();
   });
 });
