@@ -48,9 +48,9 @@ export class Skills extends React.Component<Props, {}> {
     );
   }
 
-  renderSkill = (skill: CreateSkillInput) => {
+  renderSkill = (skill: CreateSkillInput, index: number) => {
     const { setFieldValue } = this.props;
-    const { description, index } = skill;
+    const { description } = skill;
     const fieldName = "skills";
     let achievements = skill.achievements || [""];
 

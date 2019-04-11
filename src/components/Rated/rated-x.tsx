@@ -66,6 +66,7 @@ export class Rated extends React.Component<Props, {}> {
                 idPrefix={idPrefix}
                 fieldName={fieldName}
                 rowItemsLabels={rowItemsLabels}
+                index={index}
               />
             ))
           }
@@ -84,6 +85,7 @@ interface ItemProps {
   idPrefix: string;
   fieldName: string;
   rowItemsLabels: RowItemsLabels;
+  index: number;
 }
 
 function Item({
@@ -92,9 +94,10 @@ function Item({
   setFieldValue,
   idPrefix,
   fieldName,
-  rowItemsLabels
+  rowItemsLabels,
+  index
 }: ItemProps) {
-  const { index, level, description } = value;
+  const { level, description } = value;
 
   return (
     <Card>

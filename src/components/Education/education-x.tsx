@@ -47,9 +47,8 @@ export class Education extends React.Component<Props, {}> {
     );
   }
 
-  private renderSchool = (edu: EducationInput) => {
+  private renderSchool = (edu: EducationInput, index: number) => {
     const { setFieldValue } = this.props;
-    const { index } = edu;
     let achievements = edu.achievements || [""];
 
     if (achievements.length === 0) {
