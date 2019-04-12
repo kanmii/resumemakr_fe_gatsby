@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { WindowLocation } from "@reach/router";
 
 import "./styles.scss";
-import UpdateResumeForm from "../UpdateResumeForm";
+import { UpdateResumeForm } from "../UpdateResumeForm";
 import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import { ResumePathHash } from "../../routing";

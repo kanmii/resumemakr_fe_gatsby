@@ -49,7 +49,7 @@ const reducer: Reducer<State, State> = (prevState, state = {}) => {
   return { ...prevState, ...state };
 };
 
-export function ResumeForm(props: Props) {
+export function UpdateResumeForm(props: Props) {
   const {
     loading,
     error: graphQlLoadingError,
@@ -384,7 +384,7 @@ export function ResumeForm(props: Props) {
   );
 }
 
-export default ResumeForm;
+export default UpdateResumeForm;
 
 interface UpdateResumeFnArgs {
   formValues: Partial<UpdateResumeInput>;

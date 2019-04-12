@@ -6,7 +6,7 @@ import { render, fireEvent, wait } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 
-import { ResumeForm } from "../components/UpdateResumeForm/update-resume-form-x";
+import { UpdateResumeForm } from "../components/UpdateResumeForm/update-resume-form-x";
 import {
   Props,
   formikConfig,
@@ -17,7 +17,7 @@ import { makeResumeRoute } from "../routing";
 import { uiTexts, defaultVal } from "../components/PersonalInfo/personal-info";
 
 type P = React.ComponentType<Partial<Props>>;
-const ResumeFormP = ResumeForm as P;
+const ResumeFormP = UpdateResumeForm as P;
 const debounceTime = 0;
 
 /**

@@ -15,7 +15,7 @@ import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
 
 import {
-  ResumeForm,
+  UpdateResumeForm,
   makeUrlHashSegment,
   isBase64String
 } from "../components/UpdateResumeForm/update-resume-form-x";
@@ -50,7 +50,7 @@ import { ALREADY_UPLOADED } from "../constants";
 import { uiTexts as photoFieldUiText } from "../components/PhotoField/photo-field";
 
 type P = React.ComponentType<Partial<Props>>;
-const ResumeFormP = ResumeForm as P;
+const ResumeFormP = UpdateResumeForm as P;
 const debounceTime = 0;
 
 /**

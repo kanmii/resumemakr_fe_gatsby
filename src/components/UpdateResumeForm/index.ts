@@ -6,7 +6,7 @@ import {
   GetResumeVariables,
   GetResume_getResume
 } from "../../graphql/apollo/types/GetResume";
-import ResumeForm from "./update-resume-form-x";
+import { UpdateResumeForm as App } from "./update-resume-form-x";
 import { updateResumeGql } from "../../graphql/apollo/update-resume.mutation";
 import { OwnProps, formikConfig } from "./update-resume-form";
 import {
@@ -52,9 +52,9 @@ const getResumeGql = graphql<
   }
 });
 
-export default compose(
+export const UpdateResumeForm = compose(
   withMatchHOC<OwnProps, ResumePathMatch>(RESUME_PATH),
   getResumeGql,
   withFormik(formikConfig),
   updateResumeGql
-)(ResumeForm);
+)(App);

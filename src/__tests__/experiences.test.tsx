@@ -13,7 +13,7 @@ import {
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 import {
-  ResumeForm,
+  UpdateResumeForm,
   makeUrlHashSegment
 } from "../components/UpdateResumeForm/update-resume-form-x";
 import {
@@ -43,7 +43,7 @@ import {
 } from "../components/ListStrings/list-strings-x";
 
 type P = React.ComponentType<Partial<Props>>;
-const ResumeFormP = ResumeForm as P;
+const ResumeFormP = UpdateResumeForm as P;
 const debounceTime = 0;
 
 /**
