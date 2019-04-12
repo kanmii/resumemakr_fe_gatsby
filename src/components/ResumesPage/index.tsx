@@ -2,7 +2,7 @@ import React from "react";
 import { graphql, compose } from "react-apollo";
 import { Helmet } from "react-helmet-async";
 
-import Home from "./home-x";
+import { ResumesPage as App } from "./resume-pages-x";
 import CREATE_RESUME_TITLE, {
   CreateResumeProps
 } from "../../graphql/apollo/create-resume.mutation";
@@ -23,7 +23,7 @@ import {
 } from "../../graphql/apollo/types/CloneResume";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
-import { ResumeTitlesProps, Props } from "./home";
+import { ResumeTitlesProps, Props } from "./resume-pages";
 // import { HomeContainer } from "./home-styles";
 import Header from "../../components/Header";
 import Layout from "../Layout";
@@ -87,12 +87,12 @@ function ResumesRoute(props: Props) {
         <title>{makeSiteTitle(appPageUiTexts.title)}</title>
       </Helmet>
 
-      <Home {...props} header={<Header />} />
+      <App {...props} header={<Header />} />
     </Layout>
   );
 }
 
-export default compose(
+export const ResumesPage = compose(
   resumeTitlesGql,
   createResumeGql,
   deleteResumeGql,

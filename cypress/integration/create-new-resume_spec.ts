@@ -4,7 +4,7 @@ import {
   CREATE_RESUME_MINIMAL_DATA
 } from "../support/utils";
 import { RESUMES_HOME_PATH } from "../../src/routing";
-import { uiTexts } from "../../src/components/Home/home";
+import { uiTexts } from "../../src/components/ResumesPage/resume-pages";
 import {
   Section,
   nextTooltipText

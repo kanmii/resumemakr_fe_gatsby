@@ -17,7 +17,13 @@ import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
 import { CircularLabel } from "../circular-label";
 import { makeResumeRoute } from "../../routing";
-import { Props, validationSchema, Action, emptyVal, uiTexts } from "./home";
+import {
+  Props,
+  validationSchema,
+  Action,
+  emptyVal,
+  uiTexts
+} from "./resume-pages";
 import Loading from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../UpdateResumeForm/update-resume-form";
@@ -31,7 +37,7 @@ let action = Action.createResume;
 let idToClone = "0";
 let titleToClone = "";
 
-export function Home(merkmale: Props) {
+export function ResumesPage(merkmale: Props) {
   const {
     navigate,
     deleteResume,
@@ -612,5 +618,3 @@ export function Home(merkmale: Props) {
     </div>
   );
 }
-
-export default Home;

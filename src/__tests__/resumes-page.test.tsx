@@ -11,7 +11,7 @@ import {
 } from "react-testing-library";
 import { ApolloError } from "apollo-client";
 
-import { Home } from "../components/Home/home-x";
+import { ResumesPage } from "../components/ResumesPage/resume-pages-x";
 import {
   fillField,
   WithData,
@@ -19,7 +19,10 @@ import {
   renderWithRouter
 } from "./test_utils";
 import { makeResumeRoute } from "../routing";
-import { Props, ResumeTitlesProps } from "../components/Home/home";
+import {
+  Props,
+  ResumeTitlesProps
+} from "../components/ResumesPage/resume-pages";
 import { CreateResume } from "../graphql/apollo/types/CreateResume";
 import { CloneResume } from "../graphql/apollo/types/CloneResume";
 import { ResumeTitles_listResumes } from "../graphql/apollo/types/ResumeTitles";
@@ -29,7 +32,7 @@ import { CloneLebensLaufFnArgs } from "../graphql/apollo/clone-resume.mutation";
 import { ResumeTitlesProps as RTP } from "../graphql/apollo/resume-titles.query";
 import { RouteComponentProps } from "@reach/router";
 
-const HomeP = Home as React.FunctionComponent<Partial<Props>>;
+const HomeP = ResumesPage as React.FunctionComponent<Partial<Props>>;
 
 it("renders loading indicator", () => {
   /**
