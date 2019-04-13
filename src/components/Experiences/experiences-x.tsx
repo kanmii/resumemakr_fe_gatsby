@@ -13,6 +13,7 @@ import {
 } from "./experiences";
 import ListIndexHeader from "../ListIndexHeader";
 import ListStrings from "../ListStrings";
+import { SubFieldLabel } from "../components";
 
 let cachedValues: CreateExperienceInput[] = [];
 const HeaderLabelText = "Company";
@@ -177,20 +178,3 @@ export class Experiences extends React.Component<Props, {}> {
 }
 
 export default Experiences;
-
-function SubFieldLabel({
-  fieldName,
-  text
-}: {
-  fieldName: string;
-  text: string;
-}) {
-  return (
-    <>
-      <label htmlFor={fieldName} className="visually-hidden">
-        {fieldName}
-      </label>
-      <label>{text}</label>
-    </>
-  );
-}

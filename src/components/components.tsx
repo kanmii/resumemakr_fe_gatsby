@@ -87,3 +87,21 @@ export function addClassNames(
 
   return className1;
 }
+
+export function SubFieldLabel({
+  fieldName,
+  text
+}: {
+  fieldName: string;
+  text: string;
+}) {
+  return (
+    <>
+      <label htmlFor={fieldName} className="visually-hidden">
+        {fieldName}
+      </label>
+
+      <label>{text}</label>
+    </>
+  );
+}
