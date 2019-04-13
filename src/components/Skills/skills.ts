@@ -1,6 +1,12 @@
 import * as Yup from "yup";
 
 import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
+import { Section, ChildProps } from "../UpdateResumeForm/update-resume-form";
+
+export interface Props extends ChildProps {
+  label: Section;
+  values?: Array<CreateSkillInput | null> | null;
+}
 
 export const defaultVal: CreateSkillInput[] = [
   {
@@ -48,3 +54,19 @@ export const validationSchema = Yup.object<CreateSkillInput>().shape({
     .required()
     .min(1)
 });
+
+export const fieldName = "skills";
+
+export function makeSkillFieldName(index: number, key: keyof CreateSkillInput) {
+  return `${fieldName}[${index}].${key}`;
+}
+
+export const uiTexts = {
+  descriptionLabel: "Description (e.g Leadership)",
+
+  achievementsHeader1: "Achievements",
+
+  achievementsHeader2: "(responsibilities, activities)",
+
+  achievementsHiddenLabel: "skills-achievement"
+};

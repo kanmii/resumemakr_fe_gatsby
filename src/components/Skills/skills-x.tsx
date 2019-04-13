@@ -2,21 +2,18 @@ import React from "react";
 import { Icon, Card } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
 
-import { Section, ChildProps } from "../UpdateResumeForm/update-resume-form";
 import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
 import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
-import { emptyVal } from "./skills";
+import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./skills";
 import ListIndexHeader from "../ListIndexHeader";
 import ListStrings from "../ListStrings";
-
-interface Props extends ChildProps {
-  label: Section;
-  values?: Array<CreateSkillInput | null> | null;
-}
+import { SubFieldLabel } from "../components";
 
 let cachedValues: CreateSkillInput[] = [];
 const HeaderLabelText = "Skill";
+
+// export function Skills1(props: Props) {}
 
 export class Skills extends React.Component<Props, {}> {
   componentWillUnmount() {
@@ -71,14 +68,19 @@ export class Skills extends React.Component<Props, {}> {
 
         <Card.Content>
           <FastField
-            name={makeName(index, "description")}
-            label="Description (e.g Leadership)"
+            name={makeSkillFieldName(index, "description")}
             defaultValue={description}
             component={RegularField}
+            label={
+              <SubFieldLabel
+                text={uiTexts.descriptionLabel}
+                fieldName={makeSkillFieldName(index, "description")}
+              />
+            }
           />
 
           <FieldArray
-            name={makeName(index, "achievements")}
+            name={makeSkillFieldName(index, "achievements")}
             render={helper => {
               return (
                 <ListStrings
@@ -86,11 +88,12 @@ export class Skills extends React.Component<Props, {}> {
                   arrayHelper={helper}
                   header={
                     <div>
-                      Achievements
-                      <span> (responsibilities, activities)</span>
+                      {uiTexts.achievementsHeader1}
+                      <span> {uiTexts.achievementsHeader2}</span>
                     </div>
                   }
-                  fieldName={makeName(index, "achievements")}
+                  fieldName={makeSkillFieldName(index, "achievements")}
+                  appendToHiddenLabel={uiTexts.achievementsHiddenLabel}
                 />
               );
             }}
@@ -99,10 +102,4 @@ export class Skills extends React.Component<Props, {}> {
       </Card>
     );
   };
-}
-
-export default Skills;
-
-function makeName(index: number, key: keyof CreateSkillInput) {
-  return `skills[${index - 1}].${key}`;
 }
