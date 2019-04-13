@@ -23,13 +23,8 @@ import {
 } from "../components/UpdateResumeForm/update-resume-form";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
+import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import {
-  GetResume_getResume,
-  GetResume_getResume_experiences
-} from "../graphql/apollo/types/GetResume";
-import {
-  defaultVal,
-  emptyVal,
   uiTexts,
   makeExperienceFieldName
 } from "../components/Experiences/experiences";
@@ -77,13 +72,19 @@ let queryByLabelText: (
   options?: SelectorMatcherOptions | undefined
 ) => HTMLElement | null;
 
-describe("Experiences pre-fill/achievements", () => {
+describe("Experiences achievements", () => {
   const initial = {
-    experiences: [defaultVal]
+    experiences: [
+      {
+        index: 1,
+        companyName: "c",
+        position: "p",
+        fromDate: "f",
+        toDate: "t",
+        achievements: ["a0", "a1", "a2"]
+      }
+    ]
   } as GetResume_getResume;
-
-  let experience: GetResume_getResume_experiences;
-  let achievements: string[];
 
   const achievementsPrefixFieldName = makeExperienceFieldName(
     0,
@@ -100,31 +101,12 @@ describe("Experiences pre-fill/achievements", () => {
     1
   );
 
-  const achievement2FieldName = makeListStringFieldName(
-    achievementsPrefixFieldName,
-    2
-  );
-
-  const achievement0Label = makeListStringHiddenLabelText(
-    achievement0FieldName,
-    uiTexts.achievementsLabels2
-  );
-
   const achievement1Label = makeListStringHiddenLabelText(
     achievement1FieldName,
     uiTexts.achievementsLabels2
   );
 
-  const achievement2Label = makeListStringHiddenLabelText(
-    achievement2FieldName,
-    uiTexts.achievementsLabels2
-  );
-
   beforeEach(() => {
-    [experience] = initial.experiences as GetResume_getResume_experiences[];
-
-    achievements = experience.achievements as string[];
-
     mockUpdateResume = jest.fn();
 
     const props = {
@@ -134,69 +116,19 @@ describe("Experiences pre-fill/achievements", () => {
       updateResume: mockUpdateResume
     };
 
+    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
+    const Ui = withFormik(formikConfig)(ui) as P;
+
     /**
      * Given user is on update resume page
      */
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-
-    const Ui = withFormik(formikConfig)(ui) as P;
 
     const renderArgs = render(<Ui {...props} />);
+    // const renderArgs = {} as any;
 
     getByTestId = renderArgs.getByTestId;
 
     getByLabelText = renderArgs.getByLabelText;
-  });
-
-  it("pre-fills fields", () => {
-    /**
-     * User should see that 'position input' has been filled with sample
-     */
-    const $position = getByLabelText(makeExperienceFieldName(0, "position"));
-
-    expect($position.getAttribute("value")).toEqual(experience.position);
-
-    /**
-     * And that 'company input' has been filled with sample texts
-     */
-    const $company = getByLabelText(makeExperienceFieldName(0, "companyName"));
-    expect($company.getAttribute("value")).toEqual(experience.companyName);
-
-    /**
-     * And that 'from date input' has been filled with sample texts
-     */
-    const $fromDate = getByLabelText(makeExperienceFieldName(0, "fromDate"));
-    expect($fromDate.getAttribute("value")).toEqual(experience.fromDate);
-
-    /**
-     * And that 'to date input' has been filled with sample texts
-     */
-    const $toDate = getByLabelText(makeExperienceFieldName(0, "toDate"));
-    expect($toDate.getAttribute("value")).toEqual(experience.toDate);
-
-    /**
-     * And 'achievement 0 input' has been filled with sample texts
-     */
-
-    const $achievement0 = getByLabelText(achievement0Label);
-
-    const $achievement0TextContent = $achievement0.textContent as string;
-
-    expect($achievement0TextContent.length).toBeGreaterThan(0);
-
-    expect($achievement0TextContent).toEqual(achievements[0]);
-
-    /**
-     * And 'achievement 1 input' has been filled with sample texts
-     */
-
-    const $achievement1 = getByLabelText(achievement1Label);
-
-    const $achievement1TextContent = $achievement1.textContent as string;
-
-    expect($achievement1TextContent.length).toBeGreaterThan(1);
-
-    expect($achievement1TextContent).toEqual(achievements[1]);
   });
 
   it("adds achievement", async () => {
@@ -212,25 +144,12 @@ describe("Experiences pre-fill/achievements", () => {
     /**
      * Then user should see a newly added empty text box under achievement 0
      */
-    const $achievement1 = getByLabelText(achievement1Label);
+    const $achievement1 = getByLabelText(achievement1Label) as any;
 
-    expect($achievement1.textContent).toBe("");
-
-    /**
-     * And that the previous achievements 1 has been moved down one level
-     */
-
-    const $achievement2 = getByLabelText(achievement2Label);
-
-    const $achievement2TextContent = $achievement2.textContent as string;
-
-    expect($achievement2TextContent.length).toBeGreaterThan(1);
-
-    // notice indices 2/1
-    expect($achievement2TextContent).toEqual(achievements[1]);
+    expect($achievement1.value).toBe("");
 
     /**
-     * Then the data should be sent to the server
+     * And correct data should be sent to the server
      */
 
     await wait(
@@ -238,7 +157,7 @@ describe("Experiences pre-fill/achievements", () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
             .achievements
-        ).toEqual([achievements[0], "", achievements[1], achievements[2]]);
+        ).toEqual(["a0", "", "a1", "a2"]);
       },
       {
         interval: 1
@@ -249,24 +168,22 @@ describe("Experiences pre-fill/achievements", () => {
      * When user fills achievement 1 with text
      */
 
-    fillField($achievement1, "new achievement");
+    fillField($achievement1, "an");
 
+    /**
+     * And blurs the text field
+     */
     fireEvent.blur($achievement1);
 
     /**
-     * Then the data should be sent to the server
+     * Then correct data should be sent to the server
      */
     await wait(
       () => {
         expect(
           mockUpdateResume.mock.calls[1][0].variables.input.experiences[0]
             .achievements
-        ).toEqual([
-          achievements[0],
-          "new achievement",
-          achievements[1],
-          achievements[2]
-        ]);
+        ).toEqual(["a0", "an", "a1", "a2"]);
       },
       {
         interval: 1
@@ -288,7 +205,7 @@ describe("Experiences pre-fill/achievements", () => {
     fireEvent.click($achievement1CtrlRemoveBtn);
 
     /**
-     * Then the data should be sent to the server
+     * Then correct data should be sent to the server
      */
 
     await wait(
@@ -296,26 +213,12 @@ describe("Experiences pre-fill/achievements", () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
             .achievements
-        ).toEqual([achievements[0], achievements[2]]);
+        ).toEqual(["a0", "a2"]);
       },
       {
         interval: 1
       }
     );
-
-    /**
-     * And the previous achievement 2 should move up i.e become 1
-     */
-    const $achievement1 = getByLabelText(achievement1Label);
-
-    expect($achievement1.textContent).toEqual(achievements[2]);
-
-    /**
-     * And achievement 0 should not move
-     */
-    const $achievement0 = getByLabelText(achievement0Label);
-
-    expect($achievement0.textContent).toEqual(achievements[0]);
   });
 
   it("swaps achievements up", async () => {
@@ -332,41 +235,15 @@ describe("Experiences pre-fill/achievements", () => {
     fireEvent.click($achievement1CtrlUpBtn);
 
     /**
-     * Then achievement 1 should move up i.e. become achievement 0
+     * Then correct data should be sent to the server
      */
-    const $achievement0 = getByLabelText(achievement0Label);
-
-    expect($achievement0.textContent).toEqual(achievements[1]);
-
-    /**
-     * And achievement 0 should move down i.e. become achievement 1
-     */
-    const $achievement1 = getByLabelText(achievement1Label);
-
-    expect($achievement1.textContent).toEqual(achievements[0]);
-
-    /**
-     * And achievement 2 should not move
-     */
-    const $achievement2 = getByLabelText(achievement2Label);
-
-    expect($achievement2.textContent).toEqual(achievements[2]);
-
-    /**
-     * And data should be sent to the server
-     */
-    const inputAchievements = [
-      achievements[1],
-      achievements[0],
-      achievements[2]
-    ];
 
     await wait(
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
             .achievements
-        ).toEqual(inputAchievements);
+        ).toEqual(["a1", "a0", "a2"]);
       },
       {
         interval: 1
@@ -388,35 +265,14 @@ describe("Experiences pre-fill/achievements", () => {
     fireEvent.click($achievement1CtrlDownBtn);
 
     /**
-     * Then achievement 1 should move down i.e. become achievement 2
-     */
-    const $achievement2 = getByLabelText(achievement2Label);
-
-    expect($achievement2.textContent).toEqual(achievements[1]);
-
-    /**
-     * And achievement 2 should move up i.e. become achievement 1
-     */
-    const $achievement1 = getByLabelText(achievement1Label);
-
-    expect($achievement1.textContent).toEqual(achievements[2]);
-
-    /**
-     * And achievement 0 should not move
-     */
-    const $achievement0 = getByLabelText(achievement0Label);
-
-    expect($achievement0.textContent).toEqual(achievements[0]);
-
-    /**
-     * And data should be sent to the server
+     * Then correct data should be sent to the server
      */
     await wait(
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
             .achievements
-        ).toEqual([achievements[0], achievements[2], achievements[1]]);
+        ).toEqual(["a0", "a2", "a1"]);
       },
       {
         interval: 1
@@ -426,16 +282,14 @@ describe("Experiences pre-fill/achievements", () => {
 });
 
 describe("Experiences - add/remove/swap", () => {
-  const experiences = [
-    { ...defaultVal, companyName: "company 1" },
-    { ...defaultVal, companyName: "company 2", index: 2 },
-    { ...defaultVal, companyName: "company 3", index: 3 }
-  ] as GetResume_getResume_experiences[];
+  const initial = {
+    experiences: [
+      { companyName: "c0", index: 1 },
+      { companyName: "c1", index: 2 },
+      { companyName: "c2", index: 3 }
+    ]
+  } as GetResume_getResume;
 
-  const initial = { experiences } as GetResume_getResume;
-
-  const company0LabelText = makeExperienceFieldName(0, "companyName");
-  const company1LabelText = makeExperienceFieldName(1, "companyName");
   const company2LabelText = makeExperienceFieldName(2, "companyName");
 
   beforeEach(() => {
@@ -469,9 +323,7 @@ describe("Experiences - add/remove/swap", () => {
      * Given that a user sees company 2 at position 2
      */
 
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
+    expect((getByLabelText(company2LabelText) as any).value).toEqual("c2");
 
     /**
      * When user clicks on add button of experience 1
@@ -485,32 +337,20 @@ describe("Experiences - add/remove/swap", () => {
     fireEvent.click(getByTestId(experience1AddCtrlBtnId));
 
     /**
-     * Then company was at position 2 should move to position 3
-     */
-    const company3LabelText = makeExperienceFieldName(3, "companyName");
-
-    expect((getByLabelText(company3LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And an empty company should be rendered at position 2
+     * Then an empty company should be rendered at position 2
      */
     expect((getByLabelText(company2LabelText) as any).value).toEqual("");
 
     /**
-     * And values should be uploaded to server
+     * And correct values should be uploaded to server
      */
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([
-        experiences[0],
-        experiences[1],
-        { ...emptyVal, index: 3 },
-        { ...experiences[2], index: 4 }
-      ]);
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences.map(
+          (e: any) => e.companyName
+        )
+      ).toEqual(["c0", "c1", "", "c2"]);
     });
 
     done();
@@ -533,14 +373,9 @@ describe("Experiences - add/remove/swap", () => {
     );
 
     /**
-     * Then user should see a company at position 3
+     * Then user should see an empty input box at position 3
      */
-    const $company3 = getByLabelText(company3LabelText) as any;
-
-    /**
-     * And the input box of the company should be empty
-     */
-    expect($company3.value).toBe("");
+    expect((getByLabelText(company3LabelText) as any).value).toBe("");
 
     /**
      * And correct data should be uploaded to the server
@@ -548,30 +383,16 @@ describe("Experiences - add/remove/swap", () => {
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([...experiences, { ...emptyVal, index: 4 }]);
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences.map(
+          (e: any) => e.companyName
+        )
+      ).toEqual(["c0", "c1", "c2", ""]);
     });
 
     done();
   });
 
   it("removes first experience", done => {
-    /**
-     * Given that user sees company 0 at position 0
-     */
-
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And user sees company 1 at position 1
-     */
-
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
     /**
      * When user clicks on remove button of experience 0
      */
@@ -583,30 +404,15 @@ describe("Experiences - add/remove/swap", () => {
     );
 
     /**
-     * Then company that was at position 1 should move to position 0
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * Then company that was at position 2 should move to position 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And values should be uploaded to server
+     * Then correct values should be uploaded to server
      */
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([
-        { ...experiences[1], index: 1 },
-        { ...experiences[2], index: 2 }
-      ]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c1", "c2"]);
     });
 
     done();
@@ -640,30 +446,16 @@ describe("Experiences - add/remove/swap", () => {
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([experiences[0], experiences[1]]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c0", "c1"]);
     });
 
     done();
   });
 
   it("removes experience from the middle", done => {
-    /**
-     * Given that user sees company 1 at position 1
-     */
-
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And user sees company 2 at position 2
-     */
-
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
     /**
      * When user clicks on remove button of experience 1
      */
@@ -675,46 +467,20 @@ describe("Experiences - add/remove/swap", () => {
     );
 
     /**
-     * Then company that was at position 2 should move to position 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And values should be uploaded to server
+     * Then correct values should be uploaded to server
      */
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([experiences[0], { ...experiences[2], index: 2 }]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c0", "c2"]);
     });
 
     done();
   });
 
   it("moves experience up from middle", done => {
-    /**
-     * Given that user sees company 0 at position 0
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And user sees company 1 at position 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And user sees company 2 at position 2
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
     /**
      * When user clicks on move up button of experience 1
      */
@@ -725,57 +491,20 @@ describe("Experiences - add/remove/swap", () => {
     );
 
     /**
-     * Then company that was formerly at position 0 should move to position 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And company that was formerly at position 1 should move to position 0
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And company at position 2 should not move
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And the right values have been sent to the server
+     * Then the right values should have been sent to the server
      */
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([
-        { ...experiences[1], index: 1 },
-        { ...experiences[0], index: 2 },
-        experiences[2]
-      ]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c1", "c0", "c2"]);
     });
 
     done();
   });
 
   it("moves last experience up", done => {
-    /**
-     * Given that user sees company 1 at position 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And user sees company 2 at position 2
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
     /**
      * When user clicks on experience 2 move up button
      */
@@ -786,58 +515,21 @@ describe("Experiences - add/remove/swap", () => {
     );
 
     /**
-     * Then company that was formerly at position 1 should move to position 2
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And company that was formerly at position 2 should move to position 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And company at position 0 should not move
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And correct data should be uploaded to the server
+     * Then correct data should be uploaded to the server
      */
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([
-        experiences[0],
-        { ...experiences[2], index: 2 },
-        { ...experiences[1], index: 3 }
-      ]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c0", "c2", "c1"]);
     });
 
     done();
   });
 
   it("moves experience down from the middle", done => {
-    /**
-     * Given that user sees company 1 at postion 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And user sees company 2 at position 2
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
     /**
      * When user clicks move down button on experience 1
      */
@@ -846,60 +538,22 @@ describe("Experiences - add/remove/swap", () => {
         makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 1)
       )
     );
-
     /**
-     * Then company that was formerly at postion 1 should move to 2
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And company that was formerly at position 2 should move to 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And company at 0 should not move
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And correct data should be uploaded to the server
+     * Then the correct data should be uploaded to the server
      */
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([
-        experiences[0],
-        { ...experiences[2], index: 2 },
-        { ...experiences[1], index: 3 }
-      ]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c0", "c2", "c1"]);
     });
 
     done();
   });
 
   it("moves first experience down", done => {
-    /**
-     * Given user sees company 0 at postion 0
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And user sees company 1 at postion 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
     /**
      * When user clicks the move down button on experience at position 0
      */
@@ -910,40 +564,23 @@ describe("Experiences - add/remove/swap", () => {
     );
 
     /**
-     * Then company that was formerly at position 0 should move to 1
-     */
-    expect((getByLabelText(company1LabelText) as any).value).toEqual(
-      experiences[0].companyName
-    );
-
-    /**
-     * And company that was formerly at position 1 should move to 0
-     */
-    expect((getByLabelText(company0LabelText) as any).value).toEqual(
-      experiences[1].companyName
-    );
-
-    /**
-     * And company at position two should not move
-     */
-    expect((getByLabelText(company2LabelText) as any).value).toEqual(
-      experiences[2].companyName
-    );
-
-    /**
-     * And correct data should be uploaded to the server
+     * Then the correct data should be uploaded to the server
      */
 
     setTimeout(() => {
       expect(
-        mockUpdateResume.mock.calls[0][0].variables.input.experiences
-      ).toEqual([
-        { ...experiences[1], index: 1 },
-        { ...experiences[0], index: 2 },
-        experiences[2]
-      ]);
+        getCompanyNames(
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences
+        )
+      ).toEqual(["c1", "c0", "c2"]);
     });
 
     done();
   });
 });
+
+//////////////////////
+
+function getCompanyNames(experiences: any) {
+  return experiences.map((e: any) => e.companyName);
+}
