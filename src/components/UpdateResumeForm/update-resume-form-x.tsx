@@ -31,7 +31,7 @@ import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import PersonalInfo from "../PersonalInfo";
 import Experiences from "../Experiences";
-import Education from "../Education";
+import { Education } from "../Education";
 import Skills from "../Skills";
 import Loading from "../Loading";
 import { ALREADY_UPLOADED } from "../../constants";

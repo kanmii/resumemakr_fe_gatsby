@@ -1,3 +1,3 @@
-import { Education } from "./education-x";
+import { Education as App } from "./education-x";
 
-export default Education;
+export const Education = App;
