@@ -1,3 +1,4 @@
+// tslint:disable: no-any
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -10,7 +11,6 @@ import {
 } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
-import update from "immutability-helper";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
 
@@ -36,15 +36,8 @@ import {
   jpegBase64StringPrefix
 } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
-import {
-  uiTexts as personalInfoUiTexts,
-  defaultVal as personalInfoDefaultVal
-} from "../components/PersonalInfo/personal-info";
-import { UpdateResumeVariables } from "../graphql/apollo/types/UpdateResume";
-import {
-  GetResume_getResume,
-  GetResume_getResume_personalInfo
-} from "../graphql/apollo/types/GetResume";
+import { uiTexts as personalInfoUiTexts } from "../components/PersonalInfo/personal-info";
+import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import { UpdateResumeMutationFn } from "../graphql/apollo/update-resume.mutation";
 import { ALREADY_UPLOADED } from "../constants";
 import { uiTexts as photoFieldUiText } from "../components/PhotoField/photo-field";
@@ -551,18 +544,6 @@ describe("Resume form sections", () => {
 
 describe("update logic", () => {
   it("flags photo to server if photo not changed on client", async () => {
-    const formValues = {
-      personalInfo: { ...personalInfoDefaultVal, photo: "lovely photo" }
-    } as GetResume_getResume;
-
-    expect(
-      (formValues.personalInfo as GetResume_getResume_personalInfo).photo
-    ).not.toEqual(ALREADY_UPLOADED);
-
-    expect(
-      (formValues.personalInfo as GetResume_getResume_personalInfo).address
-    ).not.toEqual("awesome address");
-
     const mockUpdateResume = jest.fn();
 
     const props = {
@@ -575,7 +556,9 @@ describe("update logic", () => {
 
       updateResume: mockUpdateResume as UpdateResumeMutationFn,
 
-      getResume: formValues
+      getResume: {
+        personalInfo: { photo: "lovely photo" }
+      } as GetResume_getResume
     } as Props;
 
     const { Ui: ui } = renderWithApollo(ResumeFormP, props);
@@ -591,7 +574,7 @@ describe("update logic", () => {
      * And user edits the address field
      */
     const $address = getByLabelText(personalInfoUiTexts.addressLabel);
-    fillField($address, "awesome address");
+    fillField($address, "a");
 
     /**
      * And user blurs the address field
@@ -603,23 +586,16 @@ describe("update logic", () => {
     /**
      * Then updated data should be uploaded to server with photo field flagged
      */
-    const input = update(formValues, {
-      personalInfo: {
-        photo: {
-          $set: ALREADY_UPLOADED
-        },
 
-        address: {
-          $set: "awesome address"
-        }
-      }
-    });
-
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: { input } as UpdateResumeVariables
-      });
-    });
+    await wait(
+      () => {
+        expect(
+          (mockUpdateResume.mock.calls[0][0] as any).variables.input
+            .personalInfo.photo
+        ).toEqual(ALREADY_UPLOADED);
+      },
+      { interval: 1 }
+    );
   });
 
   it("uploads new photo as base64 encoded string", async () => {
@@ -664,17 +640,15 @@ describe("update logic", () => {
      * Then updated data should be uploaded to server with encoded photo
      */
 
-    await wait(() => {
-      expect(mockUpdateResume.mock.calls[0][0]).toMatchObject({
-        variables: {
-          input: {
-            personalInfo: {
-              photo: jpegBase64StringPrefix
-            }
-          }
-        } as UpdateResumeVariables
-      });
-    });
+    await wait(
+      () => {
+        expect(
+          (mockUpdateResume.mock.calls[0][0] as any).variables.input
+            .personalInfo.photo
+        ).toEqual(jpegBase64StringPrefix);
+      },
+      { interval: 1 }
+    );
   });
 
   it("deletes photo", async () => {
@@ -783,7 +757,7 @@ describe("update logic", () => {
      * When user completes the address input
      */
     const $address = getByLabelText(personalInfoUiTexts.addressLabel);
-    fillField($address, "user address");
+    fillField($address, "a");
 
     /**
      * And user blurs the address field
@@ -798,13 +772,13 @@ describe("update logic", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.personalInfo.address
-        ).toEqual("user address");
+        ).toEqual("a");
       },
       { interval: 1 }
     );
 
     /**
-     * And user should not see any error message
+     * And user should not see an error message
      */
     expect(getByText(errorMessage)).toBeInTheDocument();
   });
@@ -867,7 +841,7 @@ describe("loading takes too long", () => {
     /**
      * Then user should see message that loading is taking too long
      */
-    getByText(takingTooLongText);
+    expect(getByText(takingTooLongText)).toBeInTheDocument();
 
     /**
      * And user should no longer see loading indicator
