@@ -35,7 +35,10 @@ import Education from "../Education";
 import Skills from "../Skills";
 import Loading from "../Loading";
 import { ALREADY_UPLOADED } from "../../constants";
-import { UpdateResumeInput } from "../../graphql/apollo/types/globalTypes";
+import {
+  UpdateResumeInput,
+  CreateExperienceInput
+} from "../../graphql/apollo/types/globalTypes";
 import { ResumePathHash } from "../../routing";
 import Rated from "../Rated";
 import SectionLabel from "../SectionLabel";
@@ -44,6 +47,7 @@ import { NavBtn } from "../nav-btn";
 import { EpicBtnIcon } from "../epic-btn-icon/epic-btn-icon-x";
 import { ToolTip } from "../tool-tip";
 import { UpdateResumeMutationFn } from "../../graphql/apollo/update-resume.mutation";
+import { SetFieldValue } from "../utils";
 
 const reducer: Reducer<State, State> = (prevState, state = {}) => {
   return { ...prevState, ...state };
@@ -110,158 +114,11 @@ export function UpdateResumeForm(props: Props) {
     };
   }, [loading]);
 
-  function urlFromSection(section: Section) {
-    return `${pathname}${makeUrlHashSegment(ResumePathHash.edit, section)}`;
-  }
-
-  function sectionFromUrl(): Section {
-    const section = hash.split("/")[1];
-
-    const currentSection = (section
-      ? section
-      : Section.personalInfo
-    ).toLowerCase() as Section;
-
-    currentSectionRef.current = currentSection;
-
-    backToSectionRef.current =
-      currentSection !== Section.preview
-        ? currentSection
-        : backToSectionRef.current;
-
-    return currentSection;
-  }
-
-  function renderGqlError(errors: ApolloError | null | undefined) {
-    if (!errors) {
-      return null;
-    }
-
-    const { graphQLErrors, networkError } = errors;
-
-    let error;
-
-    if (networkError) {
-      error = networkError.message;
-    } else {
-      error = graphQLErrors.map(({ message }, index) => {
-        return <div key={"gql-error-" + index}>{message}</div>;
-      });
-    }
-
-    return (
-      <div data-testid="gql-errors" className="gql-errors">
-        <div
-          style={{
-            fontWeight: "normal",
-            fontSize: "1rem"
-          }}
-        >
-          Error updating data!
-        </div>
-        {error}
-      </div>
-    );
-  }
-
-  function renderCurrEditingSection() {
-    const label = sectionLabelToHeader(currentSectionRef.current);
-
-    if (currentSectionRef.current === Section.personalInfo) {
-      return <PersonalInfo values={values.personalInfo} label={label} />;
-    }
-
-    if (currentSectionRef.current === Section.experiences) {
-      return (
-        <Experiences
-          setFieldValue={setFieldValue}
-          values={values.experiences}
-          label={label}
-        />
-      );
-    } else if (currentSectionRef.current === Section.education) {
-      return (
-        <Education
-          label={label}
-          values={values.education}
-          setFieldValue={setFieldValue}
-        />
-      );
-    } else if (currentSectionRef.current === Section.skills) {
-      return (
-        <Skills
-          label={label}
-          values={values.skills}
-          setFieldValue={setFieldValue}
-        />
-      );
-    } else if (currentSectionRef.current === Section.addSkills) {
-      return (
-        <Rated
-          key={label}
-          label={label}
-          values={values.additionalSkills}
-          setFieldValue={setFieldValue}
-          rowItemsLabels={{
-            description: "Skill (e.g. Editing skills)",
-            level: "Rating description (e.g. Advanced) (optional)"
-          }}
-          fieldName="additionalSkills"
-          icon={<Icon name="won" />}
-          dataTestId="additional-skills-section"
-          idPrefix="Add. Skill"
-        />
-      );
-    } else if (currentSectionRef.current === Section.langs) {
-      return (
-        <Rated
-          key={label}
-          label={label}
-          values={values.languages}
-          rowItemsLabels={{
-            description: "Language (e.g. Spanish - Certified)",
-            level: "Rating description (e.g. Proficient) (optional)"
-          }}
-          fieldName="languages"
-          icon={<Icon name="won" />}
-          dataTestId="languages-section"
-          setFieldValue={setFieldValue}
-          idPrefix="languages"
-        />
-      );
-    } else if (currentSectionRef.current === Section.hobbies) {
-      return (
-        <>
-          <SectionLabel
-            label={label}
-            ico={<Icon name="won" />}
-            data-testid="hobbies-section"
-          />
-
-          <FieldArray
-            name="hobbies"
-            render={arrayHelper => (
-              <ListStrings
-                arrayHelper={arrayHelper}
-                fieldName="hobbies"
-                // istanbul ignore next
-                values={(values.hobbies || []) as string[]}
-                controlComponent={Input}
-              />
-            )}
-          />
-        </>
-      );
-    }
-
-    return null;
-  }
-
   if (currentSectionRef.current !== Section.preview) {
     if (graphQlLoadingError) {
       return (
         <div data-testid="component-resume-update-loading-error">
-          {renderGqlError(graphQlLoadingError)}
+          <GqlError errors={graphQlLoadingError} />
         </div>
       );
     } else if (loading && !state.loadingTooLong) {
@@ -286,14 +143,18 @@ export function UpdateResumeForm(props: Props) {
     }
   }
 
-  currentSectionRef.current = sectionFromUrl();
+  currentSectionRef.current = sectionFromUrl({
+    currentSectionRef,
+    backToSectionRef,
+    hash
+  });
   const prevSection = toSection(currentSectionRef.current, "prev");
   const nextSection = toSection(currentSectionRef.current, "next");
   const sectionIndex = sectionsList.indexOf(currentSectionRef.current);
 
   return (
     <div className="component-resume-form">
-      {renderGqlError(state.gqlError)}
+      <GqlError errors={state.gqlError} />
 
       <Form>
         <FormContextProvider
@@ -310,7 +171,11 @@ export function UpdateResumeForm(props: Props) {
             }
           }}
         >
-          {renderCurrEditingSection()}
+          <CurrEditingSection
+            section={currentSectionRef.current}
+            values={values}
+            setFieldValue={setFieldValue}
+          />
         </FormContextProvider>
 
         {currentSectionRef.current === Section.preview && (
@@ -323,7 +188,7 @@ export function UpdateResumeForm(props: Props) {
               {nextSection !== Section.preview && (
                 <NavBtn
                   className="preview-btn"
-                  href={urlFromSection(Section.preview)}
+                  href={urlFromSection(Section.preview, pathname)}
                 >
                   <ToolTip>{uiTexts.partialPreviewResumeTooltipText}</ToolTip>
 
@@ -334,7 +199,10 @@ export function UpdateResumeForm(props: Props) {
               )}
 
               {sectionIndex > 0 && (
-                <NavBtn className="edit-btn" href={urlFromSection(prevSection)}>
+                <NavBtn
+                  className="edit-btn"
+                  href={urlFromSection(prevSection, pathname)}
+                >
                   <ToolTip>{prevTooltipText(prevSection)}</ToolTip>
 
                   <EpicBtnIcon className="prev-btn-icon" />
@@ -344,7 +212,10 @@ export function UpdateResumeForm(props: Props) {
               )}
 
               {nextSection !== Section.preview && (
-                <NavBtn className="next-btn" href={urlFromSection(nextSection)}>
+                <NavBtn
+                  className="next-btn"
+                  href={urlFromSection(nextSection, pathname)}
+                >
                   <ToolTip>{nextTooltipText(nextSection)}</ToolTip>
 
                   <span>Next</span>
@@ -356,7 +227,7 @@ export function UpdateResumeForm(props: Props) {
               {nextSection === Section.preview && (
                 <NavBtn
                   className="next-btn"
-                  href={urlFromSection(Section.preview)}
+                  href={urlFromSection(Section.preview, pathname)}
                 >
                   <ToolTip>End: preview your resume</ToolTip>
 
@@ -369,7 +240,7 @@ export function UpdateResumeForm(props: Props) {
           ) : (
             <NavBtn
               className="edit-btn"
-              href={urlFromSection(backToSectionRef.current)}
+              href={urlFromSection(backToSectionRef.current, pathname)}
             >
               <ToolTip>Show resume editor</ToolTip>
 
@@ -495,4 +366,167 @@ interface State {
   readonly gqlError?: ApolloError | null;
 
   readonly loadingTooLong?: boolean;
+}
+
+function urlFromSection(section: Section, pathname: string) {
+  return `${pathname}${makeUrlHashSegment(ResumePathHash.edit, section)}`;
+}
+
+function sectionFromUrl({
+  currentSectionRef,
+  backToSectionRef,
+  hash
+}: {
+  currentSectionRef: React.MutableRefObject<Section>;
+  backToSectionRef: React.MutableRefObject<Section>;
+  hash: string;
+}): Section {
+  const section = hash.split("/")[1];
+
+  const currentSection = (section
+    ? section
+    : Section.personalInfo
+  ).toLowerCase() as Section;
+
+  currentSectionRef.current = currentSection;
+
+  backToSectionRef.current =
+    currentSection !== Section.preview
+      ? currentSection
+      : backToSectionRef.current;
+
+  return currentSection;
+}
+
+function GqlError({ errors }: { errors: ApolloError | null | undefined }) {
+  if (!errors) {
+    return null;
+  }
+
+  const { graphQLErrors, networkError } = errors;
+
+  let error;
+
+  if (networkError) {
+    error = networkError.message;
+  } else {
+    error = graphQLErrors.map(({ message }, index) => {
+      return <div key={"gql-error-" + index}>{message}</div>;
+    });
+  }
+
+  return (
+    <div data-testid="gql-errors" className="gql-errors">
+      <div
+        style={{
+          fontWeight: "normal",
+          fontSize: "1rem"
+        }}
+      >
+        Error updating data!
+      </div>
+      {error}
+    </div>
+  );
+}
+
+function CurrEditingSection({
+  section,
+  values,
+  setFieldValue
+}: {
+  section: Section;
+  values: Partial<UpdateResumeInput>;
+  setFieldValue: SetFieldValue<CreateExperienceInput>;
+}) {
+  const label = sectionLabelToHeader(section);
+
+  if (section === Section.personalInfo) {
+    return <PersonalInfo values={values.personalInfo} label={label} />;
+  }
+
+  if (section === Section.experiences) {
+    return (
+      <Experiences
+        setFieldValue={setFieldValue}
+        values={values.experiences}
+        label={label}
+      />
+    );
+  } else if (section === Section.education) {
+    return (
+      <Education
+        label={label}
+        values={values.education}
+        setFieldValue={setFieldValue}
+      />
+    );
+  } else if (section === Section.skills) {
+    return (
+      <Skills
+        label={label}
+        values={values.skills}
+        setFieldValue={setFieldValue}
+      />
+    );
+  } else if (section === Section.addSkills) {
+    return (
+      <Rated
+        key={label}
+        label={label}
+        values={values.additionalSkills}
+        setFieldValue={setFieldValue}
+        rowItemsLabels={{
+          description: "Skill (e.g. Editing skills)",
+          level: "Rating description (e.g. Advanced) (optional)"
+        }}
+        fieldName="additionalSkills"
+        icon={<Icon name="won" />}
+        dataTestId="additional-skills-section"
+        idPrefix="Add. Skill"
+      />
+    );
+  } else if (section === Section.langs) {
+    return (
+      <Rated
+        key={label}
+        label={label}
+        values={values.languages}
+        rowItemsLabels={{
+          description: "Language (e.g. Spanish - Certified)",
+          level: "Rating description (e.g. Proficient) (optional)"
+        }}
+        fieldName="languages"
+        icon={<Icon name="won" />}
+        dataTestId="languages-section"
+        setFieldValue={setFieldValue}
+        idPrefix="languages"
+      />
+    );
+  } else if (section === Section.hobbies) {
+    return (
+      <>
+        <SectionLabel
+          label={label}
+          ico={<Icon name="won" />}
+          data-testid="hobbies-section"
+        />
+
+        <FieldArray
+          name="hobbies"
+          render={arrayHelper => (
+            <ListStrings
+              arrayHelper={arrayHelper}
+              fieldName="hobbies"
+              // istanbul ignore next
+              values={(values.hobbies || []) as string[]}
+              controlComponent={Input}
+            />
+          )}
+        />
+      </>
+    );
+  }
+
+  return null;
 }
