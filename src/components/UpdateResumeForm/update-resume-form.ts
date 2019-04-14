@@ -158,6 +158,8 @@ export interface ResumeFormContextValue {
   valueChanged: ValueChangedFn;
 
   prevFormValues: Partial<UpdateResumeInput>;
+
+  setFieldValue: SetFieldValue<CreateExperienceInput>;
 }
 
 export const FormContext = createContext<ResumeFormContextValue>(

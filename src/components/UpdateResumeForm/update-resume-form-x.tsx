@@ -168,7 +168,9 @@ export function UpdateResumeForm(props: Props) {
                 updateResume,
                 dispatch
               });
-            }
+            },
+
+            setFieldValue
           }}
         >
           <CurrEditingSection
@@ -443,9 +445,7 @@ function CurrEditingSection({
 
   if (section === Section.personalInfo) {
     return <PersonalInfo values={values.personalInfo} label={label} />;
-  }
-
-  if (section === Section.experiences) {
+  } else if (section === Section.experiences) {
     return (
       <Experiences
         setFieldValue={setFieldValue}
