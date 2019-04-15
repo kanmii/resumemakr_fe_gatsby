@@ -2,78 +2,58 @@ import React from "react";
 import { Card } from "semantic-ui-react";
 import { FieldArrayRenderProps, FastField, FieldArray } from "formik";
 
-import { Section, ChildProps } from "../UpdateResumeForm/update-resume-form";
 import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
-import { emptyVal } from "../Rated/rated";
+import { emptyVal, RowItemsLabels, Props, makeRatedName } from "../Rated/rated";
 import {
   RatedInput,
   CreateExperienceInput
 } from "../../graphql/apollo/types/globalTypes";
 import ListIndexHeader from "../ListIndexHeader";
 import { SetFieldValue } from "../utils";
+import { SubFieldLabel } from "../components";
 
-let cachedValues: RatedInput[] = [];
+export function Rated(props: Props) {
+  const {
+    label,
+    setFieldValue,
+    icon,
+    fieldName,
+    idPrefix,
+    rowItemsLabels,
+    dataTestId
+  } = props;
 
-interface RowItemsLabels {
-  description: string;
-  level: string;
-}
+  let values = props.values as RatedInput[];
 
-interface Props extends ChildProps {
-  label: Section;
-  values?: Array<RatedInput | null> | null;
-  icon: JSX.Element;
-  fieldName: string;
-  idPrefix: string;
-  rowItemsLabels: RowItemsLabels;
-  dataTestId: string;
-}
-
-export class Rated extends React.Component<Props, {}> {
-  render() {
-    const {
-      label,
-      setFieldValue,
-      icon,
-      fieldName,
-      idPrefix,
-      rowItemsLabels,
-      dataTestId
-    } = this.props;
-
-    let values = this.props.values as RatedInput[];
-
-    if (!values || !values.length) {
-      values = [{ ...emptyVal }];
-    }
-
-    cachedValues = values;
-
-    return (
-      <>
-        <SectionLabel label={label} ico={icon} data-testid={dataTestId} />
-
-        <FieldArray
-          name={fieldName}
-          render={arrayHelper =>
-            values.map((value, index) => (
-              <Item
-                key={index}
-                value={value}
-                arrayHelper={arrayHelper}
-                setFieldValue={setFieldValue}
-                idPrefix={idPrefix}
-                fieldName={fieldName}
-                rowItemsLabels={rowItemsLabels}
-                index={index}
-              />
-            ))
-          }
-        />
-      </>
-    );
+  if (!values || !values.length) {
+    values = [{ ...emptyVal }];
   }
+
+  return (
+    <>
+      <SectionLabel label={label} ico={icon} data-testid={dataTestId} />
+
+      <FieldArray
+        name={fieldName}
+        render={arrayHelper =>
+          values.map((value, index) => (
+            <Item
+              key={index}
+              value={value}
+              arrayHelper={arrayHelper}
+              setFieldValue={setFieldValue}
+              idPrefix={idPrefix}
+              fieldName={fieldName}
+              rowItemsLabels={rowItemsLabels}
+              index={index}
+              values={values}
+            />
+          ))
+        }
+      />
+    </>
+  );
 }
 
 export default Rated;
@@ -86,6 +66,7 @@ interface ItemProps {
   fieldName: string;
   rowItemsLabels: RowItemsLabels;
   index: number;
+  values: RatedInput[];
 }
 
 function Item({
@@ -95,7 +76,8 @@ function Item({
   idPrefix,
   fieldName,
   rowItemsLabels,
-  index
+  index,
+  values
 }: ItemProps) {
   const { level, description } = value;
 
@@ -107,29 +89,35 @@ function Item({
         idPrefix={idPrefix}
         fieldName={fieldName}
         setFieldValue={setFieldValue}
-        values={cachedValues as RatedInput[]}
+        values={values}
         empty={emptyVal}
       />
 
       <Card.Content>
         <FastField
-          name={makeName(fieldName, index, "description")}
-          label={rowItemsLabels.description}
+          name={makeRatedName(fieldName, index, "description")}
           emptyValue={description}
           component={RegularField}
+          label={
+            <SubFieldLabel
+              text={rowItemsLabels.description}
+              fieldName={makeRatedName(fieldName, index, "description")}
+            />
+          }
         />
 
         <FastField
-          name={makeName(fieldName, index, "level")}
-          label={rowItemsLabels.level}
+          name={makeRatedName(fieldName, index, "level")}
           emptyValue={level}
           component={RegularField}
+          label={
+            <SubFieldLabel
+              text={rowItemsLabels.level}
+              fieldName={makeRatedName(fieldName, index, "level")}
+            />
+          }
         />
       </Card.Content>
     </Card>
   );
-}
-
-function makeName(fieldName: string, index: number, key: keyof RatedInput) {
-  return `${fieldName}[${index - 1}].${key}`;
 }

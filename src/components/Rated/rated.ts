@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
 import { RatedInput } from "../../graphql/apollo/types/globalTypes";
+import { Section, ChildProps } from "../UpdateResumeForm/update-resume-form";
 
 export const emptyVal: RatedInput = {
   description: "",
@@ -27,3 +28,25 @@ export const languageDefaultVal: RatedInput = {
   level: "C1",
   index: 1
 };
+
+export interface RowItemsLabels {
+  description: string;
+  level: string;
+}
+export interface Props extends ChildProps {
+  label: Section;
+  values?: Array<RatedInput | null> | null;
+  icon: JSX.Element;
+  fieldName: string;
+  idPrefix: string;
+  rowItemsLabels: RowItemsLabels;
+  dataTestId: string;
+}
+
+export function makeRatedName(
+  fieldName: string,
+  index: number,
+  key: keyof RatedInput
+) {
+  return `${fieldName}[${index}].${key}`;
+}

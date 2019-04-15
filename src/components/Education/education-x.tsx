@@ -61,7 +61,7 @@ function School({
   }
 
   return (
-    <Card key={index}>
+    <Card>
       <ListIndexHeader
         index={index}
         label={headerLabelText}

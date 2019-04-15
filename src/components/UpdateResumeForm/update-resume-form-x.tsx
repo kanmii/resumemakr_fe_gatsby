@@ -515,6 +515,7 @@ function CurrEditingSection({
               // istanbul ignore next
               values={(values.hobbies || []) as string[]}
               controlComponent={Input}
+              appendToHiddenLabel="hobbies"
             />
           )}
         />
