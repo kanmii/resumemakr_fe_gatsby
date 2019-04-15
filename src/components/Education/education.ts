@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 
 import { EducationInput } from "../../graphql/apollo/types/globalTypes";
+import { Section } from "../UpdateResumeForm/update-resume-form";
 
 export const emptyVal: EducationInput = {
   index: 1,
@@ -30,3 +31,24 @@ export const validationSchema = Yup.object<EducationInput>().shape({
     .required()
     .min(1)
 });
+
+export const eduFieldName = "education";
+
+export function makeEduFieldName(index: number, key: keyof EducationInput) {
+  return `${eduFieldName}[${index}].${key}`;
+}
+
+export interface Props {
+  label: Section;
+  values?: Array<EducationInput | null> | null;
+}
+
+export const uiTexts = {
+  schoolLabel: "School name, location",
+  courseLabel: "Major, minor, degree",
+  fromDateLabel: "Date from",
+  toDateLabel: "Date to",
+  achievementsHeader0: "Achievements",
+  achievementsHeader1: "(responsibilities, activities)",
+  achievementsHiddenLabel: "education-achievement"
+};

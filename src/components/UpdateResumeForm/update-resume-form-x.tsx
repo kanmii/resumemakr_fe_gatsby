@@ -454,13 +454,7 @@ function CurrEditingSection({
       />
     );
   } else if (section === Section.education) {
-    return (
-      <Education
-        label={label}
-        values={values.education}
-        setFieldValue={setFieldValue}
-      />
-    );
+    return <Education label={label} values={values.education} />;
   } else if (section === Section.skills) {
     return (
       <Skills

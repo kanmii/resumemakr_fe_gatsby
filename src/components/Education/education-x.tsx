@@ -4,21 +4,21 @@ import { FastField, FieldArray } from "formik";
 
 import { EducationInput } from "../../graphql/apollo/types/globalTypes";
 
-import { Section, FormContext } from "../UpdateResumeForm/update-resume-form";
+import { FormContext } from "../UpdateResumeForm/update-resume-form";
 import SectionLabel from "../SectionLabel";
 import RegularField from "../RegularField";
-import { emptyVal } from "./education";
-import { ChildProps } from "../UpdateResumeForm/update-resume-form";
+import {
+  emptyVal,
+  makeEduFieldName,
+  eduFieldName,
+  Props,
+  uiTexts
+} from "./education";
 import ListIndexHeader from "../ListIndexHeader";
 import ListStrings from "../ListStrings";
+import { SubFieldLabel } from "../components";
 
 const headerLabelText = "School";
-const eduFieldName = "education";
-
-interface Props extends ChildProps {
-  label: Section;
-  values?: Array<EducationInput | null> | null;
-}
 
 export function Education(props: Props) {
   const { label } = props;
@@ -42,10 +42,6 @@ export function Education(props: Props) {
       />
     </>
   );
-}
-
-function makeName(index: number, key: keyof EducationInput) {
-  return `${eduFieldName}[${index - 1}].${key}`;
 }
 
 function School({
@@ -77,35 +73,55 @@ function School({
 
       <Card.Content>
         <FastField
-          name={makeName(index, "school")}
-          label="School name, location"
+          name={makeEduFieldName(index, "school")}
+          label={
+            <SubFieldLabel
+              text={uiTexts.schoolLabel}
+              fieldName={makeEduFieldName(index, "school")}
+            />
+          }
           defaultValue={edu.school}
           component={RegularField}
         />
 
         <FastField
-          name={makeName(index, "course")}
-          label="Major, minor, degree"
+          name={makeEduFieldName(index, "course")}
           defaultValue={edu.course}
           component={RegularField}
+          label={
+            <SubFieldLabel
+              text={uiTexts.courseLabel}
+              fieldName={makeEduFieldName(index, "course")}
+            />
+          }
         />
 
         <FastField
-          name={makeName(index, "fromDate")}
-          label="Date from"
+          name={makeEduFieldName(index, "fromDate")}
           defaultValue={edu.fromDate}
           component={RegularField}
+          label={
+            <SubFieldLabel
+              text={uiTexts.fromDateLabel}
+              fieldName={makeEduFieldName(index, "fromDate")}
+            />
+          }
         />
 
         <FastField
-          name={makeName(index, "toDate")}
-          label="Date to"
+          name={makeEduFieldName(index, "toDate")}
           defaultValue={edu.toDate}
           component={RegularField}
+          label={
+            <SubFieldLabel
+              text={uiTexts.toDateLabel}
+              fieldName={makeEduFieldName(index, "toDate")}
+            />
+          }
         />
 
         <FieldArray
-          name={makeName(index, "achievements")}
+          name={makeEduFieldName(index, "achievements")}
           render={helper => {
             return (
               <ListStrings
@@ -113,11 +129,12 @@ function School({
                 arrayHelper={helper}
                 header={
                   <div>
-                    Achievements
-                    <span> (responsibilities, activities)</span>
+                    {uiTexts.achievementsHeader0}
+                    <span> {uiTexts.achievementsHeader1}</span>
                   </div>
                 }
-                fieldName={makeName(index, "achievements")}
+                fieldName={makeEduFieldName(index, "achievements")}
+                appendToHiddenLabel={uiTexts.achievementsHiddenLabel}
               />
             );
           }}
