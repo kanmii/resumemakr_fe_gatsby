@@ -20,8 +20,8 @@ export const userRegMutation = gql`
 
 export default userRegMutation;
 
-export type RegFn = MutationFn<UserRegMutation, UserRegMutationVariables>;
+export type RegUserFn = MutationFn<UserRegMutation, UserRegMutationVariables>;
 
 export interface RegMutationProps {
-  regUser?: RegFn;
+  regUser?: RegUserFn;
 }

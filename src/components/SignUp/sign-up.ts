@@ -1,11 +1,11 @@
 import * as Yup from "yup";
 import { RouteComponentProps } from "@reach/router";
 import { WithApolloClient } from "react-apollo";
-import { ApolloClient } from "apollo-client";
 
 import { RegMutationProps } from "../../graphql/apollo/user-reg.mutation";
 import { UserLocalMutationProps } from "../../State/user.local.mutation";
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
+import { GetConnStatus } from "../../State/get-conn-status";
 
 export interface Props
   extends RouteComponentProps,
@@ -16,7 +16,7 @@ export interface Props
 
   refreshToHome?: () => void;
 
-  getConn?: (client: ApolloClient<{}>) => Promise<boolean>;
+  getConn?: GetConnStatus;
 
   mainRef: React.RefObject<HTMLDivElement>;
 

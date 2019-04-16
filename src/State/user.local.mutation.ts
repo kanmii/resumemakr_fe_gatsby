@@ -21,8 +21,10 @@ export interface Variable {
   user: UserFragment | null;
 }
 
+export type UserLocalMutationFn = MutationFn<Variable, Variable>;
+
 export interface UserLocalMutationProps {
-  updateLocalUser?: MutationFn<Variable, Variable>;
+  updateLocalUser?: UserLocalMutationFn;
 }
 
 export const userLocalMutationGql = graphql<

@@ -6,7 +6,7 @@ import {
 } from "../../graphql/apollo/types/UserRegMutation";
 
 import REG_USER_MUTATION, {
-  RegFn,
+  RegUserFn,
   RegMutationProps
 } from "../../graphql/apollo/user-reg.mutation";
 
@@ -20,7 +20,7 @@ const regUserGql = graphql<
   RegMutationProps
 >(REG_USER_MUTATION, {
   props: props => {
-    const mutate = props.mutate as RegFn;
+    const mutate = props.mutate as RegUserFn;
 
     return {
       regUser: mutate

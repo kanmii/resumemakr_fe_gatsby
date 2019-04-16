@@ -17,7 +17,6 @@ import {
 import { UserFragment } from "../graphql/apollo/types/UserFragment";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
-import { SIGN_UP_URL } from "../routing";
 
 const LoginP = Login as React.FunctionComponent<Partial<Props>>;
 const passwortMuster = new RegExp("Password");
@@ -132,13 +131,6 @@ it("renders error if server returns error", async () => {
 
   const $error = await waitForElement(() => getByTestId("login-form-error"));
   expect($error).toContainElement(getByText(/Invalid email\/password/i));
-});
-
-it("redirects to sign up", () => {
-  const { ui, mockNavigate } = makeComp();
-  const { getByText } = render(ui);
-  fireEvent.click(getByText(/Don't have an account\? Sign Up/));
-  expect(mockNavigate).toBeCalledWith(SIGN_UP_URL);
 });
 
 it("logs out user if logged in", done => {

@@ -14,7 +14,6 @@ import {
   passworteNichtGleich,
   uiTexts
 } from "../components/SignUp/sign-up";
-import { LOGIN_URL } from "../routing";
 
 import { fillField, WithData, renderWithApollo } from "./test_utils";
 
@@ -157,17 +156,6 @@ it("renders error if server returns error", async () => {
   );
   expect($error).toContainElement(getByText(/email/i));
   expect(mockScrollToTop).toBeCalled();
-});
-
-it("redirects to login", () => {
-  const { ui, mockNavigate } = makeComp();
-  const { getByText } = render(ui);
-
-  act(() => {
-    fireEvent.click(getByText(/Already have an account\? Login/));
-  });
-
-  expect(mockNavigate).toBeCalledWith(LOGIN_URL);
 });
 
 it("renders error if nicht verbinden", async () => {

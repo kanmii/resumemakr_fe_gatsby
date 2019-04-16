@@ -9,3 +9,7 @@ export default async function getConnStatus(client: ApolloClient<{}>) {
 
   return data && data.connected && data.connected.isConnected;
 }
+
+export type GetConnStatus = (
+  client: ApolloClient<{}>
+) => Promise<boolean | undefined>;
