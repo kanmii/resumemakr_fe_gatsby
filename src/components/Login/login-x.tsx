@@ -9,7 +9,6 @@ import {
   Field,
   FormikErrors
 } from "formik";
-import { NavigateFn } from "@reach/router";
 
 import { Props, ValidationSchema } from "./login";
 import { LoginInput } from "../../graphql/apollo/types/globalTypes";
@@ -20,6 +19,7 @@ import getConnDefault from "../../State/get-conn-status";
 import { SIGN_UP_URL } from "../../routing";
 import { noOp } from "../../constants";
 import { clearToken } from "../../State/tokens";
+import { OtherAuthLink } from "../OtherAuthLink";
 
 const Errors = React.memo(ErrorsComp, ErrorsCompEqual);
 
@@ -28,7 +28,6 @@ export function Login(merkmale: Props) {
     userLocal,
     updateLocalUser,
     loggedOutUser: loggedOutUserProp,
-    navigate,
     client,
     getConn = getConnDefault,
     refreshToHome = refreshToAppDefault,
@@ -39,7 +38,6 @@ export function Login(merkmale: Props) {
   /* istanbul ignore next: */
   const loggedOutUser = loggedOutUserProp && loggedOutUserProp.loggedOutUser;
   const user = userLocal && userLocal.user;
-  const navigator = navigate as NavigateFn;
 
   const [graphQlErrors, setGraphQlErrors] = useState<ApolloError | undefined>(
     undefined
@@ -167,15 +165,11 @@ export function Login(merkmale: Props) {
         </Card.Content>
 
         <Card.Content style={{ flexShrink: "0" }} extra={true}>
-          <Button
-            type="button"
-            fluid={true}
-            onClick={() => navigator(SIGN_UP_URL)}
-            disabled={isSubmitting}
-            name="to-sign-up"
-          >
-            Don't have an account? Sign Up
-          </Button>
+          <OtherAuthLink
+            isSubmitting={isSubmitting}
+            url={SIGN_UP_URL}
+            text="Don't have an account? Sign Up"
+          />
         </Card.Content>
       </AuthCard>
     );

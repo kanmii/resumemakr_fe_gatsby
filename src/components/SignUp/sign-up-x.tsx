@@ -9,7 +9,6 @@ import {
 } from "formik";
 import loIsEmpty from "lodash/isEmpty";
 import { ApolloError } from "apollo-client";
-import { NavigateFn } from "@reach/router";
 
 import {
   Props,
@@ -26,10 +25,10 @@ import getConnDefault from "../../State/get-conn-status";
 import { noOp } from "../../constants";
 import { clearToken } from "../../State/tokens";
 import { AuthCard } from "../AuthCard";
+import { OtherAuthLink } from "../OtherAuthLink";
 
 export function SignUp(merkmale: Props) {
   const {
-    navigate,
     regUser,
     updateLocalUser,
     scrollToTop: scrollToTopFromProps,
@@ -37,8 +36,6 @@ export function SignUp(merkmale: Props) {
     refreshToHome = refreshToAppDefault,
     client
   } = merkmale;
-
-  const navigator = navigate as NavigateFn;
 
   /* istanbul ignore next: for test only*/
   const scrollToTop = scrollToTopFromProps || defaultScrollToTop;
@@ -227,15 +224,11 @@ export function SignUp(merkmale: Props) {
         </Card.Content>
 
         <Card.Content style={{ flexShrink: "0" }} extra={true}>
-          <Button
-            className="to-login-button"
-            type="button"
-            fluid={true}
-            onClick={() => navigator(LOGIN_URL)}
-            disabled={isSubmitting}
-          >
-            Already have an account? Login
-          </Button>
+          <OtherAuthLink
+            url={LOGIN_URL}
+            isSubmitting={isSubmitting}
+            text="Already have an account? Login"
+          />
         </Card.Content>
       </AuthCard>
     );
