@@ -1,8 +1,5 @@
 {
   "chromeWebSecurity": false,
   "ignoreTestFiles": "*.js",
-  "video": false,
-  "env": {
-    "apiUri": "http:localhost:4022/api"
-  }
+  "video": false
 }
