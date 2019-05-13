@@ -30,7 +30,7 @@ module.exports = {
   globals: {
     __PATH_PREFIX__: "",
     "ts-jest": {
-      tsConfig: "./tsconfig-base.json"
+      isolatedModules: true
     }
   },
   testURL: "http://localhost",
