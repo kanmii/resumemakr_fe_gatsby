@@ -2,6 +2,8 @@ import React from "react";
 import { Button } from "semantic-ui-react";
 import { Link } from "gatsby";
 
+import "./styles.scss";
+
 export function OtherAuthLink({
   isSubmitting,
   url,
@@ -13,12 +15,13 @@ export function OtherAuthLink({
 }) {
   return (
     <Button
-      className="to-login-button"
+      className="components-other-auth-link"
       type="button"
       fluid={true}
       to={url}
       disabled={isSubmitting}
       as={isSubmitting ? "span" : Link}
+      basic={true}
     >
       {text}
     </Button>

@@ -9,6 +9,18 @@ module.exports = {
     "gatsby-plugin-typescript",
 
     {
+      resolve: "gatsby-plugin-alias-imports",
+      options: {
+        alias: {
+          "../../theme.config": path.resolve(
+            "src/styles/semantic-theme/theme.config"
+          )
+        },
+        extensions: []
+      }
+    },
+
+    {
       resolve: "gatsby-source-filesystem",
 
       options: {
@@ -78,6 +90,8 @@ module.exports = {
     },
 
     "gatsby-plugin-sass",
+
+    "gatsby-plugin-less",
 
     "gatsby-plugin-netlify"
   ]
