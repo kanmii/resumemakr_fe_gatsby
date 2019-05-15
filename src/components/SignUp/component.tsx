@@ -1,4 +1,4 @@
-import React, { useRef, useReducer, Reducer, Dispatch } from "react";
+import React, { useRef, useReducer } from "react";
 import { Button, Card, Input, Message, Icon, Form } from "semantic-ui-react";
 import {
   Formik,
@@ -16,7 +16,10 @@ import {
   ValidationSchema,
   FormValuesKey,
   FORM_RENDER_PROPS,
-  uiTexts
+  uiTexts,
+  reducer,
+  ActionTypes,
+  DispatchType
 } from "./utils";
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
 import { LOGIN_URL } from "../../routing";
@@ -28,16 +31,6 @@ import { AuthCard } from "../AuthCard";
 import { OtherAuthLink } from "../OtherAuthLink";
 import { RegUserFn } from "../../graphql/apollo/user-reg.mutation";
 import { scrollToTop } from "./scroll-to-top";
-
-interface State {
-  readonly otherErrors?: string | null;
-  readonly formErrors?: FormikErrors<RegistrationInput> | null;
-  readonly gqlFehler?: ApolloError | null;
-}
-
-const reducer: Reducer<State, State> = (state, action) => {
-  return { ...state, ...action };
-};
 
 export function SignUp(props: Props) {
   const { regUser, updateLocalUser, client } = props;
@@ -54,23 +47,24 @@ export function SignUp(props: Props) {
       clearToken();
       setSubmitting(true);
       dispatch({
-        otherErrors: null,
-        formErrors: null,
-        gqlFehler: null
+        type: ActionTypes.reset_all_errors
       });
 
       const errors = await validateForm(values);
 
       if (!loIsEmpty(errors)) {
         setSubmitting(false);
-        dispatch({ formErrors: errors });
+        dispatch({ type: ActionTypes.set_form_errors, payload: errors });
         scrollToTop(mainRef);
         return;
       }
 
       if (!(await getConnStatus(client))) {
         setSubmitting(false);
-        dispatch({ otherErrors: "You are not connected" });
+        dispatch({
+          type: ActionTypes.set_other_errors,
+          payload: "You are not connected"
+        });
         scrollToTop(mainRef);
         return;
       }
@@ -88,7 +82,10 @@ export function SignUp(props: Props) {
 
         if (!user) {
           setSubmitting(false);
-          dispatch({ otherErrors: "Account creation has failed." });
+          dispatch({
+            type: ActionTypes.set_other_errors,
+            payload: "Account creation has failed."
+          });
           scrollToTop(mainRef);
           return;
         }
@@ -100,7 +97,7 @@ export function SignUp(props: Props) {
         refreshToMyResumes();
       } catch (error) {
         setSubmitting(false);
-        dispatch({ gqlFehler: error });
+        dispatch({ type: ActionTypes.set_graphql_errors, payload: error });
         scrollToTop(mainRef);
       }
     };
@@ -188,7 +185,7 @@ function RenderFormErrors({
   formErrors?: FormikErrors<RegistrationInput> | null;
   otherErrors?: string | null;
   gqlFehler?: ApolloError | null;
-  dispatch: Dispatch<State>;
+  dispatch: DispatchType;
 }) {
   let content = null;
 
@@ -238,9 +235,7 @@ function RenderFormErrors({
           error={true}
           onDismiss={() => {
             dispatch({
-              otherErrors: null,
-              gqlFehler: null,
-              formErrors: null
+              type: ActionTypes.reset_all_errors
             });
           }}
         >

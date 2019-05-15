@@ -1,6 +1,9 @@
 import * as Yup from "yup";
 import { RouteComponentProps } from "@reach/router";
 import { WithApolloClient } from "react-apollo";
+import { ApolloError } from "apollo-client";
+import { FormikErrors } from "formik";
+import { Reducer } from "react";
 
 import { RegMutationProps } from "../../graphql/apollo/user-reg.mutation";
 import { UserLocalMutationProps } from "../../State/user.local.mutation";
@@ -72,3 +75,69 @@ export const uiTexts = {
 
   formErrorTestId: "sign-up-form-error"
 };
+
+export enum ActionTypes {
+  reset_all_errors = "@components/signup/reset_all_errors",
+  set_other_errors = "@components/signup/set_other_errors",
+  set_form_errors = "@components/signup/set_form_errors",
+  set_graphql_errors = "@components/signup/set_graphql_errors"
+}
+
+interface State {
+  readonly otherErrors?: string | null;
+  readonly formErrors?: FormikErrors<RegistrationInput> | null;
+  readonly gqlFehler?: ApolloError | null;
+}
+
+type ReducerPayload =
+  | string
+  | null
+  | FormikErrors<RegistrationInput>
+  | ApolloError;
+
+interface ReducerAction {
+  type: ActionTypes;
+  payload?: ReducerPayload;
+}
+
+const reducerFunctionsObject: {
+  [k in ActionTypes]: Reducer<State, ReducerPayload>
+} = {
+  [ActionTypes.reset_all_errors]: prevState => ({
+    ...prevState,
+    otherErrors: null,
+    formErrors: null,
+    gqlFehler: null
+  }),
+
+  [ActionTypes.set_other_errors]: (previousState, payload) => ({
+    ...previousState,
+    otherErrors: payload as string
+  }),
+
+  [ActionTypes.set_form_errors]: (prevState, payload) => ({
+    ...prevState,
+    formErrors: payload as FormikErrors<RegistrationInput>
+  }),
+
+  [ActionTypes.set_graphql_errors]: (prevState, payload) => ({
+    ...prevState,
+    gqlFehler: payload as ApolloError
+  })
+};
+
+export const reducer: Reducer<State, ReducerAction> = (
+  prevState,
+  { type, payload }
+) => {
+  const fn = reducerFunctionsObject[type];
+
+  if (fn) {
+    return fn(prevState, payload as ReducerPayload);
+  }
+
+  // istanbul ignore next: react reducer magic
+  return prevState;
+};
+
+export type DispatchType = (value: ReducerAction) => void;
