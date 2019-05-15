@@ -1,6 +1,6 @@
 module.exports = {
   preset: "ts-jest",
-  testEnvironment: "jsdom",
+  testEnvironment: "jest-environment-jsdom-fourteen",
   coverageDirectory: "./coverage",
   collectCoverageFrom: [
     "src/**/*.ts*",
@@ -17,12 +17,18 @@ module.exports = {
     "!src/pages/**",
     "!src/**/*.d.ts"
   ],
-
-  coverageReporters: ["json", "lcov", "text", "clover"],
   transform: {
     "^.+\\.tsx?$": "ts-jest",
-    "^.+\\.jsx?$": "<rootDir>/jest-preprocess.js"
+    "^.+\\.jsx?$": "<rootDir>/config/jest/gatsby-preprocess.js",
+    "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
+    "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)":
+      "<rootDir>/config/jest/fileTransform.js"
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!(gatsby)/)",
+    "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
+    "^.+\\.module\\.(css|sass|scss)$"
+  ],
   testRegex: "src/__tests__/.+?\\.test\\.([tj]sx?)$",
   moduleNameMapper: {
     ".+\\.(css|styl|less|sass|scss)$": "identity-obj-proxy",
@@ -35,7 +41,6 @@ module.exports = {
     ".cache",
     "^.+\\.module\\.(css|sass|scss)$"
   ],
-  transformIgnorePatterns: ["node_modules/(?!(gatsby)/)"],
   globals: {
     __PATH_PREFIX__: "",
     "ts-jest": {
@@ -43,8 +48,12 @@ module.exports = {
     }
   },
   testURL: "http://localhost",
-  setupFiles: ["<rootDir>/loadershim.js"],
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"],
+  setupFiles: ["<rootDir>/loadershim.js", "react-app-polyfill/jsdom"],
+  setupFilesAfterEnv: ["<rootDir>/config/jest/setupTests.js"],
+  watchPlugins: [
+    "jest-watch-typeahead/filename",
+    "jest-watch-typeahead/testname"
+  ],
   watchPathIgnorePatterns: [
     "<rootDir>/node_modules/",
     "<rootDir>/cypress",

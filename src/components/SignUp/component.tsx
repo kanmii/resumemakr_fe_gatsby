@@ -39,17 +39,17 @@ const reducer: Reducer<State, State> = (state, action) => {
   return { ...state, ...action };
 };
 
-export function SignUp(merkmale: Props) {
-  const { regUser, updateLocalUser, client } = merkmale;
+export function SignUp(props: Props) {
+  const { regUser, updateLocalUser, client } = props;
 
   const [state, dispatch] = useReducer(reducer, {});
   const { otherErrors, formErrors, gqlFehler } = state;
 
   const mainRef = useRef<HTMLDivElement>(null);
 
-  function onSubmit(props: FormikProps<RegistrationInput>) {
+  function onSubmit(formProps: FormikProps<RegistrationInput>) {
     return async function() {
-      const { validateForm, values, setSubmitting } = props;
+      const { validateForm, values, setSubmitting } = formProps;
 
       clearToken();
       setSubmitting(true);
@@ -106,8 +106,8 @@ export function SignUp(merkmale: Props) {
     };
   }
 
-  function renderForm(props: FormikProps<RegistrationInput>) {
-    const { dirty, isSubmitting } = props;
+  function renderForm(formProps: FormikProps<RegistrationInput>) {
+    const { dirty, isSubmitting } = formProps;
 
     return (
       <AuthCard>
@@ -123,17 +123,17 @@ export function SignUp(merkmale: Props) {
         </Card.Content>
 
         <Card.Content>
-          <Form onSubmit={onSubmit(props)}>
+          <Form onSubmit={onSubmit(formProps)}>
             {Object.entries(FORM_RENDER_PROPS).map(([name, [label, type]]) => {
               return (
                 <FastField
                   key={name}
                   name={name}
-                  render={(formProps: FieldProps<RegistrationInput>) => (
+                  render={(formRenderProps: FieldProps<RegistrationInput>) => (
                     <RenderInput
                       label={label}
                       type={type}
-                      formProps={formProps}
+                      formProps={formRenderProps}
                     />
                   )}
                 />
@@ -275,7 +275,6 @@ function RenderInput({
       autoComplete="off"
       label={label}
       id={name}
-      autoFocus={name === "name"}
       readOnly={isSourceField}
       tabIndex={isSourceField ? -1 : 0}
     />
