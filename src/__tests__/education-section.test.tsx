@@ -14,12 +14,9 @@ import { withFormik } from "formik";
 import {
   UpdateResumeForm,
   makeUrlHashSegment
-} from "../components/UpdateResumeForm/update-resume-form-x";
-import {
-  Props,
-  Section
-} from "../components/UpdateResumeForm/update-resume-form";
-import { formikConfig } from "../components/UpdateResumeForm/update-resume-form";
+} from "../components/UpdateResumeForm/component";
+import { Props, Section } from "../components/UpdateResumeForm/utils";
+import { formikConfig } from "../components/UpdateResumeForm/utils";
 import { WindowLocation } from "@reach/router";
 import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
@@ -34,11 +31,11 @@ import {
   eduFieldName,
   makeEduFieldName,
   uiTexts
-} from "../components/Education/education";
+} from "../components/Education/utils";
 import {
   makeListStringHiddenLabelText,
   makeListStringFieldName
-} from "../components/ListStrings/list-strings-x";
+} from "../components/ListStrings";
 import { fillField } from "./test_utils";
 
 let getByTestId: (

@@ -4,7 +4,7 @@ import fetch from "isomorphic-fetch";
 import { HelmetProvider } from "react-helmet-async";
 
 import buildClientCache from "./src/State/apollo-setup";
-import { ResumemakrProvider } from "./src/components/resumemakr";
+import { ResumemakrProvider } from "./src/utils/context";
 import { RootHelmet } from "./src/components/root-helmet";
 
 const helmetContext = {};

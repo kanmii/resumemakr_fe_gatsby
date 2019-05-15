@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent } from "react-testing-library";
 import { Formik, Field } from "formik";
 
-import { makeId, PwdInput } from "../components/PwdInput/pwd-input-x";
+import { makeId, PwdInput } from "../components/PwdInput";
 
 it("renders correctly", () => {
   const name = "pwd";

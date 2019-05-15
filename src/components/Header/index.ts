@@ -4,7 +4,7 @@ import USER_LOCAL_QUERY, {
   UserLocalGqlProps,
   UserLocalGqlData
 } from "../../State/auth.local.query";
-import { Header } from "./component";
+import { Header as Comp } from "./component";
 import { OwnProps } from "./utils";
 import { userLocalMutationGql } from "../../State/user.local.mutation";
 import { fetchLogoHOC } from "./fetch-logo-hoc";
@@ -23,9 +23,9 @@ const userLocalGql = graphql<
     }
 });
 
-export default compose(
+export const Header = compose(
   withMatchHOC(RESUME_PATH, "matchResumeRouteProps"),
   userLocalGql,
   userLocalMutationGql,
   fetchLogoHOC
-)(Header);
+)(Comp);

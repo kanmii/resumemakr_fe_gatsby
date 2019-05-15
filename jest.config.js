@@ -2,13 +2,22 @@ module.exports = {
   preset: "ts-jest",
   testEnvironment: "jsdom",
   coverageDirectory: "./coverage",
-  coveragePathIgnorePatterns: [
-    "/node_modules/",
-    "<rootDir>/src/__tests__/test_utils.tsx",
-    "<rootDir>/src/refresh-to-app.ts",
-    "<rootDir>/src/State/get-conn-status.ts",
-    "<rootDir>/src/logger.ts"
+  collectCoverageFrom: [
+    "src/**/*.ts*",
+    "!src/components/**/index.ts",
+    "!src/components/AuthRequired/**",
+    "!src/components/Layout/**",
+    "!src/components/root-helmet.tsx",
+    "!src/components/**/*hoc.ts*",
+    "!src/components/SignUp/scroll-to-top",
+    "!src/State/**",
+    "!src/graphql/**",
+    "!src/__tests__/test_utils.tsx",
+    "!src/utils/**",
+    "!src/pages/**",
+    "!src/**/*.d.ts"
   ],
+
   coverageReporters: ["json", "lcov", "text", "clover"],
   transform: {
     "^.+\\.tsx?$": "ts-jest",

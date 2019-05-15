@@ -5,7 +5,7 @@ import USER_LOCAL_QUERY, {
   UserLocalGqlData
 } from "../../State/auth.local.query";
 
-import { Login } from "./login-x";
+import { Login as Comp } from "./component";
 import { userLocalMutationGql } from "../../State/user.local.mutation";
 import {
   LoginMutation,
@@ -43,10 +43,10 @@ const userLocalGql = graphql<
     }
 });
 
-export default compose(
+export const Login = compose(
   withApollo,
   loggedOutUserGql,
   userLocalGql,
   userLocalMutationGql,
   loginGql
-)(Login);
+)(Comp);

@@ -5,8 +5,8 @@ import { Menu } from "semantic-ui-react";
 import "./styles.scss";
 import { withLocationHOC } from "../../with-location-hoc";
 import { ResumePathHash } from "../../../routing";
-import Header from "../../Header";
-import { ToolTip } from "../../tool-tip";
+import { Header } from "../../Header";
+import { ToolTip } from "../../Tooltip";
 
 // tslint:disable-next-line: no-any
 export const ResumeHeader: any = withLocationHOC(function ResumeHeader1(

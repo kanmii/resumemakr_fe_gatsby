@@ -1,3 +1,3 @@
-import { PhotoField } from "./photo-field-x";
+import { PhotoField as App } from "./component";
 
-export default PhotoField;
+export const PhotoField = App;

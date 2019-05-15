@@ -17,6 +17,8 @@ export const loginMutation = gql`
 
 export default loginMutation;
 
+export type LoginMutationFn = MutationFn<LoginMutation, LoginMutationVariables>;
+
 export interface LoginMutationProps {
-  login?: MutationFn<LoginMutation, LoginMutationVariables>;
+  login?: LoginMutationFn;
 }

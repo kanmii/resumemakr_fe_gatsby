@@ -4,17 +4,17 @@ import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import { render } from "react-testing-library";
 
-import { HomePage } from "../components/HomePage/home-page-x";
-import { Props, uiTexts } from "../components/HomePage/home-page";
+import { HomePage } from "../components/HomePage/component";
+import { Props, uiTexts } from "../components/HomePage/utils";
 import { RESUMES_HOME_PATH } from "../routing";
 
-jest.mock("../components/SignUp", () => {
-  return () => null;
-});
+jest.mock("../components/SignUp", () => ({
+  SignUp: jest.fn(() => null)
+}));
 
-jest.mock("../components/Header", () => {
-  return () => null;
-});
+jest.mock("../components/Header", () => ({
+  Header: jest.fn(() => null)
+}));
 
 const HomeP = HomePage as ComponentType<Partial<Props>>;
 

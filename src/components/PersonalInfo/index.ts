@@ -1,3 +1,3 @@
-import { PersonalInfo } from "./personal-info-x";
+import { PersonalInfo as App } from "./component";
 
-export default PersonalInfo;
+export const PersonalInfo = App;

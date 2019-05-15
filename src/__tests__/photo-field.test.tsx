@@ -4,7 +4,7 @@ import "react-testing-library/cleanup-after-each";
 import { render, wait, fireEvent } from "react-testing-library";
 import { getByText as domGetByText, waitForElement } from "dom-testing-library";
 
-import { PhotoField } from "../components/PhotoField/photo-field-x";
+import { PhotoField } from "../components/PhotoField/component";
 import {
   createFile,
   uploadFile,
@@ -14,8 +14,8 @@ import {
 import {
   FormContextProvider,
   ResumeFormContextValue
-} from "../components/UpdateResumeForm/update-resume-form";
-import { uiTexts, Props } from "../components/PhotoField/photo-field";
+} from "../components/UpdateResumeForm/utils";
+import { uiTexts, Props } from "../components/PhotoField/utils";
 
 it("changes to preview on file select", async () => {
   /**

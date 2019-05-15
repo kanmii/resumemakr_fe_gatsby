@@ -15,17 +15,17 @@ import {
 } from "../../graphql/apollo/types/ResumeTitles";
 import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
-import { CircularLabel } from "../circular-label";
+import { CircularLabel } from "../CircularLabel";
 import { makeResumeRoute } from "../../routing";
 import { Props, validationSchema, Action, emptyVal, uiTexts } from "./utils";
-import Loading from "../Loading";
+import { Loading } from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
-import { initialFormValues } from "../UpdateResumeForm/update-resume-form";
-import { Mode as PreviewMode } from "../Preview/preview";
-import AutoTextarea from "../AutoTextarea";
+import { initialFormValues } from "../UpdateResumeForm/utils";
+import { Mode as PreviewMode } from "../Preview/utils";
+import { AutoTextarea } from "../AutoTextarea";
 import { AppModal } from "../AppModal";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";
-import Header from "../Header";
+import { Header } from "../Header";
 
 let initialValues = emptyVal;
 let action = Action.createResume;

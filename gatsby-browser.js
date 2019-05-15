@@ -5,7 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import "./src/styles/semantic-theme/semantic.less";
 import "./src/styles/globals.scss";
 import buildClientCache, { persistCache } from "./src/State/apollo-setup";
-import { ResumemakrProvider } from "./src/components/resumemakr";
+import { ResumemakrProvider } from "./src/utils/context";
 import { RootHelmet } from "./src/components/root-helmet";
 
 export const wrapRootElement = ({ element }) => {

@@ -6,14 +6,14 @@ import {
   GetResumeVariables,
   GetResume_getResume
 } from "../../graphql/apollo/types/GetResume";
-import { UpdateResumeForm as App } from "./update-resume-form-x";
+import { UpdateResumeForm as App } from "./component";
 import { updateResumeGql } from "../../graphql/apollo/update-resume.mutation";
-import { OwnProps, formikConfig } from "./update-resume-form";
+import { OwnProps, formikConfig } from "./utils";
 import {
   getResumeQuery,
   GetResumeProps
 } from "../../graphql/apollo/get-resume.query";
-import { getInitialValues } from "./update-resume-form";
+import { getInitialValues } from "./utils";
 import { withMatchHOC } from "../with-match-hoc";
 import { RESUME_PATH, ResumePathMatch } from "../../routing";
 

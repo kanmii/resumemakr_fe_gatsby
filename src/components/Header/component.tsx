@@ -139,8 +139,6 @@ export function Header(merkmale: Props) {
   );
 }
 
-export default Header;
-
 function Search({ user }: { user?: UserFragment }) {
   if (!user) {
     return null;

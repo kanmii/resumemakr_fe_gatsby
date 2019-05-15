@@ -1,3 +1,4 @@
+// tslint:disable:no-any
 import React from "react";
 import {
   render,
@@ -7,16 +8,24 @@ import {
   act
 } from "react-testing-library";
 
-import { Login } from "../components/Login/login-x";
-import { Props } from "../components/Login/login";
-import { fillField, WithData, renderWithApollo } from "./test_utils";
-import {
-  LoginMutation,
-  LoginMutation_login_user
-} from "../graphql/apollo/types/LoginMutation";
-import { UserFragment } from "../graphql/apollo/types/UserFragment";
+import { Login } from "../components/Login/component";
+import { Props } from "../components/Login/utils";
+import { fillField, renderWithApollo } from "./test_utils";
+import { LoginMutation_login_user } from "../graphql/apollo/types/LoginMutation";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
+
+jest.mock("../utils/refresh-to-my-resumes");
+jest.mock("../State/get-conn-status");
+jest.mock("../components/Header", () => ({
+  Header: jest.fn(() => null)
+}));
+
+import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
+import { getConnStatus } from "../State/get-conn-status";
+
+const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
+const mockGetConnStatus = getConnStatus as jest.Mock;
 
 const LoginP = Login as React.FunctionComponent<Partial<Props>>;
 const passwortMuster = new RegExp("Password");
@@ -24,21 +33,13 @@ const passwortMuster = new RegExp("Password");
 it("renders correctly and submits", async () => {
   const user = {} as LoginMutation_login_user;
   const login = { user };
-  const result = {
+
+  const { ui, mockUpdateLocalUser, mockLogin } = makeComp();
+
+  mockLogin.mockResolvedValue({
     data: {
       login
     }
-  } as WithData<LoginMutation>;
-
-  const mockLogin = makeLoginFunc(result);
-  const mockUpdateLocalUser = jest.fn();
-  const nachgemachtemAktualisierenZuHause = jest.fn();
-
-  const { ui } = makeComp({
-    login: mockLogin,
-    updateLocalUser: mockUpdateLocalUser,
-    getConn: jest.fn(() => Promise.resolve(true)),
-    refreshToHome: nachgemachtemAktualisierenZuHause
   });
 
   const { getByText, getByLabelText } = render(ui);
@@ -60,25 +61,11 @@ it("renders correctly and submits", async () => {
     }
   );
 
-  expect(nachgemachtemAktualisierenZuHause).toBeCalled();
-});
-
-it("renders error if login function is null", async () => {
-  const { ui } = makeComp({
-    login: undefined
-  });
-
-  const { getByText, getByLabelText, getByTestId } = render(ui);
-
-  fillForm(getByLabelText, getByText);
-  const $error = await waitForElement(() => getByTestId("login-form-error"));
-  expect($error).toContainElement(getByText(/Unknown error/));
+  expect(mockRefreshToMyResumes).toBeCalled();
 });
 
 it("renders error if email is invalid", async () => {
-  const { ui } = makeComp({
-    login: makeLoginFunc()
-  });
+  const { ui } = makeComp();
 
   const { getByText, getByLabelText, getByTestId } = render(ui);
 
@@ -94,9 +81,7 @@ it("renders error if email is invalid", async () => {
 });
 
 it("renders error if password is invalid", async () => {
-  const { ui } = makeComp({
-    login: makeLoginFunc()
-  });
+  const { ui } = makeComp();
 
   const { getByText, getByLabelText, getByTestId } = render(ui);
 
@@ -112,19 +97,13 @@ it("renders error if password is invalid", async () => {
 });
 
 it("renders error if server returns error", async () => {
-  const mockLogin = jest.fn(() =>
-    Promise.reject(
-      new ApolloError({
-        graphQLErrors: [new GraphQLError("Invalid email/password")]
-      })
-    )
-  );
+  const { ui, mockLogin } = makeComp();
 
-  const { ui } = makeComp({
-    login: mockLogin,
-    updateLocalUser: jest.fn(),
-    getConn: jest.fn(() => Promise.resolve(true))
-  });
+  mockLogin.mockRejectedValue(
+    new ApolloError({
+      graphQLErrors: [new GraphQLError("Invalid email/password")]
+    })
+  );
 
   const { getByText, getByLabelText, getByTestId } = render(ui);
   fillForm(getByLabelText, getByText);
@@ -134,12 +113,8 @@ it("renders error if server returns error", async () => {
 });
 
 it("logs out user if logged in", done => {
-  const mockUpdateLocalUser = jest.fn();
-  const user = {} as UserFragment;
-
-  const { ui } = makeComp({
-    updateLocalUser: mockUpdateLocalUser,
-    userLocal: { user }
+  const { ui, mockUpdateLocalUser } = makeComp(true, {
+    userLocal: { user: {} }
   });
 
   render(ui);
@@ -156,12 +131,8 @@ it("logs out user if logged in", done => {
 });
 
 it("does not log out user if user not logged in", async () => {
-  const mockUpdateLocalUser = jest.fn();
-  const user = null;
-
-  const { ui } = makeComp({
-    updateLocalUser: mockUpdateLocalUser,
-    userLocal: { user }
+  const { ui, mockUpdateLocalUser } = makeComp(false, {
+    userLocal: { user: null }
   });
 
   const {} = render(ui);
@@ -169,10 +140,7 @@ it("does not log out user if user not logged in", async () => {
 });
 
 it("renders error if no connection", async () => {
-  const { ui } = makeComp({
-    getConn: jest.fn(() => Promise.resolve(false)),
-    login: jest.fn()
-  });
+  const { ui } = makeComp(false);
 
   const { getByText, getByLabelText, queryByText } = render(ui);
 
@@ -184,15 +152,12 @@ it("renders error if no connection", async () => {
 });
 
 it("renders error if server did not return a valid user", async () => {
-  const result = {
+  const { ui, mockLogin } = makeComp();
+
+  mockLogin.mockResolvedValue({
     data: {
       login: { user: null }
     }
-  } as WithData<LoginMutation>;
-
-  const { ui } = makeComp({
-    getConn: jest.fn(() => Promise.resolve(true)),
-    login: makeLoginFunc(result)
   });
 
   const { getByText, getByLabelText, queryByText } = render(ui);
@@ -210,38 +175,37 @@ it("renders error if server did not return a valid user", async () => {
   expect($error).toBeInTheDocument();
 });
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-////////////////////////// HELPER FUNCTIONS ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-// tslint:disable-next-line:no-any
-function makeLoginFunc(data?: any) {
-  if (data) {
-    return jest.fn(() => Promise.resolve(data));
-  }
-
-  return jest.fn();
-}
-
-// tslint:disable-next-line:no-any
 function fillForm(getByLabelText: any, getByText: any) {
   fillField(getByLabelText("Email"), "me@me.com");
   fillField(getByLabelText(passwortMuster), "awesome pass");
   fireEvent.click(getByText(/Submit/));
 }
 
-function makeComp(params: Partial<Props> | {} = {}) {
-  const mockPush = jest.fn();
+function makeComp(
+  isConnected: boolean = true,
+  params: Partial<Props> | {} = {}
+) {
+  mockGetConnStatus.mockReset();
+  mockGetConnStatus.mockResolvedValue(isConnected);
+
   const mockNavigate = jest.fn();
+  const mockLogin = jest.fn();
+  const mockUpdateLocalUser = jest.fn();
 
   const { Ui, ...rest1 } = renderWithApollo(LoginP);
 
   return {
     ...rest1,
-    ui: <Ui navigate={mockNavigate} {...params} />,
-    mockPush,
-    mockNavigate
+    ui: (
+      <Ui
+        navigate={mockNavigate}
+        login={mockLogin}
+        updateLocalUser={mockUpdateLocalUser}
+        {...params}
+      />
+    ),
+    mockNavigate,
+    mockUpdateLocalUser,
+    mockLogin
   };
 }

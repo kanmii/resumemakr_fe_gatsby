@@ -15,23 +15,23 @@ import { WindowLocation } from "@reach/router";
 import {
   UpdateResumeForm,
   makeUrlHashSegment
-} from "../components/UpdateResumeForm/update-resume-form-x";
+} from "../components/UpdateResumeForm/component";
 import {
   makeSkillFieldName,
   uiTexts,
   emptyVal,
   fieldName
-} from "../components/Skills/skills";
+} from "../components/Skills/utils";
 import {
   Props,
   formikConfig,
   Section
-} from "../components/UpdateResumeForm/update-resume-form";
+} from "../components/UpdateResumeForm/utils";
 import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
   makeListStringHiddenLabelText,
   makeListStringFieldName
-} from "../components/ListStrings/list-strings-x";
+} from "../components/ListStrings";
 import { fillField } from "./test_utils";
 import {
   makeListDisplayCtrlTestId,

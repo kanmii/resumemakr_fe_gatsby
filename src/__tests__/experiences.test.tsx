@@ -15,19 +15,19 @@ import { WindowLocation } from "@reach/router";
 import {
   UpdateResumeForm,
   makeUrlHashSegment
-} from "../components/UpdateResumeForm/update-resume-form-x";
+} from "../components/UpdateResumeForm/component";
 import {
   Props,
   formikConfig,
   Section
-} from "../components/UpdateResumeForm/update-resume-form";
+} from "../components/UpdateResumeForm/utils";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import {
   uiTexts,
   makeExperienceFieldName
-} from "../components/Experiences/experiences";
+} from "../components/Experiences/utils";
 import {
   ListDisplayCtrlNames,
   makeListDisplayCtrlTestId
@@ -35,7 +35,7 @@ import {
 import {
   makeListStringFieldName,
   makeListStringHiddenLabelText
-} from "../components/ListStrings/list-strings-x";
+} from "../components/ListStrings";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;

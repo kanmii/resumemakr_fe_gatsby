@@ -1,5 +1,5 @@
-import { Experiences } from "./experiences-x";
-import { Props } from "./experiences";
+import { Experiences as Comp } from "./component";
+import { Props } from "./utils";
 import { withLocationHOC } from "../with-location-hoc";
 
-export default withLocationHOC<Props>(Experiences);
+export const Experiences = withLocationHOC<Props>(Comp);

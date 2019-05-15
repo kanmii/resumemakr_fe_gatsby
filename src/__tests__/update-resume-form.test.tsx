@@ -18,7 +18,7 @@ import {
   UpdateResumeForm,
   makeUrlHashSegment,
   isBase64String
-} from "../components/UpdateResumeForm/update-resume-form-x";
+} from "../components/UpdateResumeForm/component";
 import {
   Props,
   formikConfig,
@@ -26,7 +26,7 @@ import {
   Section,
   prevTooltipText,
   uiTexts
-} from "../components/UpdateResumeForm/update-resume-form";
+} from "../components/UpdateResumeForm/utils";
 import {
   renderWithApollo,
   fillField,
@@ -36,11 +36,11 @@ import {
   jpegBase64StringPrefix
 } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
-import { uiTexts as personalInfoUiTexts } from "../components/PersonalInfo/personal-info";
+import { uiTexts as personalInfoUiTexts } from "../components/PersonalInfo/utils";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import { UpdateResumeMutationFn } from "../graphql/apollo/update-resume.mutation";
 import { ALREADY_UPLOADED } from "../constants";
-import { uiTexts as photoFieldUiText } from "../components/PhotoField/photo-field";
+import { uiTexts as photoFieldUiText } from "../components/PhotoField/utils";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;
@@ -50,9 +50,9 @@ const debounceTime = 0;
  * Mock out the Preview component
  */
 
-jest.mock("../components/Preview", () => {
-  return () => <div data-testid="preview-resume-section">1</div>;
-});
+jest.mock("../components/Preview", () => ({
+  Preview: jest.fn(() => <div data-testid="preview-resume-section">1</div>)
+}));
 
 // ---------------------------------TESTS --------------------------------
 

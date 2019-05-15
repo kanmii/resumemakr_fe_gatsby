@@ -9,7 +9,7 @@ import { HttpLink } from "apollo-link-http";
 
 import { getToken } from "./tokens";
 import { SCHEMA_VERSION, SCHEMA_VERSION_KEY, SCHEMA_KEY } from "../constants";
-import { getSocket } from "../socket";
+import { getSocket } from "../utils/socket";
 import CONN_MUTATION, { ConnMutData } from "./conn.mutation";
 import { initState, LocalState } from "./resolvers";
 

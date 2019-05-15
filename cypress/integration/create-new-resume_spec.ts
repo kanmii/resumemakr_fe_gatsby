@@ -8,16 +8,16 @@ import { uiTexts } from "../../src/components/MyResumes/utils";
 import {
   Section,
   nextTooltipText
-} from "../../src/components/UpdateResumeForm/update-resume-form";
+} from "../../src/components/UpdateResumeForm/utils";
 import {
   defaultVal as personalInfoVals,
   uiTexts as personalInfoUiTexts
-} from "../../src/components/PersonalInfo/personal-info";
+} from "../../src/components/PersonalInfo/utils";
 import {
   uiTexts as experiencesUiTexts,
   defaultVal as experiencesVals,
   makeExperienceFieldName
-} from "../../src/components/Experiences/experiences";
+} from "../../src/components/Experiences/utils";
 
 describe("create new resume page", function() {
   beforeEach(() => {

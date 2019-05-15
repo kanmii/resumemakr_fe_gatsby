@@ -1,3 +1,3 @@
-import { Skills } from "./skills-x";
+import { Skills as App } from "./component";
 
-export default Skills;
+export const Skills = App;

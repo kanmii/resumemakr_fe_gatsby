@@ -6,15 +6,15 @@ import { render, fireEvent, wait } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 
-import { UpdateResumeForm } from "../components/UpdateResumeForm/update-resume-form-x";
+import { UpdateResumeForm } from "../components/UpdateResumeForm/component";
 import {
   Props,
   formikConfig,
   getInitialValues
-} from "../components/UpdateResumeForm/update-resume-form";
+} from "../components/UpdateResumeForm/utils";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute } from "../routing";
-import { uiTexts, defaultVal } from "../components/PersonalInfo/personal-info";
+import { uiTexts, defaultVal } from "../components/PersonalInfo/utils";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;

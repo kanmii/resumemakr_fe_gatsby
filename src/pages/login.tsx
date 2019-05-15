@@ -4,9 +4,8 @@ import { Helmet } from "react-helmet-async";
 
 import { makeSiteTitle } from "../constants";
 
-import Layout from "../components/Layout";
-import Login from "../components/Login";
-import Header from "../components/Header";
+import { Layout } from "../components/Layout";
+import { Login } from "../components/Login";
 
 export default function LoginPage(props: RouteComponentProps) {
   return (
@@ -16,7 +15,7 @@ export default function LoginPage(props: RouteComponentProps) {
       </Helmet>
 
       <div className="app-container">
-        <Login header={<Header />} {...props} />
+        <Login {...props} />
       </div>
     </Layout>
   );

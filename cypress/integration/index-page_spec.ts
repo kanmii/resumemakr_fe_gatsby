@@ -1,8 +1,5 @@
 import { SITE_TITLE } from "../../src/constants";
-import {
-  FORM_RENDER_PROPS,
-  uiTexts
-} from "../../src/components/SignUp/sign-up";
+import { FORM_RENDER_PROPS, uiTexts } from "../../src/components/SignUp/utils";
 import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
 import { TEST_USER } from "../support/utils";
 

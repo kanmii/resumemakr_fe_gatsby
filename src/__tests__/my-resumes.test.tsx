@@ -29,7 +29,9 @@ import { CloneLebensLaufFnArgs } from "../graphql/apollo/clone-resume.mutation";
 import { ResumeTitlesProps as RTP } from "../graphql/apollo/resume-titles.query";
 import { RouteComponentProps } from "@reach/router";
 
-jest.mock("../components/Header", () => jest.fn(() => null));
+jest.mock("../components/Header", () => ({
+  Header: jest.fn(() => null)
+}));
 
 const MyResumesP = MyResumes as React.FunctionComponent<Partial<Props>>;
 

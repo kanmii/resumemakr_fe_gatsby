@@ -4,8 +4,8 @@ import {
   GetResume,
   GetResumeVariables
 } from "../../graphql/apollo/types/GetResume";
-import { Preview } from "./preview-x";
-import { OwnProps, Mode } from "./preview";
+import { Preview as App } from "./component";
+import { OwnProps, Mode } from "./utils";
 import {
   getResumeQuery,
   GetResumeProps
@@ -40,7 +40,7 @@ const getResumeGql = graphql<
   }
 });
 
-export default compose(
+export const Preview = compose(
   withMatchHOC<OwnProps, ResumePathMatch>(RESUME_PATH),
   getResumeGql
-)(Preview);
+)(App);

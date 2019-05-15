@@ -1,3 +1,3 @@
-import { Rated } from "./rated-x";
+import { Rated as App } from "./component";
 
-export default Rated;
+export const Rated = App;

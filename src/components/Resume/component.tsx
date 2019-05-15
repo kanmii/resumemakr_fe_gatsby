@@ -3,8 +3,8 @@ import { WindowLocation } from "@reach/router";
 
 import "./styles.scss";
 import { UpdateResumeForm } from "../UpdateResumeForm";
-import Preview from "../Preview";
-import { Mode as PreviewMode } from "../Preview/preview";
+import { Preview } from "../Preview";
+import { Mode as PreviewMode } from "../Preview/utils";
 import { ResumePathHash } from "../../routing";
 import { Props } from "./utils";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";

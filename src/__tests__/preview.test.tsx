@@ -11,8 +11,8 @@ import {
   RatedInput
 } from "../graphql/apollo/types/globalTypes";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
-import { Preview } from "../components/Preview/preview-x";
-import { Mode, Props } from "../components/Preview/preview";
+import { Preview } from "../components/Preview/component";
+import { Mode, Props } from "../components/Preview/utils";
 import { renderWithRouter, renderWithApollo } from "./test_utils";
 
 const PreviewP = Preview as React.ComponentClass<Partial<Props>>;
