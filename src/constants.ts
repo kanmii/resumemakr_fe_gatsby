@@ -7,6 +7,7 @@ export const SECOND_LEVEL_CLASS = "app-main";
 export const ALREADY_UPLOADED = "___ALREADY_UPLOADED___";
 export const SITE_TITLE = "Resume Makr";
 export const USER_KEY = "1554058206372----x-xxx---1554058219607";
+export const NOT_FOUND_TITLE = `Page Not Found | ${SITE_TITLE}`;
 
 // istanbul ignore next:
 export function makeSiteTitle(title: string) {
@@ -18,4 +19,8 @@ export function makeSiteTitle(title: string) {
 export function noOp() {
   // istanbul ignore next:
   return null;
+}
+
+export function setDocumentTitle(title?: string) {
+  document.title = title ? title : SITE_TITLE;
 }

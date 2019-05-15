@@ -32,6 +32,8 @@ import { CloneLebensLaufFnArgs } from "../graphql/apollo/clone-resume.mutation";
 import { ResumeTitlesProps as RTP } from "../graphql/apollo/resume-titles.query";
 import { RouteComponentProps } from "@reach/router";
 
+jest.mock("../components/Header", () => jest.fn(() => null));
+
 const HomeP = ResumesPage as React.FunctionComponent<Partial<Props>>;
 
 it("renders loading indicator", () => {

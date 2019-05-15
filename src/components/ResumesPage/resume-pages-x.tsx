@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Modal, Button, Label, Icon, Popup } from "semantic-ui-react";
 import { MutationUpdaterFn, ApolloError } from "apollo-client";
 import dateFormat from "date-fns/format";
@@ -30,6 +30,8 @@ import { initialFormValues } from "../UpdateResumeForm/update-resume-form";
 import { Mode as PreviewMode } from "../Preview/preview";
 import AutoTextarea from "../AutoTextarea";
 import { AppModal } from "../AppModal";
+import { makeSiteTitle, setDocumentTitle } from "../../constants";
+import Header from "../../components/Header";
 
 let initialValues = emptyVal;
 let action = Action.createResume;
@@ -42,8 +44,7 @@ export function ResumesPage(merkmale: Props) {
     deleteResume,
     resumeTitlesGql: { loading, error, listResumes },
     createResume,
-    cloneResume,
-    header
+    cloneResume
   } = merkmale;
   const verlauf = navigate as NavigateFn;
   const edges = listResumes && listResumes.edges;
@@ -79,6 +80,12 @@ export function ResumesPage(merkmale: Props) {
   );
 
   const deleteTriggerRefs = useRef<{ id?: undefined | HTMLElement }>({});
+
+  useEffect(() => {
+    setDocumentTitle(makeSiteTitle("My Resumes"));
+
+    return setDocumentTitle;
+  }, []);
 
   function handleConfirmDeletePopup() {
     einstellenBestatigenLoschenId(undefined);
@@ -605,7 +612,7 @@ export function ResumesPage(merkmale: Props) {
 
   return (
     <div className="components-home">
-      {header}
+      <Header />
 
       <div className="main">{render()}</div>
     </div>

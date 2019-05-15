@@ -19,8 +19,6 @@ export function RootHelmet() {
         content="Use resumemakr online resume builder app. Build your perfect resume in minutes. Download, apply, and start getting more interviews!"
       />
       <meta name="application" content="resumemakr" />
-
-      <title>Resume Makr</title>
     </Helmet>
   );
 }

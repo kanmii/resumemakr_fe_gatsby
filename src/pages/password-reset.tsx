@@ -9,11 +9,11 @@ import { makeSiteTitle } from "../constants";
 export default function PasswordResetPage(props: RouteComponentProps) {
   return (
     <Layout>
-      <Header />
-
       <Helmet>
         <title>{makeSiteTitle("Password Reset")}</title>
       </Helmet>
+
+      <Header />
 
       <div> password reset page</div>
     </Layout>

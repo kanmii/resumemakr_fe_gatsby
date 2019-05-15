@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { WindowLocation } from "@reach/router";
 
 import "./styles.scss";
@@ -7,19 +7,27 @@ import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import { ResumePathHash } from "../../routing";
 import { Props } from "./resume";
+import { makeSiteTitle, setDocumentTitle } from "../../constants";
+import { ResumeHeader } from "./header";
 
 export function Resume(props: Props) {
-  const { header } = props;
+  const { title } = props;
 
   const location = props.location as WindowLocation;
 
   const hash = location.hash;
 
+  useEffect(() => {
+    setDocumentTitle(makeSiteTitle(title as string));
+
+    return setDocumentTitle;
+  }, [title]);
+
   return (
     <div className="components-resume">
       {hash.startsWith(ResumePathHash.edit) && (
         <>
-          {header}
+          <ResumeHeader />
 
           <div className="main">
             <div className="side-bar">.</div>
@@ -37,5 +45,3 @@ export function Resume(props: Props) {
     </div>
   );
 }
-
-export default Resume;
