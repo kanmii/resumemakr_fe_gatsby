@@ -115,6 +115,16 @@ it("renders error if server returns error", async () => {
    * And page should be automatically scrolled to the top
    */
   expect(mockScrollToTop).toBeCalled();
+
+  /**
+   * When we close the error UI
+   */
+  fireEvent.click($error.querySelector(".icon.close") as any);
+
+  /**
+   * Then we should no longer see any error UI
+   */
+  expect(queryByTestId(uiTexts.formErrorTestId)).not.toBeInTheDocument();
 });
 
 it("renders error if nicht verbinden", async () => {
