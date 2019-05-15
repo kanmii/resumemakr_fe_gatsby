@@ -11,7 +11,7 @@ import {
 } from "react-testing-library";
 import { ApolloError } from "apollo-client";
 
-import { ResumesPage } from "../components/ResumesPage/resume-pages-x";
+import { MyResumes } from "../components/MyResumes/component";
 import {
   fillField,
   WithData,
@@ -19,10 +19,7 @@ import {
   renderWithRouter
 } from "./test_utils";
 import { makeResumeRoute } from "../routing";
-import {
-  Props,
-  ResumeTitlesProps
-} from "../components/ResumesPage/resume-pages";
+import { Props, ResumeTitlesProps } from "../components/MyResumes/utils";
 import { CreateResume } from "../graphql/apollo/types/CreateResume";
 import { CloneResume } from "../graphql/apollo/types/CloneResume";
 import { ResumeTitles_listResumes } from "../graphql/apollo/types/ResumeTitles";
@@ -34,7 +31,7 @@ import { RouteComponentProps } from "@reach/router";
 
 jest.mock("../components/Header", () => jest.fn(() => null));
 
-const HomeP = ResumesPage as React.FunctionComponent<Partial<Props>>;
+const MyResumesP = MyResumes as React.FunctionComponent<Partial<Props>>;
 
 it("renders loading indicator", () => {
   /**
@@ -517,7 +514,7 @@ it("clones resume", async () => {
 ///////////////////////////////////////////////////////////////////////////////
 
 function setUp(props: Partial<RouteComponentProps> = {}) {
-  const { Ui: ui, ...routerProps } = renderWithRouter(HomeP, props);
+  const { Ui: ui, ...routerProps } = renderWithRouter(MyResumesP, props);
   const { Ui, ...apollo } = renderWithApollo(ui);
 
   return { Ui, ...apollo, ...routerProps };

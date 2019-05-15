@@ -1,6 +1,6 @@
 import { graphql, compose } from "react-apollo";
 
-import { ResumesPage as App } from "./resume-pages-x";
+import { MyResumes as App } from "./component";
 import CREATE_RESUME_TITLE, {
   CreateResumeProps
 } from "../../graphql/apollo/create-resume.mutation";
@@ -21,7 +21,7 @@ import {
 } from "../../graphql/apollo/types/CloneResume";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
-import { ResumeTitlesProps } from "./resume-pages";
+import { ResumeTitlesProps } from "./utils";
 
 const createResumeGql = graphql<
   {},
@@ -73,7 +73,7 @@ const cloneResumeGql = graphql<
   }
 });
 
-export const ResumesPage = compose(
+export const MyResumes = compose(
   resumeTitlesGql,
   createResumeGql,
   deleteResumeGql,
