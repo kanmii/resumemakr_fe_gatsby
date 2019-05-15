@@ -36,5 +36,9 @@ module.exports = {
   testURL: "http://localhost",
   setupFiles: ["<rootDir>/loadershim.js"],
   setupFilesAfterEnv: ["<rootDir>/src/setupTests.js"],
-  watchPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/cypress"]
+  watchPathIgnorePatterns: [
+    "<rootDir>/node_modules/",
+    "<rootDir>/cypress",
+    "<rootDir>/src/pages/"
+  ]
 };
