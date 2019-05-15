@@ -1,3 +1,3 @@
 export const appPageUiTexts = {
-  title: "Your Resumes"
+  title: "My Resumes"
 };

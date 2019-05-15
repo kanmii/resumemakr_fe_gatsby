@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { WindowLocation } from "@reach/router";
 
 import "./styles.scss";
@@ -7,7 +7,6 @@ import Preview from "../Preview";
 import { Mode as PreviewMode } from "../Preview/preview";
 import { ResumePathHash } from "../../routing";
 import { Props } from "./resume";
-import { useSetParentClassNameOnMount } from "../hooks";
 
 export function Resume(props: Props) {
   const { header } = props;
@@ -16,17 +15,13 @@ export function Resume(props: Props) {
 
   const hash = location.hash;
 
-  const componentChildRef = useRef<HTMLDivElement>(null);
-
-  useSetParentClassNameOnMount(componentChildRef, "components-resume");
-
   return (
     <div className="components-resume">
       {hash.startsWith(ResumePathHash.edit) && (
         <>
           {header}
 
-          <div className="main" ref={componentChildRef}>
+          <div className="main">
             <div className="side-bar">.</div>
 
             <div className="main-container">

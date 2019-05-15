@@ -6,6 +6,7 @@
   .main {
     @extend %app-main;
     display: flex;
+    overflow-y: hidden;
   }
 
   .side-bar {

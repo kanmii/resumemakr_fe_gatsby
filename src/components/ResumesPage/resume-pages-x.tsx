@@ -29,7 +29,6 @@ import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../UpdateResumeForm/update-resume-form";
 import { Mode as PreviewMode } from "../Preview/preview";
 import AutoTextarea from "../AutoTextarea";
-import { useSetParentClassNameOnMount as useSetParentAttrsOnMount } from "../hooks";
 import { AppModal } from "../AppModal";
 
 let initialValues = emptyVal;
@@ -80,10 +79,6 @@ export function ResumesPage(merkmale: Props) {
   );
 
   const deleteTriggerRefs = useRef<{ id?: undefined | HTMLElement }>({});
-
-  const componentChildRef = useRef<HTMLDivElement>(null);
-
-  useSetParentAttrsOnMount(componentChildRef, "components-home");
 
   function handleConfirmDeletePopup() {
     einstellenBestatigenLoschenId(undefined);
@@ -612,9 +607,7 @@ export function ResumesPage(merkmale: Props) {
     <div className="components-home">
       {header}
 
-      <div className="main" ref={componentChildRef}>
-        {render()}
-      </div>
+      <div className="main">{render()}</div>
     </div>
   );
 }
