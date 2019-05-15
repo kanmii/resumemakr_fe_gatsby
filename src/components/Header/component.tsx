@@ -18,7 +18,7 @@ import {
   removeTrailingSlash,
   RESUMES_HOME_PATH
 } from "../../routing";
-import { Props } from "./header";
+import { Props } from "./utils";
 import { UserFragment } from "../../graphql/apollo/types/UserFragment";
 
 const HOME_URLS = [RESUMES_HOME_PATH, ROOT_URL];

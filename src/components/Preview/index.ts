@@ -10,7 +10,7 @@ import {
   getResumeQuery,
   GetResumeProps
 } from "../../graphql/apollo/get-resume.query";
-import { withMatchHOC } from "../components";
+import { withMatchHOC } from "../with-match-hoc";
 import { RESUME_PATH } from "../../routing";
 import { ResumePathMatch } from "../../routing";
 

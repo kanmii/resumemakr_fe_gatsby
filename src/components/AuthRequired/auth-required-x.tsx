@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { navigate } from "gatsby";
 
 import { LOGIN_URL } from "../../routing";
-import { WithUser } from "../components";
+import { WithUser } from "../with-user-hoc";
 import { RouteComponentProps } from "@reach/router";
 
 type Props = WithUser &

@@ -1,4 +1,4 @@
 import { AuthRequired } from "./auth-required-x";
-import { withUserHOC } from "../components";
+import { withUserHOC } from "../with-user-hoc";
 
 export default withUserHOC(AuthRequired);

@@ -3,7 +3,7 @@ import { LocationContext, WindowLocation, NavigateFn } from "@reach/router";
 import { Menu } from "semantic-ui-react";
 
 import "./styles.scss";
-import { withLocationHOC } from "../../components";
+import { withLocationHOC } from "../../with-location-hoc";
 import { ResumePathHash } from "../../../routing";
 import Header from "../../Header";
 import { ToolTip } from "../../tool-tip";

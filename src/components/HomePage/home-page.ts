@@ -1,5 +1,5 @@
 import { RouteComponentProps } from "@reach/router";
-import { WithUser } from "../components";
+import { WithUser } from "../with-user-hoc";
 
 export interface Props extends RouteComponentProps, WithUser {}
 

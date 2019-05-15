@@ -14,7 +14,7 @@ import {
   GetResumeProps
 } from "../../graphql/apollo/get-resume.query";
 import { getInitialValues } from "./update-resume-form";
-import { withMatchHOC } from "../components";
+import { withMatchHOC } from "../with-match-hoc";
 import { RESUME_PATH, ResumePathMatch } from "../../routing";
 
 const getResumeGql = graphql<
