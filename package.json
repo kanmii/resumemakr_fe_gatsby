@@ -24,7 +24,7 @@
     "gen-apollo-types": "apollo codegen:generate --endpoint=http://localhost:4023/api --tagName=gql --target=typescript --includes=src/graphql/apollo/*.ts --outputFlat=src/graphql/apollo/types",
     "gen-gatsby-types": "apollo codegen:generate --endpoint=http://localhost:3023/___graphql --tagName=graphql --target=typescript --includes=src/**/*.ts* --outputFlat=src/graphql/gatsby/types",
     "cy-open-dev": "cypress open --config baseUrl=http://localhost:3023/",
-    "cy-open-staging": "cypress open --config baseUrl=http://localhost:3022/",
+    "cy-open-staging": "env-cmd -e staging cypress open --config baseUrl=http://localhost:3022/",
     "cy-run-dev": "cypress run --config baseUrl=http://localhost:3023/",
     "cy-run-staging": "env-cmd -e staging cypress run --config baseUrl=http://localhost:3022/",
     "build-deploy": "yarn build:production && yarn deploy",

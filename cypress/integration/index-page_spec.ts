@@ -5,7 +5,6 @@ import {
 } from "../../src/components/SignUp/sign-up";
 import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
 import { TEST_USER } from "../support/utils";
-import { appPageUiTexts } from "../../src/components/app";
 
 describe("index page", function() {
   beforeEach(() => {
@@ -44,6 +43,6 @@ describe("index page", function() {
     /**
      * The user should be redirected to app page
      */
-    cy.title().should("contain", appPageUiTexts.title);
+    cy.title().should("contain", "My Resumes");
   });
 });

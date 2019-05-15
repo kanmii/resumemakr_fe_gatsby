@@ -33,10 +33,15 @@ describe("create new resume page", function() {
     /**
      * And user is at the resumes page
      */
-    cy.visit(RESUMES_HOME_PATH, { failOnStatusCode: false });
+    cy.visit(RESUMES_HOME_PATH);
 
     /**
-     * And user clicks on the prompt to create a new resume
+     * Then user should see the title
+     */
+    cy.title().should("contain", "My Resumes");
+
+    /**
+     * When user clicks on the prompt to create a new resume
      */
     cy.getByText(/you have no resumes/i).click();
 
@@ -66,17 +71,17 @@ describe("create new resume page", function() {
     cy.getByText(uiTexts.form.submitBtnText).click();
 
     /**
-     * Then user should see text that shows user is on the page
-     * to complete resume details
+     * Then page title should change to that of newly created resume
      */
-    const $firstNameInput = cy.getByLabelText(
-      personalInfoUiTexts.firstNameLabel
-    );
+    cy.title().should("contain", title);
 
     /**
      * When user completes the first name field
      */
-    $firstNameInput.type(personalInfoVals.firstName as string);
+
+    cy.getByLabelText(personalInfoUiTexts.firstNameLabel).type(
+      personalInfoVals.firstName as string
+    );
 
     /**
      * And user completes the last name field
