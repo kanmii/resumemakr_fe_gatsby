@@ -1,36 +1,36 @@
-import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
+import { RegistrationInput } from "../../src/graphql/apollo-types/globalTypes";
 import {
   UserRegMutation,
-  UserRegMutationVariables
-} from "../../src/graphql/apollo/types/UserRegMutation";
-import { userRegMutation } from "../../src/graphql/apollo/user-reg.mutation";
+  UserRegMutationVariables,
+} from "../../src/graphql/apollo-types/UserRegMutation";
+import { USER_REGISTRATION_MUTATION } from "../../src/graphql/apollo/user-reg.mutation";
 import { USER_TOKEN_ENV_KEY } from "./constants";
 import {
-  userLocalMutation,
-  Variable as UserLocalMutation
-} from "../../src/State/user.local.mutation";
-import { CreateResumeInput } from "../../src/graphql/apollo/types/globalTypes";
+  USER_LOCAL_MUTATION,
+  Variable as UserLocalMutation,
+} from "../../src/state/user.local.mutation";
+import { CreateResumeInput } from "../../src/graphql/apollo-types/globalTypes";
 
 export const TEST_USER: RegistrationInput = {
   email: "a@b.com",
   password: "123456",
   passwordConfirmation: "123456",
   source: "password",
-  name: "John Doe"
+  name: "John Doe",
 };
 
 export const CREATE_RESUME_MINIMAL_DATA: CreateResumeInput = {
   title: "Resume 1",
-  description: "Resume 1 description"
+  description: "Resume 1 description",
 };
 
 export function createUser(input: RegistrationInput) {
   return cy
     .mutate<UserRegMutation, UserRegMutationVariables>({
-      mutation: userRegMutation,
+      mutation: USER_REGISTRATION_MUTATION,
       variables: {
-        input
-      }
+        input,
+      },
     })
     .then(({ data }) => {
       const user = data && data.registration && data.registration.user;
@@ -48,10 +48,10 @@ export function createUser(input: RegistrationInput) {
 export function createUserAndLogin(input: RegistrationInput) {
   createUser(input).then(user => {
     return cy.mutate<UserLocalMutation, UserLocalMutation>({
-      mutation: userLocalMutation,
+      mutation: USER_LOCAL_MUTATION,
       variables: {
-        user
-      }
+        user,
+      },
     });
   });
 }

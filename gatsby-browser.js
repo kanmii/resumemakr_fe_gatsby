@@ -5,7 +5,7 @@ import "./src/styles/semantic-theme/semantic.less";
 import "./src/styles/globals.scss";
 import buildClientCache, {
   restoreCacheOrPurgeStorage
-} from "./src/State/apollo-setup";
+} from "./src/state/apollo-setup";
 import { ResumemakrProvider } from "./src/utils/context";
 import { RootHelmet } from "./src/components/root-helmet";
 

@@ -1,21 +1,23 @@
-import { compose, graphql } from "react-apollo";
-
+import { graphql } from "react-apollo";
+import compose from "lodash/flowRight";
 import {
   GetResume,
-  GetResumeVariables
-} from "../../graphql/apollo/types/GetResume";
-import { Preview as App } from "./component";
-import { OwnProps, Mode } from "./utils";
+  GetResumeVariables,
+} from "../../graphql/apollo-types/GetResume";
+import { Preview as App } from "./preview.component";
+import { OwnProps, Mode, MatchProps, Props } from "./preview.utils";
 import {
   getResumeQuery,
-  GetResumeProps
+  GetResumeProps,
 } from "../../graphql/apollo/get-resume.query";
 import { withMatchHOC } from "../with-match-hoc";
 import { RESUME_PATH } from "../../routing";
 import { ResumePathMatch } from "../../routing";
+import { ComponentType } from "react";
+import { UpdateResumeInput } from "../../graphql/apollo-types/globalTypes";
 
 const getResumeGql = graphql<
-  OwnProps,
+  MatchProps & OwnProps,
   GetResume,
   GetResumeVariables,
   GetResumeProps | void
@@ -25,22 +27,25 @@ const getResumeGql = graphql<
   skip: ({ mode }) => mode === Mode.preview,
 
   options: ({ match }) => {
-    // istanbul ignore next: trust @reach/router to parse the param correctly.
     const title = (match && match.title) || "";
 
     return {
       variables: {
         input: {
-          title: decodeURIComponent(title)
-        }
+          title: decodeURIComponent(title),
+        },
       },
 
-      fetchPolicy: "cache-and-network"
+      fetchPolicy: "cache-and-network",
     };
-  }
+  },
 });
 
 export const Preview = compose(
-  withMatchHOC<OwnProps, ResumePathMatch>(RESUME_PATH),
-  getResumeGql
-)(App);
+  withMatchHOC<Props, ResumePathMatch>(RESUME_PATH),
+  getResumeGql,
+)(App) as ComponentType<
+  OwnProps & {
+    getResume?: Partial<UpdateResumeInput>;
+  }
+>;

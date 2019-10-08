@@ -2,20 +2,20 @@ import React, { FunctionComponent, ComponentClass } from "react";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloLink } from "apollo-link";
-import { ApolloProvider } from "react-apollo";
-import { fireEvent } from "react-testing-library";
+import { ApolloProvider } from "@apollo/react-hooks";
+import { fireEvent } from "@testing-library/react";
 import { RouteComponentProps } from "@reach/router";
 
 export function makeClient() {
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: new ApolloLink()
+    link: new ApolloLink(),
   });
 }
 
 export function renderWithApollo<TProps>(
   Ui: FunctionComponent<TProps> | ComponentClass<TProps>,
-  initialProps: Partial<TProps> = {}
+  initialProps: Partial<TProps> = {},
 ) {
   const client = makeClient();
 
@@ -25,25 +25,35 @@ export function renderWithApollo<TProps>(
       <ApolloProvider client={client}>
         <Ui client={client} {...initialProps} {...props} />
       </ApolloProvider>
-    )
+    ),
   };
 }
 
 export function renderWithRouter<TProps extends RouteComponentProps>(
   Ui: FunctionComponent<TProps> | ComponentClass<TProps>,
-  routerProps: Partial<RouteComponentProps> = {}
+  routerProps: Partial<RouteComponentProps> = {},
 ) {
-  const { navigate = jest.fn(), ...rest } = routerProps;
+  const {
+    navigate = jest.fn(),
+    location = {
+      pathname: "/",
+    },
+    ...rest
+  } = routerProps;
+
   return {
     mockNavigate: navigate,
+    location,
     ...rest,
-    Ui: (props: TProps) => <Ui navigate={navigate} {...rest} {...props} />
+    Ui: (props: TProps) => (
+      <Ui location={location} navigate={navigate} {...rest} {...props} />
+    ),
   };
 }
 
 export function fillField(element: Element, value: string) {
   fireEvent.change(element, {
-    target: { value }
+    target: { value },
   });
 }
 
@@ -60,7 +70,7 @@ export function createFile(fileName: string, size: number, type: string) {
   Object.defineProperty(file, "size", {
     get() {
       return size;
-    }
+    },
   });
 
   return file;
@@ -68,7 +78,7 @@ export function createFile(fileName: string, size: number, type: string) {
 
 export function uploadFile($input: HTMLElement, file?: File) {
   Object.defineProperty($input, "files", {
-    value: (file && [file]) || []
+    value: file ? [file] : [],
   });
 
   fireEvent.change($input);

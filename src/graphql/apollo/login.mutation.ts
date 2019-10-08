@@ -1,10 +1,12 @@
 import gql from "graphql-tag";
-import { MutationFn } from "react-apollo";
-
+import { useMutation } from "react-apollo";
 import userFragment from "./user.fragment";
-import { LoginMutation, LoginMutationVariables } from "./types/LoginMutation";
+import {
+  LoginMutation,
+  LoginMutationVariables,
+} from "../apollo-types/LoginMutation";
 
-export const loginMutation = gql`
+export const LOGIN_MUTATION = gql`
   mutation LoginMutation($input: LoginInput!) {
     login(input: $input) {
       user {
@@ -15,10 +17,6 @@ export const loginMutation = gql`
   ${userFragment}
 `;
 
-export default loginMutation;
-
-export type LoginMutationFn = MutationFn<LoginMutation, LoginMutationVariables>;
-
-export interface LoginMutationProps {
-  login?: LoginMutationFn;
+export function useLoginMutation() {
+  return useMutation<LoginMutation, LoginMutationVariables>(LOGIN_MUTATION);
 }

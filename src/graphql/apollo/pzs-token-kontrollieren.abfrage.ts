@@ -4,7 +4,7 @@ import { DataValue } from "react-apollo";
 import {
   PzsTokenkontrollieren,
   PzsTokenkontrollierenVariables
-} from "./types/PzsTokenkontrollieren";
+} from "../apollo-types/PzsTokenkontrollieren";
 
 export const PZS_TOKEN_KONTROLLIEREN = gql`
   query PzsTokenkontrollieren($token: String!) {

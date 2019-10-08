@@ -1,8 +1,7 @@
 import gql from "graphql-tag";
 import { DataValue } from "react-apollo";
-
 import { userFragment } from "../graphql/apollo/user.fragment";
-import { UserFragment } from "../graphql/apollo/types/UserFragment";
+import { UserFragment } from "../graphql/apollo-types/UserFragment";
 
 export const USER_LOCAL_QUERY = gql`
   query UserLocalQuery {

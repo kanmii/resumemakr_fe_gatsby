@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
-import { MutationFn, graphql } from "react-apollo";
-
-import { DeleteResume, DeleteResumeVariables } from "./types/DeleteResume";
+import { MutationFunction, graphql } from "react-apollo";
+import { DeleteResume, DeleteResumeVariables } from "../apollo-types/DeleteResume";
 
 export const deleteResumeMutation = gql`
   mutation DeleteResume($input: DeleteResumeInput!) {
@@ -16,8 +15,13 @@ export const deleteResumeMutation = gql`
 
 export default deleteResumeMutation;
 
+export type DeleteResumeMutationFn = MutationFunction<
+  DeleteResume,
+  DeleteResumeVariables
+>;
+
 export interface DeleteResumeProps {
-  deleteResume?: MutationFn<DeleteResume, DeleteResumeVariables>;
+  deleteResume?: DeleteResumeMutationFn;
 }
 
 export const deleteResumeGql = graphql<
@@ -32,7 +36,7 @@ export const deleteResumeGql = graphql<
     }
 
     return {
-      deleteResume: mutate
+      deleteResume: mutate,
     };
-  }
+  },
 });

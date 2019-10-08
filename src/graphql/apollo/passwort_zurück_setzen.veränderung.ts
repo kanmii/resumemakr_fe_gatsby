@@ -1,11 +1,11 @@
 import gql from "graphql-tag";
-import { MutationFn } from "react-apollo";
+import { MutationFunction } from "react-apollo";
 
 import userFragment from "./user.fragment";
 import {
   PasswortZuruckSetzenVeranderung,
   PasswortZuruckSetzenVeranderungVariables
-} from "./types/PasswortZuruckSetzenVeranderung";
+} from "../apollo-types/PasswortZuruckSetzenVeranderung";
 
 export const PASSWORT_ZURÜCK_SETZEN_VERANDERUNG = gql`
   mutation PasswortZuruckSetzenVeranderung(
@@ -23,7 +23,7 @@ export const PASSWORT_ZURÜCK_SETZEN_VERANDERUNG = gql`
 export default PASSWORT_ZURÜCK_SETZEN_VERANDERUNG;
 
 export interface PasswortZuruckSetzenVeranderungMerkmale {
-  passwortZuruckSetzenVeranderung?: MutationFn<
+  passwortZuruckSetzenVeranderung?: MutationFunction<
     PasswortZuruckSetzenVeranderung,
     PasswortZuruckSetzenVeranderungVariables
   >;

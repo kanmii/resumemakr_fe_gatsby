@@ -6,11 +6,14 @@ import "./styles.scss";
 interface Props extends React.Props<{}> {
   ico: JSX.Element;
   label: string;
+  id?: string;
 }
 
-export function SectionLabel({ children, label, ico, ...props }: Props) {
+export function SectionLabel(props: Props) {
+  const { children, label, ico, ...rest } = props;
+
   return (
-    <Segment className="component-section-label" {...props} raised={true}>
+    <Segment className="component-section-label" {...rest} raised={true}>
       <Label as="div" ribbon={true} className="segment-label">
         <div className="icon-container">{ico}</div>
 

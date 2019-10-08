@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 import { DataValue } from "react-apollo";
-
-import { ResumeTitles, ResumeTitlesVariables } from "./types/ResumeTitles";
+import { ResumeTitles, ResumeTitlesVariables } from "../apollo-types/ResumeTitles";
 
 const resumeTitlesFrag = gql`
   fragment ResumeTitlesFrag on ResumeConnection {

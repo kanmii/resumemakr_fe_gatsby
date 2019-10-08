@@ -1,5 +1,11 @@
-import { FORM_RENDER_PROPS, uiTexts } from "../../src/components/SignUp/utils";
-import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
+import {
+  domNameInputId,
+  domSubmitBtnId,
+  domEmailInputId,
+  domPasswordInputId,
+  domPasswordConfirmInputId,
+  domErrorsId,
+} from "../../src/components/SignUp/signup.dom-selectors";
 import { TEST_USER, createUser } from "../support/utils";
 import { SIGN_UP_URL } from "../../src/routing";
 
@@ -27,29 +33,26 @@ describe("sign up page", function() {
     /**
      * And user should not see any indication of error
      */
-    cy.queryByTestId(uiTexts.formErrorTestId).should("not.exist");
+    cy.get("#" + domErrorsId).should("not.exist");
 
     /**
      * When user completes the form with same information as existing user
      */
-    Object.entries(FORM_RENDER_PROPS).forEach(([key, [label]]) => {
-      if (key === "source") {
-        return;
-      }
-
-      cy.getByLabelText(new RegExp(label, "i")).type(
-        TEST_USER[key as keyof RegistrationInput]
-      );
-    });
+    cy.get("#" + domNameInputId).type(TEST_USER.name);
+    cy.get("#" + domEmailInputId).type(TEST_USER.email);
+    cy.get("#" + domPasswordInputId).type(TEST_USER.password);
+    cy.get("#" + domPasswordConfirmInputId).type(
+      TEST_USER.passwordConfirmation,
+    );
 
     /**
      * And user submits the form
      */
-    cy.getByText(new RegExp(uiTexts.submitBtn, "i")).click();
+    cy.get("#" + domSubmitBtnId).click();
 
     /**
-     * Then user should see an error message that has to do with email
+     * Then user should see an error message
      */
-    cy.getByTestId(uiTexts.formErrorTestId).contains(/email/i);
+    cy.get("#" + domErrorsId).contains(/email/i)
   });
 });

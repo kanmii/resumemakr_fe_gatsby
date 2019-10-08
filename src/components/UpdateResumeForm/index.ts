@@ -1,19 +1,21 @@
-import { graphql, compose } from "react-apollo";
+import { graphql } from "react-apollo";
+import compose from "lodash/flowRight";
 import { withFormik } from "formik";
-
 import {
   GetResume,
   GetResumeVariables,
-  GetResume_getResume
-} from "../../graphql/apollo/types/GetResume";
-import { UpdateResumeForm as App } from "./component";
-import { updateResumeGql } from "../../graphql/apollo/update-resume.mutation";
-import { OwnProps, formikConfig } from "./utils";
+  GetResume_getResume,
+} from "../../graphql/apollo-types/GetResume";
+import { UpdateResumeForm as App } from "./update-resume.component";
+import {
+  OwnProps,
+  formikConfig,
+  getInitialValues,
+} from "./update-resume.utils";
 import {
   getResumeQuery,
-  GetResumeProps
+  GetResumeProps,
 } from "../../graphql/apollo/get-resume.query";
-import { getInitialValues } from "./utils";
 import { withMatchHOC } from "../with-match-hoc";
 import { RESUME_PATH, ResumePathMatch } from "../../routing";
 
@@ -32,29 +34,27 @@ const getResumeGql = graphql<
 
     return {
       ...data,
-      getResume: getInitialValues(getResume) as GetResume_getResume
+      getResume: getInitialValues(getResume) as GetResume_getResume,
     };
   },
 
   options: ({ match }) => {
-    // istanbul ignore next: trust @reach/router to properly parse url params
     const title = (match && match.title) || "";
 
     return {
       variables: {
         input: {
-          title: decodeURIComponent(title)
-        }
+          title: decodeURIComponent(title),
+        },
       },
 
-      fetchPolicy: "cache-and-network"
+      fetchPolicy: "cache-and-network",
     };
-  }
+  },
 });
 
 export const UpdateResumeForm = compose(
   withMatchHOC<OwnProps, ResumePathMatch>(RESUME_PATH),
   getResumeGql,
   withFormik(formikConfig),
-  updateResumeGql
 )(App);

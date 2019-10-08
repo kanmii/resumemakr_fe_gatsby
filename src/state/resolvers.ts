@@ -1,5 +1,5 @@
 import { InMemoryCache } from "apollo-cache-inmemory";
-import { UserFragment } from "../graphql/apollo/types/UserFragment";
+import { UserFragment } from "../graphql/apollo-types/UserFragment";
 import { Variable as UserMutationVar } from "./user.local.mutation";
 import USER_QUERY, { UserLocalGqlData } from "./auth.local.query";
 import {
@@ -27,10 +27,9 @@ const userMutation: ClientStateFn<UserMutationVar> = async (
      * out of apollo local state immediately after login does not seem to work
      */
     storeUser(user);
-
     cache.writeData({ data: { user, staleToken: null, loggedOutUser: null } });
-
     storeToken(user.jwt);
+    await window.____resumemakr.persistor.persist();
 
     return user;
   }

@@ -1,6 +1,11 @@
 import { SITE_TITLE } from "../../src/constants";
-import { FORM_RENDER_PROPS, uiTexts } from "../../src/components/SignUp/utils";
-import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
+import {
+  domNameInputId,
+  domSubmitBtnId,
+  domEmailInputId,
+  domPasswordInputId,
+  domPasswordConfirmInputId,
+} from "../../src/components/SignUp/signup.dom-selectors";
 import { TEST_USER } from "../support/utils";
 
 describe("index page", function() {
@@ -22,23 +27,20 @@ describe("index page", function() {
     /**
      * When user completes the form
      */
-    Object.entries(FORM_RENDER_PROPS).forEach(([key, [label]]) => {
-      if (key === "source") {
-        return;
-      }
-
-      cy.getByLabelText(new RegExp(label, "i")).type(
-        TEST_USER[key as keyof RegistrationInput]
-      );
-    });
+    cy.get("#" + domNameInputId).type(TEST_USER.name);
+    cy.get("#" + domEmailInputId).type(TEST_USER.email);
+    cy.get("#" + domPasswordInputId).type(TEST_USER.password);
+    cy.get("#" + domPasswordConfirmInputId).type(
+      TEST_USER.passwordConfirmation,
+    );
 
     /**
      * And user submits the form
      */
-    cy.getByText(new RegExp(uiTexts.submitBtn, "i")).click();
+    cy.get("#" + domSubmitBtnId).click();
 
     /**
-     * The user should be redirected to app page
+     * The user should be redirected to 'My Resumes' page
      */
     cy.title().should("contain", "My Resumes");
   });

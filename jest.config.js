@@ -1,10 +1,10 @@
 module.exports = {
-  preset: "ts-jest",
   testEnvironment: "jest-environment-jsdom-fourteen",
   coverageDirectory: "./coverage",
   collectCoverageFrom: [
     "src/**/*.ts*",
     "!src/components/**/index.ts",
+    "!src/**/*injectables.ts",
     "!src/components/AuthRequired/**",
     "!src/components/Layout/**",
     "!src/components/root-helmet.tsx",
@@ -18,7 +18,7 @@ module.exports = {
     "!src/**/*.d.ts"
   ],
   transform: {
-    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.tsx?$": "<rootDir>/node_modules/babel-jest",
     "^.+\\.jsx?$": "<rootDir>/config/jest/gatsby-preprocess.js",
     "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
     "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)":
@@ -42,10 +42,7 @@ module.exports = {
     "^.+\\.module\\.(css|sass|scss)$"
   ],
   globals: {
-    __PATH_PREFIX__: "",
-    "ts-jest": {
-      isolatedModules: true
-    }
+    __PATH_PREFIX__: ""
   },
   testURL: "http://localhost",
   setupFiles: ["<rootDir>/loadershim.js", "react-app-polyfill/jsdom"],
@@ -55,8 +52,17 @@ module.exports = {
     "jest-watch-typeahead/testname"
   ],
   watchPathIgnorePatterns: [
-    "<rootDir>/node_modules/",
-    "<rootDir>/cypress",
-    "<rootDir>/src/pages/"
-  ]
+    "<rootDir>/node_modules*",
+    "<rootDir>/cypress/",
+    "<rootDir>/package.json",
+    "<rootDir>/gatsby-*",
+    "<rootDir>/src/pages/",
+    "<rootDir>/\\.cache/",
+    "<rootDir>/public/",
+    "<rootDir>/src/graphql/.+?types",
+    "<rootDir>/jest\\.config\\.js",
+    "<rootDir>/coverage/"
+  ],
+  extraGlobals: ["Date"],
+  roots: ["<rootDir>/src"]
 };

@@ -27,7 +27,7 @@ export function stripTypeName<T>(value: T): T {
       return acc;
     },
     // tslint:disable-next-line:no-any
-    {} as any
+    {} as any,
   );
 }
 
@@ -35,4 +35,4 @@ export function toServerUrl(url: string) {
   return new URL(url, getBackendUrls().root);
 }
 
-export type SetFieldValue<T> = (field: string, value: Array<T | null>) => void;
+export type SetFieldValue<T> = (field: string, value: (T | null)[]) => void;
