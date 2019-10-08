@@ -38,7 +38,7 @@ module.exports = {
       resolve: "gatsby-plugin-env-variables",
 
       options: {
-        whitelist: ["API_URL"]
+        whitelist: ["API_URL", "IS_E2E", "NO_LOG"]
       }
     },
 

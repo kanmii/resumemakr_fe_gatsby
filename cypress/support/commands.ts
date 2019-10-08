@@ -9,7 +9,7 @@ import {
 import { FetchResult } from "apollo-link";
 import ApolloClient from "apollo-client";
 
-const serverUrl = getBackendUrls(Cypress.env("apiUri"));
+const serverUrl = getBackendUrls(Cypress.env("API_URL"));
 
 Cypress.Commands.add("checkoutSession", checkoutSession);
 

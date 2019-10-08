@@ -8,7 +8,7 @@ import { USER_TOKEN_ENV_KEY } from "./constants";
 import {
   userLocalMutation,
   Variable as UserLocalMutation
-} from "../../src/State/user.local.mutation";
+} from "../../src/state/user.local.mutation";
 import { CreateResumeInput } from "../../src/graphql/apollo/types/globalTypes";
 
 export const TEST_USER: RegistrationInput = {
