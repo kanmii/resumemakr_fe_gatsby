@@ -6,9 +6,9 @@ import { RouteComponentProps } from "@reach/router";
 
 import { LoginInput as FormValues } from "../../graphql/apollo/types/globalTypes";
 import { LoginMutationProps } from "../../graphql/apollo/login.mutation";
-import { UserLocalMutationProps } from "../../State/user.local.mutation";
-import { UserLocalGqlProps } from "../../State/auth.local.query";
-import { LoggedOutUserProps } from "../../State/logged-out-user.local.query";
+import { UserLocalMutationProps } from "../../state/user.local.mutation";
+import { UserLocalGqlProps } from "../../state/auth.local.query";
+import { LoggedOutUserProps } from "../../state/logged-out-user.local.query";
 
 export interface OwnProps extends WithApolloClient<{}>, RouteComponentProps {}
 

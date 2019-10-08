@@ -1,7 +1,7 @@
 import React from "react";
 
 import { UserFragment } from "../graphql/apollo/types/UserFragment";
-import { getUser } from "../State/tokens";
+import { getUser } from "../state/tokens";
 
 export interface WithUser {
   user?: UserFragment | null;

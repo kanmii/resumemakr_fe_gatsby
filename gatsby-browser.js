@@ -1,15 +1,16 @@
 import React from "react";
 import { ApolloProvider } from "react-apollo";
 import { HelmetProvider } from "react-helmet-async";
-
 import "./src/styles/semantic-theme/semantic.less";
 import "./src/styles/globals.scss";
-import buildClientCache, { persistCache } from "./src/State/apollo-setup";
+import buildClientCache, {
+  restoreCacheOrPurgeStorage
+} from "./src/State/apollo-setup";
 import { ResumemakrProvider } from "./src/utils/context";
 import { RootHelmet } from "./src/components/root-helmet";
 
 export const wrapRootElement = ({ element }) => {
-  const { client, cache } = buildClientCache();
+  const { client, cache, persistor } = buildClientCache();
 
   return (
     <ApolloProvider client={client}>
@@ -17,12 +18,12 @@ export const wrapRootElement = ({ element }) => {
         value={{
           client,
           cache,
-          persistCache
+          persistor,
+          restoreCacheOrPurgeStorage
         }}
       >
         <HelmetProvider>
           <RootHelmet />
-
           {element}
         </HelmetProvider>
       </ResumemakrProvider>

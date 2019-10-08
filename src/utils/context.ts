@@ -1,37 +1,18 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import { createContext } from "react";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import ApolloClient from "apollo-client";
-import { PersistCacheFn } from "../State/apollo-setup";
+import { RestoreCacheOrPurgeStorageFn } from "../state/apollo-setup";
+import { CachePersistor } from "apollo-cache-persist";
 
 interface ResumemakrContextProps {
-  cache?: InMemoryCache;
-  client?: ApolloClient<{}>;
-  persistCache?: PersistCacheFn;
+  cache: InMemoryCache;
+  client: ApolloClient<{}>;
+  restoreCacheOrPurgeStorage?: RestoreCacheOrPurgeStorageFn;
+  persistor: CachePersistor<{}>;
 }
 
-export const ResumemakrContext = createContext<ResumemakrContextProps>({});
+export const ResumemakrContext = createContext<ResumemakrContextProps>(
+  {} as ResumemakrContextProps
+);
 
 export const ResumemakrProvider = ResumemakrContext.Provider;
-
-export function useSetupCachePersistor() {
-  const { cache, persistCache } = useContext(ResumemakrContext);
-
-  if (!(cache && persistCache)) {
-    return null;
-  }
-
-  const [loadingCache, setLoadingCache] = useState(false);
-
-  useEffect(function PersistCache() {
-    (async function doPersistCache() {
-      try {
-        await persistCache(cache);
-        setLoadingCache(true);
-      } catch (error) {
-        return error;
-      }
-    })();
-  }, []);
-
-  return loadingCache;
-}

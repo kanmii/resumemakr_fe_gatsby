@@ -24,16 +24,16 @@ import {
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
 import { LOGIN_URL } from "../../routing";
 import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";
-import { getConnStatus } from "../../State/get-conn-status";
+import { isConnected } from "../../state/get-conn-status";
 import { noOp } from "../../constants";
-import { clearToken } from "../../State/tokens";
+import { clearToken } from "../../state/tokens";
 import { AuthCard } from "../AuthCard";
 import { OtherAuthLink } from "../OtherAuthLink";
 import { RegUserFn } from "../../graphql/apollo/user-reg.mutation";
 import { scrollToTop } from "./scroll-to-top";
 
 export function SignUp(props: Props) {
-  const { regUser, updateLocalUser, client } = props;
+  const { regUser, updateLocalUser } = props;
 
   const [state, dispatch] = useReducer(reducer, {});
   const { otherErrors, formErrors, gqlFehler } = state;
@@ -59,7 +59,7 @@ export function SignUp(props: Props) {
         return;
       }
 
-      if (!(await getConnStatus(client))) {
+      if (!(await isConnected())) {
         setSubmitting(false);
         dispatch({
           type: ActionTypes.set_other_errors,

@@ -1,7 +1,6 @@
-// tslint:disable: no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { render, fireEvent, wait, waitForElement } from "react-testing-library";
-
 import { SignUp } from "../components/SignUp/component";
 import {
   Props,
@@ -9,20 +8,18 @@ import {
   uiTexts
 } from "../components/SignUp/utils";
 import { fillField } from "./test_utils";
-
-jest.mock("../utils/refresh-to-my-resumes");
-jest.mock("../State/get-conn-status");
-jest.mock("../components/SignUp/scroll-to-top");
-
 import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
-import { getConnStatus } from "../State/get-conn-status";
+import { isConnected } from "../state/get-conn-status";
 import { scrollToTop } from "../components/SignUp/scroll-to-top";
 
+jest.mock("../utils/refresh-to-my-resumes");
+jest.mock("../state/get-conn-status");
+jest.mock("../components/SignUp/scroll-to-top");
+
 const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
-const mockGetConnStatus = getConnStatus as jest.Mock;
+const mockGetConnStatus = isConnected as jest.Mock;
 const mockScrollToTop = scrollToTop as jest.Mock;
 
-const SignUpP = SignUp as React.FunctionComponent<Partial<Props>>;
 const passwortMuster = new RegExp("Password");
 const passBestMuster = new RegExp("Password Confirmation");
 const submitBtnPattern = new RegExp(uiTexts.submitBtn, "i");
@@ -295,6 +292,10 @@ function fillAndSubmitForm(getByLabelText: any, getByText: any) {
   fillForm(getByLabelText);
   fireEvent.click(getByText(submitBtnPattern));
 }
+
+////////////////////////// HELPERS ////////////////////////////
+
+const SignUpP = SignUp as React.FunctionComponent<Partial<Props>>;
 
 function makeComp({
   isConnected = true,

@@ -1,9 +1,7 @@
 import { InMemoryCache } from "apollo-cache-inmemory";
-
 import { UserFragment } from "../graphql/apollo/types/UserFragment";
 import { Variable as UserMutationVar } from "./user.local.mutation";
 import USER_QUERY, { UserLocalGqlData } from "./auth.local.query";
-// import { resetClientAndPersistor } from "./apollo-setup";
 import {
   getToken,
   clearToken,
@@ -54,7 +52,6 @@ const userMutation: ClientStateFn<UserMutationVar> = async (
   };
 
   if (loggedOutUser) {
-    // await resetClientAndPersistor();
     data.loggedOutUser = loggedOutUser;
   }
 
@@ -69,45 +66,24 @@ const userMutation: ClientStateFn<UserMutationVar> = async (
   return loggedOutUser;
 };
 
-const updateConn: ClientStateFn<{
-  isConnected: boolean;
-}> = (_, { isConnected }, { cache }) => {
-  const connected = {
-    __typename: "ConnectionStatus",
-    isConnected
-  };
-
-  cache.writeData({ data: { connected } });
-  return connected;
-};
-
 export interface LocalState {
   staleToken: string | null;
   user: null;
   loggedOutUser: null;
-  connected: {
-    __typename: string;
-    isConnected: boolean;
-  };
 }
 
 export function initState() {
   return {
     resolvers: {
       Mutation: {
-        user: userMutation,
-        connected: updateConn
+        user: userMutation
       }
     },
 
     defaultState: {
       staleToken: getToken(),
       user: null,
-      loggedOutUser: null,
-      connected: {
-        __typename: "ConnectionStatus",
-        isConnected: true
-      }
+      loggedOutUser: null
     }
   };
 }

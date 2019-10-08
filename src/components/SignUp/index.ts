@@ -10,7 +10,7 @@ import REG_USER_MUTATION, {
   RegMutationProps
 } from "../../graphql/apollo/user-reg.mutation";
 
-import { userLocalMutationGql } from "../../State/user.local.mutation";
+import { userLocalMutationGql } from "../../state/user.local.mutation";
 import { SignUp as Comp } from "./component";
 
 const regUserGql = graphql<

@@ -8,7 +8,6 @@ import {
   Responsive
 } from "semantic-ui-react";
 import { Link, navigate, WindowLocation } from "@reach/router";
-
 import "./styles.scss";
 import {
   LOGIN_URL,

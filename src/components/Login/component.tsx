@@ -9,16 +9,15 @@ import {
   Field,
   FormikErrors
 } from "formik";
-
 import { Props, ValidationSchema } from "./utils";
 import { LoginInput } from "../../graphql/apollo/types/globalTypes";
 import { PwdInput } from "../PwdInput";
 import { AuthCard } from "../AuthCard";
 import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";
-import { getConnStatus } from "../../State/get-conn-status";
+import { isConnected } from "../../state/get-conn-status";
 import { SIGN_UP_URL } from "../../routing";
 import { noOp } from "../../constants";
-import { clearToken } from "../../State/tokens";
+import { clearToken } from "../../state/tokens";
 import { OtherAuthLink } from "../OtherAuthLink";
 import { Header } from "../Header";
 import { LoginMutationFn } from "../../graphql/apollo/login.mutation";
@@ -30,7 +29,6 @@ export function Login(merkmale: Props) {
     userLocal,
     updateLocalUser,
     loggedOutUser: loggedOutUserProp,
-    client,
     login
   } = merkmale;
 
@@ -48,18 +46,21 @@ export function Login(merkmale: Props) {
     undefined | FormikErrors<LoginInput>
   >(undefined);
 
-  useEffect(function logoutUser() {
-    if (!user) {
-      return;
-    }
-    if (updateLocalUser) {
-      updateLocalUser({
-        variables: {
-          user: null
-        }
-      });
-    }
-  }, []);
+  useEffect(
+    function logoutUser() {
+      if (!user) {
+        return;
+      }
+      if (updateLocalUser) {
+        updateLocalUser({
+          variables: {
+            user: null
+          }
+        });
+      }
+    },
+    [updateLocalUser, user]
+  );
 
   function onSubmit({
     values,
@@ -80,7 +81,7 @@ export function Login(merkmale: Props) {
         return;
       }
 
-      if (!(await getConnStatus(client))) {
+      if (!(await isConnected())) {
         setSubmitting(false);
         setOtherErrors("You are not connected");
         return;

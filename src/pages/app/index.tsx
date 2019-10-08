@@ -1,5 +1,5 @@
 import React from "react";
-import { Router, RouteComponentProps } from "@reach/router";
+import { Router } from "@reach/router";
 
 import { AuthRequired } from "../../components/AuthRequired";
 import { MyResumes } from "../../components/MyResumes";
@@ -8,7 +8,7 @@ import { RESUMES_HOME_PATH, RESUME_PATH } from "../../routing";
 import { NotFound } from "../../components/NotFound";
 import { Layout } from "../../components/Layout";
 
-export default function App(props: RouteComponentProps) {
+export default function App() {
   return (
     <Layout>
       <Router style={{ height: "100%" }}>

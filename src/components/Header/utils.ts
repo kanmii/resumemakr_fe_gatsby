@@ -1,8 +1,8 @@
 import { MatchRenderProps } from "@reach/router";
 
 import { LogoImageQuery_file_childImageSharp_fixed } from "../../graphql/gatsby/types/LogoImageQuery";
-import { UserLocalGqlProps } from "../../State/auth.local.query";
-import { UserLocalMutationProps } from "../../State/user.local.mutation";
+import { UserLocalGqlProps } from "../../state/auth.local.query";
+import { UserLocalMutationProps } from "../../state/user.local.mutation";
 import { ResumePathMatch } from "../../routing";
 
 export interface OwnProps {

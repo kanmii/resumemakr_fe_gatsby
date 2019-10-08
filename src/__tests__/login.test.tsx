@@ -1,4 +1,4 @@
-// tslint:disable:no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   render,
@@ -7,25 +7,24 @@ import {
   waitForElement,
   act
 } from "react-testing-library";
-
 import { Login } from "../components/Login/component";
 import { Props } from "../components/Login/utils";
 import { fillField } from "./test_utils";
 import { LoginMutation_login_user } from "../graphql/apollo/types/LoginMutation";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
+import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
+import { isConnected } from "../state/get-conn-status";
 
 jest.mock("../utils/refresh-to-my-resumes");
-jest.mock("../State/get-conn-status");
+jest.mock("../state/get-conn-status");
 jest.mock("../components/Header", () => ({
   Header: jest.fn(() => null)
 }));
 
-import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
-import { getConnStatus } from "../State/get-conn-status";
 
 const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
-const mockGetConnStatus = getConnStatus as jest.Mock;
+const mockGetConnStatus = isConnected as jest.Mock;
 
 const LoginP = Login as React.FunctionComponent<Partial<Props>>;
 const passwortMuster = new RegExp("Password");

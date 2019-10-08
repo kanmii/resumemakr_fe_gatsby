@@ -1,19 +1,25 @@
 import { Socket } from "phoenix";
-import { getToken } from "../State/tokens";
-import getBackendUrls from "../State/get-backend-urls";
+import getBackendUrls from "../state/get-backend-urls";
+import { storeConnectionStatus } from "../state/get-conn-status";
 
-let socket: Socket;
+export interface AppSocket extends Socket {
+  ebnisConnect: (token?: string | null) => AppSocket;
+}
 
-function defineSocket(props: DefineParams) {
-  // if we are disconnected, phoenix will keep trying to connect which means
+let socket: AppSocket;
+
+export const defineSocket = ({ uri, token: connToken }: DefineParams) => {
+  // if we are disconnected, phoenix will keep trying to connect using
+  // exponential back off which means
   // we will keep dispatching disconnect.  So we track if we already dispatched
-  // disconnect (socketDisconnectedCount = 1) and if so we do not send another
-  // message.  We only dispatch the message if socketDisconnectedCount = 0.
-  let socketDisconnectedCount = 0;
+  // disconnect (isDisconnected = true) and if so we do not send another
+  // message.  We only dispatch the message if isDisconnected = false.
+  let isDisconnected = false;
 
-  function appConnect(token = getToken()) {
+  function ebnisConnect(token?: string | null) {
     const params = makeParams(token);
-    socket = new Socket(getBackendUrls(props.uri).websocketUrl, params);
+    socket = new Socket(getBackendUrls(uri).websocketUrl, params) as AppSocket;
+    socket.ebnisConnect = ebnisConnect;
     socket.connect();
 
     socket.onOpen(() => {
@@ -31,23 +37,19 @@ function defineSocket(props: DefineParams) {
     return socket;
   }
 
-  appConnect();
+  ebnisConnect(connToken);
 
   function dispatchDisconnected() {
-    if (socketDisconnectedCount === 0) {
-      if (props.onConnChange) {
-        props.onConnChange(false);
-      }
-      socketDisconnectedCount = 1;
+    if (isDisconnected === false) {
+      storeConnectionStatus(false);
+      isDisconnected = true;
     }
   }
 
   function dispatchConnected() {
-    if (props.onConnChange) {
-      props.onConnChange(true);
-    }
+    storeConnectionStatus(socket.isConnected());
 
-    socketDisconnectedCount = 0;
+    isDisconnected = !socket.isConnected();
   }
 
   function makeParams(token?: string | null) {
@@ -61,19 +63,18 @@ function defineSocket(props: DefineParams) {
   }
 
   return socket;
-}
+};
 
-export function getSocket(params: DefineParams = {}) {
-  if (socket) {
-    return socket;
+export function getSocket({ forceReconnect, ...params }: DefineParams = {}) {
+  if (forceReconnect) {
+    return defineSocket(params);
   }
 
-  return defineSocket(params);
+  return socket ? socket : defineSocket(params);
 }
 
-export default getSocket;
-
 interface DefineParams {
-  onConnChange?: (connStatus: boolean) => void;
   uri?: string;
+  token?: string | null;
+  forceReconnect?: boolean;
 }
