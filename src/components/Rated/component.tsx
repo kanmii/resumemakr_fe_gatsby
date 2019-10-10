@@ -1,7 +1,6 @@
 import React from "react";
 import { Card } from "semantic-ui-react";
 import { FieldArrayRenderProps, FastField, FieldArray } from "formik";
-
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import { emptyVal, RowItemsLabels, Props, makeRatedName } from "./utils";
@@ -69,7 +68,6 @@ interface ItemProps {
 
 function Item({
   value,
-  arrayHelper,
   setFieldValue,
   idPrefix,
   fieldName,

@@ -219,7 +219,6 @@ declare global {
 
 interface BuildClientCache {
   uri?: string;
-  fetch?: GlobalFetch["fetch"];
   newE2eTest?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   resolvers?: any;

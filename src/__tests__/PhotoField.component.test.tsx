@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import { render, wait, fireEvent } from "react-testing-library";
 import { getByText as domGetByText, waitForElement } from "dom-testing-library";
-
-import { PhotoField } from "../components/PhotoField/component";
+import { PhotoField } from "../components/PhotoField/photo-field.component";
 import {
   createFile,
   uploadFile,
@@ -14,8 +14,8 @@ import {
 import {
   FormContextProvider,
   ResumeFormContextValue
-} from "../components/UpdateResumeForm/utils";
-import { uiTexts, Props } from "../components/PhotoField/utils";
+} from "../components/UpdateResumeForm/update-resume.utils";
+import { uiTexts, Props } from "../components/PhotoField/photo-field.utils";
 
 it("changes to preview on file select", async () => {
   /**

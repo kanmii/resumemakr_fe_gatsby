@@ -21,6 +21,7 @@ import { clearToken } from "../../state/tokens";
 import { OtherAuthLink } from "../OtherAuthLink";
 import { Header } from "../Header";
 import { LoginMutationFn } from "../../graphql/apollo/login.mutation";
+import { UserLocalMutationFn } from "../../state/user.local.mutation";
 
 const Errors = React.memo(ErrorsComp, ErrorsDiff);
 
@@ -59,7 +60,8 @@ export function Login(merkmale: Props) {
         });
       }
     },
-    [updateLocalUser, user]
+    /* eslint-disable react-hooks/exhaustive-deps */
+    []
   );
 
   function onSubmit({
@@ -103,11 +105,9 @@ export function Login(merkmale: Props) {
           return;
         }
 
-        if (updateLocalUser) {
-          await updateLocalUser({
-            variables: { user: resultUser }
-          });
-        }
+        await (updateLocalUser as UserLocalMutationFn)({
+          variables: { user: resultUser }
+        });
 
         refreshToMyResumes();
       } catch (error) {

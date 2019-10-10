@@ -1,7 +1,6 @@
 import * as Yup from "yup";
-
 import { EducationInput } from "../../graphql/apollo/types/globalTypes";
-import { Section } from "../UpdateResumeForm/utils";
+import { Section } from "../UpdateResumeForm/update-resume.utils";
 
 export const emptyVal: EducationInput = {
   index: 1,

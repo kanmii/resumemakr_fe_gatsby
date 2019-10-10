@@ -3,7 +3,7 @@ import React, {
   useEffect,
   MutableRefObject,
   useReducer,
-  Reducer
+  Reducer,
 } from "react";
 import { Form, Icon, Input } from "semantic-ui-react";
 import lodashDebounce from "lodash/debounce";
@@ -12,7 +12,6 @@ import update from "immutability-helper";
 import { FieldArray } from "formik";
 import { Cancelable } from "lodash";
 import { ApolloError } from "apollo-client";
-
 import "./styles.scss";
 import {
   FormValues,
@@ -25,19 +24,19 @@ import {
   sectionLabelToHeader,
   nextTooltipText,
   prevTooltipText,
-  uiTexts
-} from "./utils";
+  uiTexts,
+} from "./update-resume.utils";
 import { Preview } from "../Preview";
 import { Mode as PreviewMode } from "../Preview/utils";
-import { PersonalInfo } from "../PersonalInfo";
+import { PersonalInfo } from "../PersonalInfo/personal-info.component";
 import { Experiences } from "../Experiences";
-import { Education } from "../Education";
+import { Education } from "../Education/education.component";
 import { Skills } from "../Skills";
 import { Loading } from "../Loading";
 import { ALREADY_UPLOADED } from "../../constants";
 import {
   UpdateResumeInput,
-  CreateExperienceInput
+  CreateExperienceInput,
 } from "../../graphql/apollo/types/globalTypes";
 import { ResumePathHash } from "../../routing";
 import { Rated } from "../Rated";
@@ -48,6 +47,13 @@ import { EpicBtnIcon } from "../EpicBtnIcon";
 import { ToolTip } from "../Tooltip";
 import { UpdateResumeMutationFn } from "../../graphql/apollo/update-resume.mutation";
 import { SetFieldValue } from "../utils";
+import {
+  gqlErrorId,
+  loadingTooLongId,
+  previousBtnId,
+  nextBtnId,
+} from "./update-resume.dom-selectors";
+import { debounceTime } from "./update-resume.injectables";
 
 const reducer: Reducer<State, State> = (prevState, state = {}) => {
   return { ...prevState, ...state };
@@ -59,16 +65,11 @@ export function UpdateResumeForm(props: Props) {
     error: graphQlLoadingError,
     location: { pathname, hash },
     setFieldValue,
-    debounceTime: propDebounceTime,
     values,
-    match
+    match,
   } = props;
 
-  // istanbul ignore next: trust @reach/router to properly inject match
   const resumeTitle = match && match.title;
-
-  // istanbul ignore next
-  const debounceTime = propDebounceTime || 250;
 
   const updateResume = props.updateResume as UpdateResumeMutationFn;
 
@@ -79,24 +80,25 @@ export function UpdateResumeForm(props: Props) {
   const backToSectionRef = useRef(Section.personalInfo);
   const currentSectionRef = useRef(Section.personalInfo);
 
-  const updateResumeFnDebounced = useRef<UpdateResumeFn>(
-    lodashDebounce(updateResumeFn, debounceTime)
-  );
+  const updateResumeFnDebounced = useRef<null | UpdateResumeFn>(null);
 
   useEffect(() => {
-    return updateResumeFnDebounced.current.cancel;
+    return () => {
+      getUpdateFn().cancel();
+    };
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
   useEffect(() => {
     if (loading) {
       timerRef.current = setTimeout(() => {
         dispatch({
-          loadingTooLong: true
+          loadingTooLong: true,
         });
       }, 10000);
     } else {
       dispatch({
-        loadingTooLong: false
+        loadingTooLong: false,
       });
 
       // istanbul ignore next: can not figure out a way to test
@@ -113,6 +115,17 @@ export function UpdateResumeForm(props: Props) {
       }
     };
   }, [loading]);
+
+  function getUpdateFn() {
+    if (updateResumeFnDebounced.current === null) {
+      updateResumeFnDebounced.current = lodashDebounce(
+        updateResumeFn,
+        debounceTime,
+      );
+    }
+
+    return updateResumeFnDebounced.current;
+  }
 
   if (currentSectionRef.current !== Section.preview) {
     if (graphQlLoadingError) {
@@ -133,9 +146,12 @@ export function UpdateResumeForm(props: Props) {
       );
     } else if (state.loadingTooLong) {
       return (
-        <div className="component-resume-form container--loading">
+        <div
+          id={loadingTooLongId}
+          className="component-resume-form container--loading"
+        >
           <div className="loading-too-long">
-            {uiTexts.takingTooLongPrefix} <b>"{resumeTitle}"</b>
+            {uiTexts.takingTooLongPrefix} <b>{`"${resumeTitle}"`}</b>
             {uiTexts.takingTooLongSuffix}
           </div>
         </div>
@@ -146,7 +162,7 @@ export function UpdateResumeForm(props: Props) {
   currentSectionRef.current = sectionFromUrl({
     currentSectionRef,
     backToSectionRef,
-    hash
+    hash,
   });
   const prevSection = toSection(currentSectionRef.current, "prev");
   const nextSection = toSection(currentSectionRef.current, "next");
@@ -162,15 +178,15 @@ export function UpdateResumeForm(props: Props) {
             prevFormValues: valuesTrackerRef.current,
 
             valueChanged: () => {
-              updateResumeFnDebounced.current({
+              getUpdateFn()({
                 formValues: values,
                 valuesTrackerRef,
                 updateResume,
-                dispatch
+                dispatch,
               });
             },
 
-            setFieldValue
+            setFieldValue,
           }}
         >
           <CurrEditingSection
@@ -204,6 +220,7 @@ export function UpdateResumeForm(props: Props) {
                 <NavBtn
                   className="edit-btn"
                   href={urlFromSection(prevSection, pathname)}
+                  id={previousBtnId}
                 >
                   <ToolTip>{prevTooltipText(prevSection)}</ToolTip>
 
@@ -217,6 +234,7 @@ export function UpdateResumeForm(props: Props) {
                 <NavBtn
                   className="next-btn"
                   href={urlFromSection(nextSection, pathname)}
+                  id={nextBtnId}
                 >
                   <ToolTip>{nextTooltipText(nextSection)}</ToolTip>
 
@@ -271,7 +289,7 @@ async function updateResumeFn({
   formValues,
   valuesTrackerRef,
   updateResume,
-  dispatch
+  dispatch,
 }: UpdateResumeFnArgs) {
   const photo = formValues.personalInfo && formValues.personalInfo.photo;
 
@@ -285,18 +303,18 @@ async function updateResumeFn({
     formValues = update(formValues, {
       personalInfo: {
         photo: {
-          $set: ALREADY_UPLOADED
-        }
-      }
+          $set: ALREADY_UPLOADED,
+        },
+      },
     });
 
     if (valuesTrackerRef.current && valuesTrackerRef.current.personalInfo) {
       valuesTrackerRef.current = update(valuesTrackerRef.current, {
         personalInfo: {
           photo: {
-            $set: ALREADY_UPLOADED
-          }
-        }
+            $set: ALREADY_UPLOADED,
+          },
+        },
       });
     }
   }
@@ -310,9 +328,9 @@ async function updateResumeFn({
     const result = await updateResume({
       variables: {
         input: {
-          ...(formValues as UpdateResumeInput)
-        }
-      }
+          ...(formValues as UpdateResumeInput),
+        },
+      },
     });
 
     // istanbul ignore next: just satisfying typescript
@@ -339,7 +357,7 @@ async function updateResumeFn({
     valuesTrackerRef.current = getInitialValues(resume);
   } catch (error) {
     dispatch({
-      gqlError: error
+      gqlError: error,
     });
   }
 }
@@ -375,7 +393,7 @@ function urlFromSection(section: Section, pathname: string) {
 function sectionFromUrl({
   currentSectionRef,
   backToSectionRef,
-  hash
+  hash,
 }: {
   currentSectionRef: React.MutableRefObject<Section>;
   backToSectionRef: React.MutableRefObject<Section>;
@@ -416,11 +434,11 @@ function GqlError({ errors }: { errors: ApolloError | null | undefined }) {
   }
 
   return (
-    <div data-testid="gql-errors" className="gql-errors">
+    <div id={gqlErrorId} data-testid="gql-errors" className="gql-errors">
       <div
         style={{
           fontWeight: "normal",
-          fontSize: "1rem"
+          fontSize: "1rem",
         }}
       >
         Error updating data!
@@ -433,7 +451,7 @@ function GqlError({ errors }: { errors: ApolloError | null | undefined }) {
 function CurrEditingSection({
   section,
   values,
-  setFieldValue
+  setFieldValue,
 }: {
   section: Section;
   values: Partial<UpdateResumeInput>;
@@ -470,7 +488,7 @@ function CurrEditingSection({
         setFieldValue={setFieldValue}
         rowItemsLabels={{
           description: "Skill (e.g. Editing skills)",
-          level: "Rating description (e.g. Advanced) (optional)"
+          level: "Rating description (e.g. Advanced) (optional)",
         }}
         fieldName="additionalSkills"
         icon={<Icon name="won" />}
@@ -486,7 +504,7 @@ function CurrEditingSection({
         values={values.languages}
         rowItemsLabels={{
           description: "Language (e.g. Spanish - Certified)",
-          level: "Rating description (e.g. Proficient) (optional)"
+          level: "Rating description (e.g. Proficient) (optional)",
         }}
         fieldName="languages"
         icon={<Icon name="won" />}

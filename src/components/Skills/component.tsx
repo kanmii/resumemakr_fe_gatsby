@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Icon, Card } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
-
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
@@ -9,7 +8,7 @@ import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./utils";
 import { ListIndexHeader } from "../ListIndexHeader";
 import { ListStrings } from "../ListStrings";
 import { SubFieldLabel } from "../components";
-import { FormContext } from "../UpdateResumeForm/utils";
+import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 
 const HeaderLabelText = "Skill";
 

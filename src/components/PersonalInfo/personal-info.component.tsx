@@ -1,14 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Icon, Card, TextArea } from "semantic-ui-react";
 import { FastField } from "formik";
-
 import { PersonalInfoInput } from "../../graphql/apollo/types/globalTypes";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
-import { PhotoField } from "../PhotoField";
-import { Section } from "../UpdateResumeForm/utils";
+import { PhotoField } from "../PhotoField/photo-field.component";
+import { Section } from "../UpdateResumeForm/update-resume.utils";
 import { emptyVal, uiTexts } from "./utils";
-import { FormContext } from "../UpdateResumeForm/utils";
+import { prefix } from "./personal-info.dom-selectors";
 
 interface Props {
   values: PersonalInfoInput | null | undefined;
@@ -17,7 +16,6 @@ interface Props {
 
 export function PersonalInfo(props: Props) {
   const { label } = props;
-  // istanbul ignore next:
   const values = props.values || emptyVal;
 
   return (
@@ -26,6 +24,7 @@ export function PersonalInfo(props: Props) {
         label={label}
         ico={<Icon name="user outline" />}
         data-testid="personal-info-section"
+        id={prefix}
       />
 
       <BioData values={values} />
@@ -76,7 +75,6 @@ function BioData({ values }: { values: PersonalInfoInput }) {
 
 function FirstColumn(props: { values: PersonalInfoInput }) {
   const { values } = props;
-  const formContext = useContext(FormContext);
 
   return (
     <Card>
@@ -91,7 +89,6 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
           comp={TextArea}
           component={RegularField}
           value={values.address}
-          onBlur={formContext.valueChanged}
         />
 
         <FastField

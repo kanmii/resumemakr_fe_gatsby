@@ -11,7 +11,7 @@ import {
   ResumeTitles,
   ResumeTitlesVariables,
   ResumeTitles_listResumes_edges_node,
-  ResumeTitles_listResumes_edges
+  ResumeTitles_listResumes_edges,
 } from "../../graphql/apollo/types/ResumeTitles";
 import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
@@ -20,7 +20,7 @@ import { makeResumeRoute } from "../../routing";
 import { Props, validationSchema, Action, emptyVal, uiTexts } from "./utils";
 import { Loading } from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
-import { initialFormValues } from "../UpdateResumeForm/utils";
+import { initialFormValues } from "../UpdateResumeForm/update-resume.utils";
 import { Mode as PreviewMode } from "../Preview/utils";
 import { AutoTextarea } from "../AutoTextarea";
 import { AppModal } from "../AppModal";
@@ -38,7 +38,7 @@ export function MyResumes(merkmale: Props) {
     deleteResume,
     resumeTitlesGql: { loading, error, listResumes },
     createResume,
-    cloneResume
+    cloneResume,
   } = merkmale;
   const verlauf = navigate as NavigateFn;
   const edges = listResumes && listResumes.edges;
@@ -70,7 +70,7 @@ export function MyResumes(merkmale: Props) {
   >(undefined);
 
   const [gqlFehler, einstellenGqlFehler] = useState<undefined | ApolloError>(
-    undefined
+    undefined,
   );
 
   const deleteTriggerRefs = useRef<{ id?: undefined | HTMLElement }>({});
@@ -112,7 +112,7 @@ export function MyResumes(merkmale: Props) {
 
   function erstellenResume({
     values,
-    validateForm
+    validateForm,
   }: FormikProps<CreateResumeInput>) {
     return async function erstellenResumeDrinnen() {
       einstellenFormularFehler(undefined);
@@ -143,8 +143,8 @@ export function MyResumes(merkmale: Props) {
       try {
         const result = await fun({
           variables: {
-            input
-          }
+            input,
+          },
         });
 
         const resume =
@@ -172,7 +172,7 @@ export function MyResumes(merkmale: Props) {
     if (!deleteResume) {
       einstellenLoschenFehler({
         id,
-        errors: ["Something is wrong:", "unable to delete resume"]
+        errors: ["Something is wrong:", "unable to delete resume"],
       });
 
       return;
@@ -180,10 +180,10 @@ export function MyResumes(merkmale: Props) {
 
     const result = await deleteResume({
       variables: {
-        input: { id }
+        input: { id },
       },
 
-      update: updateAfterDelete
+      update: updateAfterDelete,
     });
 
     const resume =
@@ -210,7 +210,7 @@ export function MyResumes(merkmale: Props) {
 
   const updateAfterDelete: MutationUpdaterFn<DeleteResume> = function(
     cache,
-    { data: newData }
+    { data: newData },
   ) {
     if (!newData) {
       return;
@@ -222,8 +222,8 @@ export function MyResumes(merkmale: Props) {
       query: RESUME_TITLES_QUERY,
 
       variables: {
-        howMany: 10
-      }
+        howMany: 10,
+      },
     });
 
     const neueEdges =
@@ -239,7 +239,7 @@ export function MyResumes(merkmale: Props) {
       query: RESUME_TITLES_QUERY,
 
       variables: {
-        howMany: 10
+        howMany: 10,
       },
 
       data: {
@@ -248,9 +248,9 @@ export function MyResumes(merkmale: Props) {
             return e && e.node && e.node.id !== resumeToBeRemovedId;
           }),
 
-          __typename: "ResumeConnection"
-        }
-      }
+          __typename: "ResumeConnection",
+        },
+      },
     });
   };
 
@@ -269,7 +269,7 @@ export function MyResumes(merkmale: Props) {
           <span
             style={{
               fontWeight: "bolder",
-              marginRight: "5px"
+              marginRight: "5px",
             }}
           >
             {nachricht}
@@ -427,7 +427,7 @@ export function MyResumes(merkmale: Props) {
                     onClick={() => {
                       initialValues = {
                         title,
-                        description: description || ""
+                        description: description || "",
                       };
 
                       idToClone = id;
@@ -498,7 +498,7 @@ export function MyResumes(merkmale: Props) {
 
   function renderDeleteError({
     id,
-    title
+    title,
   }: ResumeTitles_listResumes_edges_node) {
     if (!(loschenFehler && loschenFehler.id === id)) {
       return null;
@@ -523,7 +523,7 @@ export function MyResumes(merkmale: Props) {
 
   function renderConfirmDelete({
     id,
-    title
+    title,
   }: ResumeTitles_listResumes_edges_node) {
     if (bestatigenLoschenId !== id) {
       return null;
@@ -542,7 +542,7 @@ export function MyResumes(merkmale: Props) {
           style={{
             fontWeight: "bolder",
             marginRight: "5px",
-            wordBreak: "break-all"
+            wordBreak: "break-all",
           }}
         >
           {title}?
@@ -551,7 +551,7 @@ export function MyResumes(merkmale: Props) {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            marginTop: "5px"
+            marginTop: "5px",
           }}
         >
           <Button

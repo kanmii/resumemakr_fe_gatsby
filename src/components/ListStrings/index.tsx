@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, memo, useState } from "react";
 import { TextArea, Icon } from "semantic-ui-react";
 import { FieldArrayRenderProps, Field } from "formik";
-
 import { CircularLabel } from "../CircularLabel";
 import { RegularField } from "../RegularField";
-import { FormContext } from "../UpdateResumeForm/utils";
+import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
 
 interface Props {

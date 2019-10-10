@@ -1,10 +1,8 @@
 import React, { useContext } from "react";
 import { Icon, Card } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
-
 import { EducationInput } from "../../graphql/apollo/types/globalTypes";
-
-import { FormContext } from "../UpdateResumeForm/utils";
+import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import {
@@ -12,11 +10,12 @@ import {
   makeEduFieldName,
   eduFieldName,
   Props,
-  uiTexts
+  uiTexts,
 } from "./utils";
 import { ListIndexHeader } from "../ListIndexHeader";
 import { ListStrings } from "../ListStrings";
 import { SubFieldLabel } from "../components";
+import { prefix } from "./education.dom-selectors";
 
 const headerLabelText = "School";
 
@@ -30,11 +29,12 @@ export function Education(props: Props) {
         label={label}
         ico={<Icon name="won" />}
         data-testid="education-section"
+        id={prefix}
       />
 
       <FieldArray
         name={eduFieldName}
-        render={arrayHelper =>
+        render={() =>
           values.map((edu, index) => (
             <School key={index} edu={edu} index={index} values={values} />
           ))
@@ -47,7 +47,7 @@ export function Education(props: Props) {
 function School({
   edu,
   index,
-  values
+  values,
 }: {
   edu: EducationInput;
   index: number;

@@ -1,14 +1,19 @@
 import React from "react";
 import { Card, Icon } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
-
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
 import { RegularField } from "../RegularField";
 import { SectionLabel } from "../SectionLabel";
-import { emptyVal, Props, uiTexts, makeExperienceFieldName } from "./utils";
+import {
+  emptyVal,
+  Props,
+  uiTexts,
+  makeExperienceFieldName,
+} from "./experiences.utils";
 import { ListIndexHeader } from "../ListIndexHeader";
 import { ListStrings } from "../ListStrings";
 import { SubFieldLabel } from "../components";
+import { prefix } from "./experiences.dom-selectors";
 
 let cachedValues: CreateExperienceInput[] = [];
 const HeaderLabelText = "Company";
@@ -30,7 +35,7 @@ export class Experiences extends React.Component<Props, {}> {
     const { label } = this.props;
 
     const values = (this.props.values || [
-      { ...emptyVal }
+      { ...emptyVal },
     ]) as CreateExperienceInput[];
 
     cachedValues = values;
@@ -41,11 +46,12 @@ export class Experiences extends React.Component<Props, {}> {
           label={label}
           ico={<Icon name="won" />}
           data-testid="experiences-section"
+          id={prefix}
         />
 
         <FieldArray
           name="experiences"
-          render={helper => values.map(this.renderExperience)}
+          render={() => values.map(this.renderExperience)}
         />
       </>
     );
@@ -148,8 +154,6 @@ export class Experiences extends React.Component<Props, {}> {
 
   private scrollToExperience = () => {
     const { location } = this.props;
-
-    // istanbul ignore next:
     const hash = (location && location.hash) || "";
     const id = hash.split("/")[2];
 
@@ -167,7 +171,7 @@ export class Experiences extends React.Component<Props, {}> {
     $id.scrollIntoView({
       behavior: "auto",
       block: "start",
-      inline: "start"
+      inline: "start",
     });
   };
 }

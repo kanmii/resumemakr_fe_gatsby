@@ -1,4 +1,4 @@
-// tslint:disable: no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -15,19 +15,19 @@ import { WindowLocation } from "@reach/router";
 import {
   UpdateResumeForm,
   makeUrlHashSegment
-} from "../components/UpdateResumeForm/component";
+} from "../components/UpdateResumeForm/update-resume.component";
 import {
   Props,
   formikConfig,
   Section
-} from "../components/UpdateResumeForm/utils";
+} from "../components/UpdateResumeForm/update-resume.utils";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import {
   uiTexts,
   makeExperienceFieldName
-} from "../components/Experiences/utils";
+} from "../components/Experiences/experiences.utils";
 import {
   ListDisplayCtrlNames,
   makeListDisplayCtrlTestId

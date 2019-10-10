@@ -1,4 +1,4 @@
-// tslint:disable: no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ComponentType } from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -7,40 +7,43 @@ import {
   fireEvent,
   wait,
   Matcher,
-  MatcherOptions
+  MatcherOptions,
 } from "react-testing-library";
 import { withFormik } from "formik";
 
 import {
   UpdateResumeForm,
-  makeUrlHashSegment
-} from "../components/UpdateResumeForm/component";
-import { Props, Section } from "../components/UpdateResumeForm/utils";
-import { formikConfig } from "../components/UpdateResumeForm/utils";
+  makeUrlHashSegment,
+} from "../components/UpdateResumeForm/update-resume.component";
+import {
+  Props,
+  Section,
+  formikConfig,
+} from "../components/UpdateResumeForm/update-resume.utils";
 import { WindowLocation } from "@reach/router";
 import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
   GetResume_getResume,
-  GetResume_getResume_education
+  GetResume_getResume_education,
 } from "../graphql/apollo/types/GetResume";
 import {
   makeListDisplayCtrlTestId,
-  ListDisplayCtrlNames
+  ListDisplayCtrlNames,
 } from "../components/components";
 import {
   eduFieldName,
   makeEduFieldName,
-  uiTexts
+  uiTexts,
 } from "../components/Education/utils";
 import {
   makeListStringHiddenLabelText,
-  makeListStringFieldName
+  makeListStringFieldName,
 } from "../components/ListStrings";
 import { fillField } from "./test_utils";
 
 let getByTestId: (
   text: Matcher,
-  options?: MatcherOptions | undefined
+  options?: MatcherOptions | undefined,
 ) => HTMLElement;
 
 let mockUpdateResume: jest.Mock;
@@ -49,18 +52,18 @@ describe("changing number", () => {
   beforeEach(() => {
     const education = [
       {
-        course: "c0"
+        course: "c0",
       },
       {
-        course: "c1"
+        course: "c1",
       },
-      { course: "c2" }
+      { course: "c2" },
     ] as GetResume_getResume_education[];
 
     const formValues = { education } as GetResume_getResume;
 
     const comp = makeComp({
-      getResume: formValues
+      getResume: formValues,
     });
 
     mockUpdateResume = comp.mockUpdateResume;
@@ -81,8 +84,8 @@ describe("changing number", () => {
        */
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(eduFieldName, ListDisplayCtrlNames.add, 0)
-        )
+          makeListDisplayCtrlTestId(eduFieldName, ListDisplayCtrlNames.add, 0),
+        ),
       );
 
       /**
@@ -93,11 +96,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "", "c1", "c2"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -107,8 +110,8 @@ describe("changing number", () => {
        */
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(eduFieldName, ListDisplayCtrlNames.add, 1)
-        )
+          makeListDisplayCtrlTestId(eduFieldName, ListDisplayCtrlNames.add, 1),
+        ),
       );
 
       /**
@@ -119,11 +122,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "c1", "", "c2"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -133,8 +136,8 @@ describe("changing number", () => {
        */
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(eduFieldName, ListDisplayCtrlNames.add, 2)
-        )
+          makeListDisplayCtrlTestId(eduFieldName, ListDisplayCtrlNames.add, 2),
+        ),
       );
 
       /**
@@ -145,11 +148,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "c1", "c2", ""]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -164,9 +167,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.remove,
-            0
-          )
-        )
+            0,
+          ),
+        ),
       );
 
       /**
@@ -177,11 +180,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c1", "c2"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -194,9 +197,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.remove,
-            1
-          )
-        )
+            1,
+          ),
+        ),
       );
 
       /**
@@ -207,11 +210,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "c2"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -224,9 +227,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.remove,
-            2
-          )
-        )
+            2,
+          ),
+        ),
       );
 
       /**
@@ -237,11 +240,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "c1"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -256,9 +259,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.moveUp,
-            1
-          )
-        )
+            1,
+          ),
+        ),
       );
 
       /**
@@ -269,11 +272,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c1", "c0", "c2"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -286,9 +289,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.moveUp,
-            2
-          )
-        )
+            2,
+          ),
+        ),
       );
 
       /**
@@ -299,11 +302,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "c2", "c1"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -318,9 +321,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.moveDown,
-            0
-          )
-        )
+            0,
+          ),
+        ),
       );
 
       /**
@@ -331,11 +334,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c1", "c0", "c2"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -348,9 +351,9 @@ describe("changing number", () => {
           makeListDisplayCtrlTestId(
             eduFieldName,
             ListDisplayCtrlNames.moveDown,
-            1
-          )
-        )
+            1,
+          ),
+        ),
       );
 
       /**
@@ -361,11 +364,11 @@ describe("changing number", () => {
           expect(
             getCourses(
               (mockUpdateResume.mock.calls[0][0] as any).variables.input
-                .education
-            )
+                .education,
+            ),
           ).toEqual(["c0", "c2", "c1"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -375,8 +378,8 @@ it("updates education on blur", async () => {
   const education = [
     {
       course: "a",
-      achievements: ["a0", "a1", "a2"]
-    }
+      achievements: ["a0", "a1", "a2"],
+    },
   ] as GetResume_getResume_education[];
 
   const formValues = { education } as GetResume_getResume;
@@ -407,10 +410,10 @@ it("updates education on blur", async () => {
     () => {
       expect(
         (mockUpdateResume.mock.calls[0][0] as any).variables.input.education[0]
-          .course
+          .course,
       ).toBe("b");
     },
-    { interval: 1 }
+    { interval: 1 },
   );
 
   /**
@@ -419,8 +422,8 @@ it("updates education on blur", async () => {
   const $achievement1 = getByLabelText(
     makeListStringHiddenLabelText(
       makeListStringFieldName(makeEduFieldName(0, "achievements"), 1),
-      uiTexts.achievementsHiddenLabel
-    )
+      uiTexts.achievementsHiddenLabel,
+    ),
   );
 
   fillField($achievement1, "a10");
@@ -437,10 +440,10 @@ it("updates education on blur", async () => {
     () => {
       expect(
         (mockUpdateResume.mock.calls[1][0] as any).variables.input.education[0]
-          .achievements
+          .achievements,
       ).toEqual(["a0", "a10", "a2"]);
     },
-    { interval: 1 }
+    { interval: 1 },
   );
 });
 
@@ -448,7 +451,7 @@ type P = ComponentType<Partial<Props>>;
 const UpdateResumeFormP = UpdateResumeForm as any;
 const location = {
   hash: makeUrlHashSegment(ResumePathHash.edit, Section.education),
-  pathname: makeResumeRoute("title")
+  pathname: makeResumeRoute("title"),
 } as WindowLocation;
 
 function makeComp(props: Partial<Props> = {}) {
@@ -460,7 +463,7 @@ function makeComp(props: Partial<Props> = {}) {
 
   return {
     ui: <C {...props} location={location} updateResume={mockUpdateResume} />,
-    mockUpdateResume
+    mockUpdateResume,
   };
 }
 

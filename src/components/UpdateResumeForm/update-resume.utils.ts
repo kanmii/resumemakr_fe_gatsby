@@ -7,7 +7,7 @@ import { createContext } from "react";
 import {
   validationSchema as expSchema,
   defaultVal as experience
-} from "../Experiences/utils";
+} from "../Experiences/experiences.utils";
 import { validationSchema as personalInfoSchema } from "../PersonalInfo/utils";
 import {
   validationSchema as edSchema,

@@ -11,11 +11,10 @@ import {
 } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
-
 import {
   UpdateResumeForm,
   makeUrlHashSegment
-} from "../components/UpdateResumeForm/component";
+} from "../components/UpdateResumeForm/update-resume.component";
 import {
   makeSkillFieldName,
   uiTexts,
@@ -26,7 +25,7 @@ import {
   Props,
   formikConfig,
   Section
-} from "../components/UpdateResumeForm/utils";
+} from "../components/UpdateResumeForm/update-resume.utils";
 import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
   makeListStringHiddenLabelText,

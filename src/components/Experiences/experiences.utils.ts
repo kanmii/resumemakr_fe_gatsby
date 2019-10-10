@@ -1,9 +1,7 @@
 import * as Yup from "yup";
 import { RouteComponentProps } from "@reach/router";
-
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
-import { Section } from "../UpdateResumeForm/utils";
-import { ChildProps } from "../UpdateResumeForm/utils";
+import { Section, ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 export const emptyVal: CreateExperienceInput = {
   position: "",
@@ -11,7 +9,7 @@ export const emptyVal: CreateExperienceInput = {
   fromDate: "",
   toDate: "",
   achievements: [""],
-  index: 1
+  index: 1,
 };
 
 export const validationSchema = Yup.object<CreateExperienceInput>().shape({
@@ -22,7 +20,7 @@ export const validationSchema = Yup.object<CreateExperienceInput>().shape({
   achievements: Yup.array<string>(),
   index: Yup.number()
     .required()
-    .min(1)
+    .min(1),
 });
 
 export const defaultVal: CreateExperienceInput = {
@@ -35,9 +33,9 @@ export const defaultVal: CreateExperienceInput = {
 
     "Developed, reviewed, and tested innovative and visionary new applications using emerging technologies.",
 
-    "Guided talent that provides technical support and training while working in partnership with the business team."
+    "Guided talent that provides technical support and training while working in partnership with the business team.",
   ],
-  index: 1
+  index: 1,
 };
 
 export interface Props extends RouteComponentProps, ChildProps {
@@ -56,12 +54,12 @@ export const uiTexts = {
 
   achievementsLabels1: "Achievements",
 
-  achievementsLabels2: "(responsibilities, activities)"
+  achievementsLabels2: "(responsibilities, activities)",
 };
 
 export function makeExperienceFieldName(
   index: number,
-  key: keyof CreateExperienceInput
+  key: keyof CreateExperienceInput,
 ) {
   return `experiences[${index}].${key}`;
 }

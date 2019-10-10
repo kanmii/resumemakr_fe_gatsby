@@ -1,17 +1,16 @@
-// tslint:disable: no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import { render, fireEvent, wait } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
-
-import { UpdateResumeForm } from "../components/UpdateResumeForm/component";
+import { UpdateResumeForm } from "../components/UpdateResumeForm/update-resume.component";
 import {
   Props,
   formikConfig,
   getInitialValues
-} from "../components/UpdateResumeForm/utils";
+} from "../components/UpdateResumeForm/update-resume.utils";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute } from "../routing";
 import { uiTexts, defaultVal } from "../components/PersonalInfo/utils";

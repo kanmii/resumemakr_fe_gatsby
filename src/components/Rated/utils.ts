@@ -1,12 +1,11 @@
 import * as Yup from "yup";
-
 import { RatedInput } from "../../graphql/apollo/types/globalTypes";
-import { Section, ChildProps } from "../UpdateResumeForm/utils";
+import { Section, ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 export const emptyVal: RatedInput = {
   description: "",
   level: "",
-  index: 1
+  index: 1,
 };
 
 export const validationSchema = Yup.object<RatedInput>().shape({
@@ -14,19 +13,19 @@ export const validationSchema = Yup.object<RatedInput>().shape({
   level: Yup.string(),
   index: Yup.number()
     .required()
-    .min(1)
+    .min(1),
 });
 
 export const additionalSkillDefaultVal: RatedInput = {
   description: "Adobe Photoshop",
   level: "Excellent",
-  index: 1
+  index: 1,
 };
 
 export const languageDefaultVal: RatedInput = {
   description: "Spanish",
   level: "C1",
-  index: 1
+  index: 1,
 };
 
 export interface RowItemsLabels {
@@ -35,7 +34,7 @@ export interface RowItemsLabels {
 }
 export interface Props extends ChildProps {
   label: Section;
-  values?: Array<RatedInput | null> | null;
+  values?: (RatedInput | null)[] | null;
   icon: JSX.Element;
   fieldName: string;
   idPrefix: string;
@@ -46,7 +45,7 @@ export interface Props extends ChildProps {
 export function makeRatedName(
   fieldName: string,
   index: number,
-  key: keyof RatedInput
+  key: keyof RatedInput,
 ) {
   return `${fieldName}[${index}].${key}`;
 }
