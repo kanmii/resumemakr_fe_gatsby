@@ -7,7 +7,7 @@ import { RegularField } from "../RegularField";
 import { PhotoField } from "../PhotoField/photo-field.component";
 import { Section } from "../UpdateResumeForm/update-resume.utils";
 import { emptyVal, uiTexts } from "./utils";
-import { prefix } from "./personal-info.dom-selectors";
+import { prefix, addressFieldId } from "./personal-info.dom-selectors";
 
 interface Props {
   values: PersonalInfoInput | null | undefined;
@@ -89,6 +89,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
           comp={TextArea}
           component={RegularField}
           value={values.address}
+          id={addressFieldId}
         />
 
         <FastField

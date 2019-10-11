@@ -27,11 +27,11 @@ import {
   uiTexts,
 } from "./update-resume.utils";
 import { Preview } from "../Preview";
-import { Mode as PreviewMode } from "../Preview/utils";
+import { Mode as PreviewMode } from "../Preview/preview.utils";
 import { PersonalInfo } from "../PersonalInfo/personal-info.component";
 import { Experiences } from "../Experiences";
 import { Education } from "../Education/education.component";
-import { Skills } from "../Skills";
+import { Skills } from "../Skills/skills.component";
 import { Loading } from "../Loading";
 import { ALREADY_UPLOADED } from "../../constants";
 import {
@@ -39,7 +39,7 @@ import {
   CreateExperienceInput,
 } from "../../graphql/apollo/types/globalTypes";
 import { ResumePathHash } from "../../routing";
-import { Rated } from "../Rated";
+import { Rated } from "../Rated/rated.component";
 import { SectionLabel } from "../SectionLabel";
 import { ListStrings } from "../ListStrings";
 import { NavBtn } from "../NavBtn";
@@ -52,6 +52,11 @@ import {
   loadingTooLongId,
   previousBtnId,
   nextBtnId,
+  additionalSkillsId,
+  languagesId,
+  hobbiesId,
+  partialPreviewBtnId,
+  backToEditBtnId,
 } from "./update-resume.dom-selectors";
 import { debounceTime } from "./update-resume.injectables";
 
@@ -67,15 +72,14 @@ export function UpdateResumeForm(props: Props) {
     setFieldValue,
     values,
     match,
+    updateResume,
   } = props;
 
-  const resumeTitle = match && match.title;
-
-  const updateResume = props.updateResume as UpdateResumeMutationFn;
+  const resumeTitle = match && (match as { title: string }).title;
 
   const [state, dispatch] = useReducer(reducer, {});
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const cancelLoadingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const valuesTrackerRef = useRef<FormValues>({ ...values });
   const backToSectionRef = useRef(Section.personalInfo);
   const currentSectionRef = useRef(Section.personalInfo);
@@ -91,27 +95,17 @@ export function UpdateResumeForm(props: Props) {
 
   useEffect(() => {
     if (loading) {
-      timerRef.current = setTimeout(() => {
+      cancelLoadingTimerRef.current = setTimeout(() => {
         dispatch({
           loadingTooLong: true,
         });
       }, 10000);
-    } else {
-      dispatch({
-        loadingTooLong: false,
-      });
-
-      // istanbul ignore next: can not figure out a way to test
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
     }
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
+      if (cancelLoadingTimerRef.current) {
+        clearTimeout(cancelLoadingTimerRef.current);
+        cancelLoadingTimerRef.current = null;
       }
     };
   }, [loading]);
@@ -181,7 +175,7 @@ export function UpdateResumeForm(props: Props) {
               getUpdateFn()({
                 formValues: values,
                 valuesTrackerRef,
-                updateResume,
+                updateResume: updateResume as UpdateResumeMutationFn,
                 dispatch,
               });
             },
@@ -207,6 +201,7 @@ export function UpdateResumeForm(props: Props) {
                 <NavBtn
                   className="preview-btn"
                   href={urlFromSection(Section.preview, pathname)}
+                  id={partialPreviewBtnId}
                 >
                   <ToolTip>{uiTexts.partialPreviewResumeTooltipText}</ToolTip>
 
@@ -248,8 +243,9 @@ export function UpdateResumeForm(props: Props) {
                 <NavBtn
                   className="next-btn"
                   href={urlFromSection(Section.preview, pathname)}
+                  id={nextBtnId}
                 >
-                  <ToolTip>End: preview your resume</ToolTip>
+                  <ToolTip>{uiTexts.endPreviewResumeTooltipText}</ToolTip>
 
                   <span>Preview Your resume</span>
 
@@ -261,6 +257,7 @@ export function UpdateResumeForm(props: Props) {
             <NavBtn
               className="edit-btn"
               href={urlFromSection(backToSectionRef.current, pathname)}
+              id={backToEditBtnId}
             >
               <ToolTip>Show resume editor</ToolTip>
 
@@ -333,7 +330,6 @@ async function updateResumeFn({
       },
     });
 
-    // istanbul ignore next: just satisfying typescript
     const resume =
       result &&
       result.data &&
@@ -493,6 +489,7 @@ function CurrEditingSection({
         fieldName="additionalSkills"
         icon={<Icon name="won" />}
         dataTestId="additional-skills-section"
+        id={additionalSkillsId}
         idPrefix="Add. Skill"
       />
     );
@@ -511,6 +508,7 @@ function CurrEditingSection({
         dataTestId="languages-section"
         setFieldValue={setFieldValue}
         idPrefix="languages"
+        id={languagesId}
       />
     );
   } else if (section === Section.hobbies) {
@@ -520,6 +518,7 @@ function CurrEditingSection({
           label={label}
           ico={<Icon name="won" />}
           data-testid="hobbies-section"
+          id={hobbiesId}
         />
 
         <FieldArray

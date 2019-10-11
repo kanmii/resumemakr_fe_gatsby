@@ -5,7 +5,6 @@ import dateFormat from "date-fns/format";
 import { Formik, FastField, FormikProps, FormikErrors } from "formik";
 import lodashIsEmpty from "lodash/isEmpty";
 import { NavigateFn } from "@reach/router";
-
 import "./styles.scss";
 import {
   ResumeTitles,
@@ -21,7 +20,7 @@ import { Props, validationSchema, Action, emptyVal, uiTexts } from "./utils";
 import { Loading } from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../UpdateResumeForm/update-resume.utils";
-import { Mode as PreviewMode } from "../Preview/utils";
+import { Mode as PreviewMode } from "../Preview/preview.utils";
 import { AutoTextarea } from "../AutoTextarea";
 import { AppModal } from "../AppModal";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";
@@ -508,7 +507,7 @@ export function MyResumes(merkmale: Props) {
       <Popup
         context={deleteTriggerRefs.current[id]}
         position="top center"
-        verticalOffset={10}
+        offset={10}
         open={loschenFehler.id === id}
         onClose={handleDeleteErrorPopup}
       >
@@ -533,7 +532,7 @@ export function MyResumes(merkmale: Props) {
       <Popup
         context={deleteTriggerRefs.current[id]}
         position="top center"
-        verticalOffset={10}
+        offset={10}
         open={bestatigenLoschenId === id}
         onClose={handleConfirmDeletePopup}
       >

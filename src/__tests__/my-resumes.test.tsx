@@ -1,6 +1,5 @@
 // tslint:disable: no-any
 import React from "react";
-import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import {
   render,
@@ -10,7 +9,6 @@ import {
   act
 } from "react-testing-library";
 import { ApolloError } from "apollo-client";
-
 import { MyResumes } from "../components/MyResumes/component";
 import {
   fillField,

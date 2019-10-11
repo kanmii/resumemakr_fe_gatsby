@@ -3,33 +3,32 @@ import { MatchRenderProps } from "@reach/router";
 import { FormikProps } from "formik";
 import { WithFormikConfig } from "formik";
 import { createContext } from "react";
-
 import {
   validationSchema as expSchema,
-  defaultVal as experience
+  defaultVal as experience,
 } from "../Experiences/experiences.utils";
 import { validationSchema as personalInfoSchema } from "../PersonalInfo/utils";
 import {
   validationSchema as edSchema,
-  defaultVal as education
+  defaultVal as education,
 } from "../Education/utils";
 import {
   defaultVal as skills,
-  validationSchema as skillsSchema
-} from "../Skills/utils";
+  validationSchema as skillsSchema,
+} from "../Skills/skills.utils";
 import {
   EducationInput,
   CreateExperienceInput,
   CreateSkillInput,
   RatedInput,
-  UpdateResumeInput
+  UpdateResumeInput,
 } from "../../graphql/apollo/types/globalTypes";
 import { GetResume_getResume } from "../../graphql/apollo/types/GetResume";
 import {
   validationSchema as ratedSchema,
   languageDefaultVal,
-  additionalSkillDefaultVal
-} from "../Rated/utils";
+  additionalSkillDefaultVal,
+} from "../Rated/rated-utils";
 import { UpdateResumeProps } from "../../graphql/apollo/update-resume.mutation";
 import { GetResumeProps } from "../../graphql/apollo/get-resume.query";
 import { stripTypeName, SetFieldValue } from "../utils";
@@ -53,19 +52,19 @@ export const initialFormValues: FormValues = {
   additionalSkills: [additionalSkillDefaultVal],
   languages: [languageDefaultVal],
   hobbies: ["Swimming"],
-  skills
+  skills,
 };
 
 export const validationSchema = Yup.object<FormValues>().shape({
   personalInfo: personalInfoSchema,
   experiences: Yup.array<CreateExperienceInput>().of<CreateExperienceInput>(
-    expSchema
+    expSchema,
   ),
   education: Yup.array<EducationInput>().of<EducationInput>(edSchema),
   skills: Yup.array<CreateSkillInput>().of<CreateSkillInput>(skillsSchema),
   additionalSkills: Yup.array<RatedInput>().of<RatedInput>(ratedSchema),
   languages: Yup.array<RatedInput>().of<RatedInput>(ratedSchema),
-  hobbies: Yup.array<string>()
+  hobbies: Yup.array<string>(),
 });
 
 // sections by string key
@@ -77,7 +76,7 @@ export enum Section {
   addSkills = "additional-skills",
   langs = "languages",
   hobbies = "hobbies",
-  preview = "preview"
+  preview = "preview",
 }
 
 export function sectionLabelToHeader(section: Section) {
@@ -107,7 +106,7 @@ export const toSection = (current: Section, to: "next" | "prev") => {
 };
 
 export function getInitialValues(
-  getResume: GetResume_getResume | undefined | null
+  getResume: GetResume_getResume | undefined | null,
 ): GetResume_getResume {
   const initial = { ...initialFormValues };
 
@@ -126,7 +125,7 @@ export function getInitialValues(
       (acc as GetResume_getResume)[key] = stripTypeName(v);
       return acc;
     },
-    {} as GetResume_getResume
+    {} as GetResume_getResume,
   );
 }
 
@@ -143,7 +142,7 @@ export const formikConfig: WithFormikConfig<Props, FormValues> = {
 
   validateOnChange: false,
 
-  validateOnBlur: false
+  validateOnBlur: false,
 };
 
 export interface ChildProps {
@@ -163,7 +162,7 @@ export interface ResumeFormContextValue {
 }
 
 export const FormContext = createContext<ResumeFormContextValue>(
-  {} as ResumeFormContextValue
+  {} as ResumeFormContextValue,
 );
 export const FormContextProvider = FormContext.Provider;
 
@@ -177,17 +176,12 @@ export function prevTooltipText(section: Section) {
 
 export const uiTexts = {
   partialPreviewResumeTooltipText: "Partial: preview your resume",
-
   endPreviewResumeTooltipText: "End: preview your resume",
-
   backToEditorBtnText: "Back to Editor",
-
   takingTooLongPrefix: "I am deeply sorry. It looks like",
+  loadingText: "loading...",
+  formValuesSameText: "form values are same",
 
   takingTooLongSuffix:
     "is taking too long to load. I will display it as soon as it arrives.",
-
-  loadingText: "loading...",
-
-  formValuesSameText: "form values are same"
 };

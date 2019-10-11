@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { WindowLocation } from "@reach/router";
-
 import "./styles.scss";
 import { UpdateResumeForm } from "../UpdateResumeForm";
 import { Preview } from "../Preview";
-import { Mode as PreviewMode } from "../Preview/utils";
+import { Mode as PreviewMode } from "../Preview/preview.utils";
 import { ResumePathHash } from "../../routing";
 import { Props } from "./utils";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";

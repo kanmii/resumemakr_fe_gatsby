@@ -4,11 +4,12 @@ import { FastField, FieldArray } from "formik";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
-import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./utils";
+import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./skills.utils";
 import { ListIndexHeader } from "../ListIndexHeader";
 import { ListStrings } from "../ListStrings";
 import { SubFieldLabel } from "../components";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
+import { prefix } from "./skills.dom-selectors";
 
 const HeaderLabelText = "Skill";
 
@@ -23,11 +24,12 @@ export function Skills(props: Props) {
         label={label}
         ico={<Icon name="won" />}
         data-testid="skills-section"
+        id={prefix}
       />
 
       <FieldArray
         name="skills"
-        render={arrayHelper =>
+        render={() =>
           values.map((skill, index) => (
             <Skill key={index} skill={skill} index={index} values={values} />
           ))
@@ -40,7 +42,7 @@ export function Skills(props: Props) {
 function Skill({
   skill,
   index,
-  values
+  values,
 }: {
   skill: CreateSkillInput;
   index: number;

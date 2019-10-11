@@ -1,17 +1,17 @@
 import React from "react";
 import { Icon } from "semantic-ui-react";
-
 import "./styles.scss";
 import {
   GetResume_getResume_personalInfo,
   GetResume_getResume_skills,
   GetResume_getResume_education,
   GetResume_getResume_additionalSkills,
-  GetResume_getResume_languages
+  GetResume_getResume_languages,
 } from "../../graphql/apollo/types/GetResume";
 import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
-import { Props, Mode } from "./utils";
+import { Props, Mode } from "./preview.utils";
 import { toServerUrl } from "../utils";
+import {prefix} from './preview.dom-selectors'
 
 export class Preview extends React.Component<Props> {
   containerRef = React.createRef<HTMLDivElement>();
@@ -34,7 +34,7 @@ export class Preview extends React.Component<Props> {
     let totalHeight = 0;
     const maxHeights = {
       [Mode.download]: 850,
-      [Mode.preview]: 1000
+      [Mode.preview]: 1000,
     };
 
     [].forEach.call(els, (el: HTMLElement, index: number) => {
@@ -89,11 +89,11 @@ export class Preview extends React.Component<Props> {
     const { mode } = this.props;
 
     const additionalSkills = (getResume.additionalSkills || []).filter(
-      a => a && a.description && a.description.trim()
+      a => a && a.description && a.description.trim(),
     ) as GetResume_getResume_additionalSkills[];
 
     const languages = (getResume.languages || []).filter(
-      a => a && a.description && a.description.trim()
+      a => a && a.description && a.description.trim(),
     ) as GetResume_getResume_languages[];
 
     const hobbies = (getResume.hobbies || []).filter(s => s && s.trim());
@@ -105,6 +105,7 @@ export class Preview extends React.Component<Props> {
         }`}
         ref={this.containerRef}
         data-testid="preview-resume-section"
+        id={prefix}
       >
         <div className="main-column left">
           {personalInfo && <PersonalInfo personalInfo={personalInfo} />}
@@ -179,7 +180,7 @@ export class Preview extends React.Component<Props> {
 }
 
 function PersonalInfo({
-  personalInfo
+  personalInfo,
 }: {
   personalInfo: GetResume_getResume_personalInfo;
 }) {
@@ -191,7 +192,7 @@ function PersonalInfo({
     phone,
     email,
     dateOfBirth,
-    photo
+    photo,
   } = personalInfo;
 
   return (
@@ -243,7 +244,7 @@ function PersonalInfo({
           className="photo"
           data-testid={`${firstName} ${lastName} photo`}
           style={{
-            backgroundImage: `url(${toServerUrl(photo)})`
+            backgroundImage: `url(${toServerUrl(photo)})`,
           }}
         />
       )}
@@ -252,7 +253,7 @@ function PersonalInfo({
 }
 
 function Educations({
-  educations
+  educations,
 }: {
   educations: GetResume_getResume_education[];
 }) {
@@ -285,7 +286,7 @@ function Educations({
 }
 
 function Experiences({
-  experiences
+  experiences,
 }: {
   experiences: CreateExperienceInput[];
 }) {
@@ -345,7 +346,7 @@ function Skills({ skills }: { skills: GetResume_getResume_skills[] }) {
 let elmKey = 0;
 
 function Achievements({
-  achievements
+  achievements,
 }: {
   achievements: Array<string | null> | null | undefined;
 }) {

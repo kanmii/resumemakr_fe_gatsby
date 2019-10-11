@@ -2,7 +2,7 @@ import React from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import { render } from "react-testing-library";
-
+import "jest-dom/extend-expect";
 import {
   EducationInput,
   CreateExperienceInput,
@@ -11,8 +11,8 @@ import {
   RatedInput
 } from "../graphql/apollo/types/globalTypes";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
-import { Preview } from "../components/Preview/component";
-import { Mode, Props } from "../components/Preview/utils";
+import { Preview } from "../components/Preview/preview.component";
+import { Mode, Props } from "../components/Preview/preview.utils";
 import { renderWithRouter, renderWithApollo } from "./test_utils";
 
 const PreviewP = Preview as React.ComponentClass<Partial<Props>>;

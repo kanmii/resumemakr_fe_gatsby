@@ -3,10 +3,10 @@ import { Card } from "semantic-ui-react";
 import { FieldArrayRenderProps, FastField, FieldArray } from "formik";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
-import { emptyVal, RowItemsLabels, Props, makeRatedName } from "./utils";
+import { emptyVal, RowItemsLabels, Props, makeRatedName } from "./rated-utils";
 import {
   RatedInput,
-  CreateExperienceInput
+  CreateExperienceInput,
 } from "../../graphql/apollo/types/globalTypes";
 import { ListIndexHeader } from "../ListIndexHeader";
 import { SetFieldValue } from "../utils";
@@ -20,7 +20,8 @@ export function Rated(props: Props) {
     fieldName,
     idPrefix,
     rowItemsLabels,
-    dataTestId
+    dataTestId,
+    id = "",
   } = props;
 
   let values = props.values as RatedInput[];
@@ -31,7 +32,7 @@ export function Rated(props: Props) {
 
   return (
     <>
-      <SectionLabel label={label} ico={icon} data-testid={dataTestId} />
+      <SectionLabel id={id} label={label} ico={icon} data-testid={dataTestId} />
 
       <FieldArray
         name={fieldName}
@@ -73,7 +74,7 @@ function Item({
   fieldName,
   rowItemsLabels,
   index,
-  values
+  values,
 }: ItemProps) {
   const { level, description } = value;
 

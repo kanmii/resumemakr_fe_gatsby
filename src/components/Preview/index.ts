@@ -1,11 +1,10 @@
 import { compose, graphql } from "react-apollo";
-
 import {
   GetResume,
   GetResumeVariables
 } from "../../graphql/apollo/types/GetResume";
-import { Preview as App } from "./component";
-import { OwnProps, Mode } from "./utils";
+import { Preview as App } from "./preview.component";
+import { OwnProps, Mode } from "./preview.utils";
 import {
   getResumeQuery,
   GetResumeProps

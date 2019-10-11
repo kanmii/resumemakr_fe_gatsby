@@ -40,6 +40,7 @@ export interface Props extends ChildProps {
   idPrefix: string;
   rowItemsLabels: RowItemsLabels;
   dataTestId: string;
+  id?: string;
 }
 
 export function makeRatedName(

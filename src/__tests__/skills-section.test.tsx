@@ -20,7 +20,7 @@ import {
   uiTexts,
   emptyVal,
   fieldName
-} from "../components/Skills/utils";
+} from "../components/Skills/skills.utils";
 import {
   Props,
   formikConfig,

@@ -5,8 +5,9 @@ import {
   fireEvent,
   wait,
   waitForElement,
-  act
+  act,
 } from "react-testing-library";
+import "jest-dom/extend-expect";
 import { Login } from "../components/Login/component";
 import { Props } from "../components/Login/utils";
 import { fillField } from "./test_utils";
@@ -19,9 +20,8 @@ import { isConnected } from "../state/get-conn-status";
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
 jest.mock("../components/Header", () => ({
-  Header: jest.fn(() => null)
+  Header: jest.fn(() => null),
 }));
-
 
 const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
 const mockGetConnStatus = isConnected as jest.Mock;
@@ -39,8 +39,8 @@ it("renders correctly and submits", async () => {
 
   mockLogin.mockResolvedValue({
     data: {
-      login: { user }
-    }
+      login: { user },
+    },
   });
 
   /**
@@ -79,8 +79,8 @@ it("renders correctly and submits", async () => {
       expect(mockUpdateLocalUser).toBeCalledWith({ variables: { user } });
     },
     {
-      interval: 1
-    }
+      interval: 1,
+    },
   );
 
   /**
@@ -167,8 +167,8 @@ it("renders error if server returns error", async () => {
 
   mockLogin.mockRejectedValue(
     new ApolloError({
-      graphQLErrors: [new GraphQLError("Invalid email/password")]
-    })
+      graphQLErrors: [new GraphQLError("Invalid email/password")],
+    }),
   );
 
   /**
@@ -203,7 +203,7 @@ it("logs out user if logged in", done => {
    * Given that we are logged in
    */
   const { ui, mockUpdateLocalUser } = makeComp({
-    props: { userLocal: { user: {} } as any }
+    props: { userLocal: { user: {} } as any },
   });
 
   /**
@@ -217,8 +217,8 @@ it("logs out user if logged in", done => {
   setTimeout(() => {
     expect(mockUpdateLocalUser).toBeCalledWith({
       variables: {
-        user: null
-      }
+        user: null,
+      },
     });
   });
 
@@ -230,7 +230,7 @@ it("does not log out user if user not logged in", async () => {
    * Given that we are not logged in
    */
   const { ui, mockUpdateLocalUser } = makeComp({
-    props: { userLocal: { user: null } as any }
+    props: { userLocal: { user: null } as any },
   });
 
   /**
@@ -280,8 +280,8 @@ it("renders error if server did not return a valid user", async () => {
 
   mockLogin.mockResolvedValue({
     data: {
-      login: { user: null }
-    }
+      login: { user: null },
+    },
   });
 
   /**
@@ -293,7 +293,7 @@ it("renders error if server did not return a valid user", async () => {
    * Then we should not see any error UI
    */
   expect(
-    queryByText(/There is a problem logging you in/)
+    queryByText(/There is a problem logging you in/),
   ).not.toBeInTheDocument();
 
   /**
@@ -305,7 +305,7 @@ it("renders error if server did not return a valid user", async () => {
    * Then we should see error UI
    */
   const $error = await waitForElement(() =>
-    getByText(/There is a problem logging you in/)
+    getByText(/There is a problem logging you in/),
   );
 
   expect($error).toBeInTheDocument();
@@ -319,7 +319,7 @@ function fillForm(getByLabelText: any, getByText: any) {
 
 function makeComp({
   isConnected = true,
-  props = {}
+  props = {},
 }: { isConnected?: boolean; props?: Partial<Props> } = {}) {
   mockRefreshToMyResumes.mockReset();
 
@@ -339,6 +339,6 @@ function makeComp({
     ),
 
     mockUpdateLocalUser,
-    mockLogin
+    mockLogin,
   };
 }
