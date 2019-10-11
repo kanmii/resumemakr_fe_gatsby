@@ -3,12 +3,11 @@ import React, { ComponentType } from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
 import { render } from "react-testing-library";
-
 import { HomePage } from "../components/HomePage/component";
 import { Props, uiTexts } from "../components/HomePage/utils";
 import { RESUMES_HOME_PATH } from "../routing";
 
-jest.mock("../components/SignUp", () => ({
+jest.mock("../components/SignUp/signup.index", () => ({
   SignUp: jest.fn(() => null)
 }));
 

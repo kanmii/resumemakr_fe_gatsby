@@ -2,20 +2,21 @@ import React, { useState } from "react";
 import { FieldProps } from "formik";
 import { Form, Input, Icon } from "semantic-ui-react";
 import { Link } from "gatsby";
-
-import "./styles.scss";
+import "./password-input.styles.scss";
 import { PASSWORD_RESET_PATH } from "../../routing";
+import { domShowIconId, domHideIconId } from "./password-input.dom-selectors";
 
 type PwdType = "password" | "text";
 
 interface Props<TFormValues> extends FieldProps<TFormValues> {
   pwdType?: PwdType;
   onToggle: (type: PwdType) => void;
+  id?: string;
 }
 
-export function PwdInput<T>(props: Props<T>) {
+export function PasswordInput<T>(props: Props<T>) {
   const { field } = props;
-  const id = makeId(field.name);
+  const id = props.id || makeId(field.name);
 
   const [pwdType, setPwdType] = useState<PwdType>("password");
 
@@ -28,7 +29,7 @@ export function PwdInput<T>(props: Props<T>) {
           to={PASSWORD_RESET_PATH}
           tabIndex={-1}
           style={{
-            fontStyle: "italic"
+            fontStyle: "italic",
           }}
         >
           Forgotten your password?
@@ -43,6 +44,7 @@ export function PwdInput<T>(props: Props<T>) {
             name="eye"
             className="link"
             data-testid="password-unmask"
+            id={domShowIconId}
             onClick={() => setPwdType("text")}
           />
         )}
@@ -52,6 +54,7 @@ export function PwdInput<T>(props: Props<T>) {
             name="eye slash"
             className="link"
             data-testid="password-mask"
+            id={domHideIconId}
             onClick={() => setPwdType("password")}
           />
         )}

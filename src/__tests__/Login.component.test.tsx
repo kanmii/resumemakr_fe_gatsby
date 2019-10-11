@@ -1,21 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import {
-  render,
-  fireEvent,
-  wait,
-  waitForElement,
-  act,
-} from "react-testing-library";
-import "jest-dom/extend-expect";
-import { Login } from "../components/Login/component";
-import { Props } from "../components/Login/utils";
+import { cleanup, render, wait, waitForElement } from "react-testing-library";
+import { Login } from "../components/Login/login.component";
+import { Props } from "../components/Login/login.utils";
 import { fillField } from "./test_utils";
 import { LoginMutation_login_user } from "../graphql/apollo/types/LoginMutation";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
 import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
 import { isConnected } from "../state/get-conn-status";
+import {
+  domSubmitBtnId,
+  domEmailInputId,
+  domPasswordInputId,
+  domFormErrorId,
+} from "../components/Login/login.dom-selectors";
 
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
@@ -27,7 +26,16 @@ const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
 const mockGetConnStatus = isConnected as jest.Mock;
 
 const LoginP = Login as React.FunctionComponent<Partial<Props>>;
-const passwortMuster = new RegExp("Password");
+
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  cleanup();
+  jest.runAllTimers();
+  jest.clearAllTimers();
+});
 
 it("renders correctly and submits", async () => {
   /**
@@ -46,42 +54,43 @@ it("renders correctly and submits", async () => {
   /**
    * While using component
    */
-  const { getByText, getByLabelText } = render(ui);
+  render(ui);
 
   /**
    * Then the submit button should be disabled
    */
-  const $button = getByText(/Submit/);
-  expect($button).toBeDisabled();
+  const $button = document.getElementById(domSubmitBtnId) as HTMLButtonElement;
+  expect($button.disabled).toBe(true);
 
   /**
    * When we complete the form
    */
-  fillField(getByLabelText("Email"), "me@me.com");
-  fillField(getByLabelText(passwortMuster), "awesome pass");
+  fillField(
+    document.getElementById(domEmailInputId) as HTMLElement,
+    "me@me.com",
+  );
 
+  fillField(
+    document.getElementById(domPasswordInputId) as HTMLElement,
+    "awesome pass",
+  );
   /**
    * Then the submit button should be enabled
    */
-  expect($button).not.toBeDisabled();
+  expect($button.disabled).toBe(false);
 
   /**
    * When we submit the form
    */
-  fireEvent.click($button);
+  $button.click();
 
   /**
    * Then correct data should be uploaded to the server and user should be
    * saved locally to client
    */
-  await wait(
-    () => {
-      expect(mockUpdateLocalUser).toBeCalledWith({ variables: { user } });
-    },
-    {
-      interval: 1,
-    },
-  );
+  await wait(() => {
+    expect(mockUpdateLocalUser).toBeCalledWith({ variables: { user } });
+  });
 
   /**
    * And we should be redirected
@@ -95,28 +104,36 @@ it("renders error if email is invalid", async () => {
    */
   const { ui } = makeComp();
 
-  const { getByText, getByLabelText, getByTestId, queryByTestId } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(queryByTestId("login-form-error")).not.toBeInTheDocument();
+  expect(document.getElementById(domFormErrorId)).toBeNull();
 
   /**
    * When we complete the form with invalid email and submit
    */
-  fillField(getByLabelText("Email"), "invalid email");
-  fillField(getByLabelText(passwortMuster), "awesome pass");
+  fillField(
+    document.getElementById(domEmailInputId) as HTMLElement,
+    "invalid email",
+  );
 
-  act(() => {
-    fireEvent.click(getByText(/Submit/));
-  });
+  fillField(
+    document.getElementById(domPasswordInputId) as HTMLElement,
+    "awesome pass",
+  );
+
+  (document.getElementById(domSubmitBtnId) as HTMLElement).click();
 
   /**
    * Then we should see error Ui
    */
-  const $error = await waitForElement(() => getByTestId("login-form-error"));
-  expect($error).toContainElement(getByText(/email/i));
+  const $error = await waitForElement(() => {
+    return document.getElementById(domFormErrorId) as HTMLElement;
+  });
+
+  expect($error.textContent).toContain("email");
 
   /**
    * And we should not be redirected
@@ -130,28 +147,33 @@ it("renders error if password is invalid", async () => {
    */
   const { ui } = makeComp();
 
-  const { getByText, getByLabelText, getByTestId, queryByTestId } = render(ui);
+  render(ui);
 
-  /**
+  /*s
    * Then we should not see any error UI
    */
-  expect(queryByTestId("login-form-error")).not.toBeInTheDocument();
+  expect(document.getElementById(domFormErrorId)).toBeNull();
 
   /**
    * When we complete the form with invalid password and submit
    */
-  fillField(getByLabelText("Email"), "awesome@email.com");
-  fillField(getByLabelText(passwortMuster), "12");
+  fillField(
+    document.getElementById(domEmailInputId) as HTMLElement,
+    "awesome@email.com",
+  );
 
-  act(() => {
-    fireEvent.click(getByText(/Submit/));
-  });
+  fillField(document.getElementById(domPasswordInputId) as HTMLElement, "12");
+
+  (document.getElementById(domSubmitBtnId) as HTMLButtonElement).click();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() => getByTestId("login-form-error"));
-  expect($error).toContainElement(getByText(/too short/i));
+  const $error = await waitForElement(() => {
+    return document.getElementById(domFormErrorId) as HTMLElement;
+  });
+
+  expect($error.textContent).toContain("short");
 
   /**
    * And we should not be redirected
@@ -167,30 +189,33 @@ it("renders error if server returns error", async () => {
 
   mockLogin.mockRejectedValue(
     new ApolloError({
-      graphQLErrors: [new GraphQLError("Invalid email/password")],
+      graphQLErrors: [new GraphQLError("lolo")],
     }),
   );
 
   /**
    * While we are using the component
    */
-  const { getByText, getByLabelText, getByTestId, queryByTestId } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(queryByTestId("login-form-error")).not.toBeInTheDocument();
+  expect(document.getElementById(domFormErrorId)).toBeNull();
 
   /**
    * When we complete and submit the form
    */
-  fillForm(getByLabelText, getByText);
+  fillForm();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() => getByTestId("login-form-error"));
-  expect($error).toContainElement(getByText(/Invalid email\/password/i));
+  const $error = await waitForElement(() => {
+    return document.getElementById(domFormErrorId) as HTMLElement;
+  });
+
+  expect($error.textContent).toContain("lolo");
 
   /**
    * And we should not be redirected
@@ -198,7 +223,7 @@ it("renders error if server returns error", async () => {
   expect(mockRefreshToMyResumes).not.toBeCalled();
 });
 
-it("logs out user if logged in", done => {
+it("logs out user if logged in", () => {
   /**
    * Given that we are logged in
    */
@@ -210,19 +235,16 @@ it("logs out user if logged in", done => {
    * While using the component
    */
   render(ui);
+  jest.runAllTimers();
 
   /**
    * Then we should be logged out
    */
-  setTimeout(() => {
-    expect(mockUpdateLocalUser).toBeCalledWith({
-      variables: {
-        user: null,
-      },
-    });
+  expect(mockUpdateLocalUser).toBeCalledWith({
+    variables: {
+      user: null,
+    },
   });
-
-  done();
 });
 
 it("does not log out user if user not logged in", async () => {
@@ -237,6 +259,7 @@ it("does not log out user if user not logged in", async () => {
    * While using the component
    */
   const {} = render(ui);
+  jest.runAllTimers();
 
   /**
    * Then we should not be logged out
@@ -253,23 +276,26 @@ it("renders error if no connection", async () => {
   /**
    * While using the component
    */
-  const { getByText, getByLabelText, queryByText } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see error UI
    */
-  expect(queryByText(/You are not connected/)).not.toBeInTheDocument();
+  expect(document.getElementById(domFormErrorId)).toBeNull();
 
   /**
    * When we complete and submit the form
    */
-  fillForm(getByLabelText, getByText);
+  fillForm();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() => getByText(/You are not connected/));
-  expect($error).toBeInTheDocument();
+  const $error = await waitForElement(() => {
+    return document.getElementById(domFormErrorId) as HTMLElement;
+  });
+
+  expect($error.textContent).toContain("conn");
 });
 
 it("renders error if server did not return a valid user", async () => {
@@ -287,34 +313,40 @@ it("renders error if server did not return a valid user", async () => {
   /**
    * While using the component
    */
-  const { getByText, getByLabelText, queryByText } = render(ui);
+  const { getByText, queryByText } = render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(
-    queryByText(/There is a problem logging you in/),
-  ).not.toBeInTheDocument();
+  expect(document.getElementById(domFormErrorId) as HTMLElement).toBeNull();
 
   /**
    * When we complete and submit the form
    */
-  fillForm(getByLabelText, getByText);
+  fillForm();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() =>
-    getByText(/There is a problem logging you in/),
-  );
+  const $error = await waitForElement(() => {
+    return document.getElementById(domFormErrorId) as HTMLElement;
+  });
 
-  expect($error).toBeInTheDocument();
+  expect($error.textContent).toContain("prob");
 });
 
-function fillForm(getByLabelText: any, getByText: any) {
-  fillField(getByLabelText("Email"), "me@me.com");
-  fillField(getByLabelText(passwortMuster), "awesome pass");
-  fireEvent.click(getByText(/Submit/));
+function fillForm() {
+  fillField(
+    document.getElementById(domEmailInputId) as HTMLElement,
+    "me@me.com",
+  );
+
+  fillField(
+    document.getElementById(domPasswordInputId) as HTMLElement,
+    "awesome pass",
+  );
+
+  (document.getElementById(domSubmitBtnId) as HTMLButtonElement).click();
 }
 
 function makeComp({

@@ -1,17 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import "jest-dom/extend-expect";
 import React from "react";
 import { render, fireEvent, wait, waitForElement } from "react-testing-library";
-import { SignUp } from "../components/SignUp/component";
+import { SignUp } from "../components/SignUp/signup.component";
 import {
   Props,
   passworteNichtGleich,
-  uiTexts
-} from "../components/SignUp/utils";
+  uiTexts,
+} from "../components/SignUp/signup.utils";
 import { fillField } from "./test_utils";
 import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
 import { isConnected } from "../state/get-conn-status";
 import { scrollToTop } from "../components/SignUp/scroll-to-top";
+import { UserRegMutation_registration_user } from "../graphql/apollo/types/UserRegMutation";
+import { ApolloError } from "apollo-client";
+import { GraphQLError } from "graphql";
+import {
+  domPasswordInputId,
+  domPasswordConfirmInputId,
+  domNameInputId,
+  domEmailInputId,
+  domSubmitBtnId,
+  domErrorsId,
+  domSourceInputId,
+} from "../components/SignUp/signup.dom-selectors";
 
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
@@ -21,41 +32,48 @@ const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
 const mockGetConnStatus = isConnected as jest.Mock;
 const mockScrollToTop = scrollToTop as jest.Mock;
 
-const passwortMuster = new RegExp("Password");
-const passBestMuster = new RegExp("Password Confirmation");
-const submitBtnPattern = new RegExp(uiTexts.submitBtn, "i");
-
-import { UserRegMutation_registration_user } from "../graphql/apollo/types/UserRegMutation";
-import { ApolloError } from "apollo-client";
-import { GraphQLError } from "graphql";
-
 it("renders error if password and password confirm are not same", async () => {
   /**
    * Given we are using the component
    */
   const { ui } = makeComp();
-  const { getByText, getByLabelText, getByTestId, queryByTestId } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(queryByTestId("sign-up-form-error")).not.toBeInTheDocument();
+  expect(document.getElementById(domErrorsId) as HTMLElement).toBeNull();
 
   /**
    * When we complete the form with different password and password
    * confirmation and submit the form
    */
-  fillField(getByLabelText("Name"), "Kanmii");
-  fillField(getByLabelText("Email"), "me@me.com");
-  fillField(getByLabelText(passwortMuster), "awesome pass");
-  fillField(getByLabelText(passBestMuster), "awesome pass1");
-  fireEvent.click(getByText(submitBtnPattern));
+  fillField(document.getElementById(domNameInputId) as HTMLElement, "Kanmii");
+  fillField(
+    document.getElementById(domEmailInputId) as HTMLElement,
+    "me@me.com",
+  );
+
+  fillField(
+    document.getElementById(domPasswordInputId) as HTMLElement,
+    "awesome pass",
+  );
+
+  fillField(
+    document.getElementById(domPasswordConfirmInputId) as HTMLElement,
+    "awesome pass1",
+  );
+
+  (document.getElementById(domSubmitBtnId) as HTMLButtonElement).click();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() => getByTestId("sign-up-form-error"));
-  expect($error).toContainElement(getByText(new RegExp(passworteNichtGleich)));
+  const $error = await waitForElement(() => {
+    return document.getElementById(domErrorsId) as HTMLElement;
+  });
+
+  expect($error.textContent).toContain("nicht");
 
   /**
    * And page should be automatically scrolled to the top
@@ -79,35 +97,36 @@ it("renders error if server returns error", async () => {
       graphQLErrors: [
         new GraphQLError(
           JSON.stringify({
-            errors: { email: "email" }
-          })
-        )
-      ]
-    })
+            errors: { email: "email" },
+          }),
+        ),
+      ],
+    }),
   );
 
   /**
    * When we interact the component
    */
-  const { getByText, getByLabelText, getByTestId, queryByTestId } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(queryByTestId(uiTexts.formErrorTestId)).not.toBeInTheDocument();
+  expect(document.getElementById(domErrorsId) as HTMLElement).toBeNull();
 
   /**
    * When we complete and submit the form
    */
-  fillAndSubmitForm(getByLabelText, getByText);
+  fillAndSubmitForm();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() =>
-    getByTestId(uiTexts.formErrorTestId)
+  const $error = await waitForElement(
+    () => document.getElementById(domErrorsId) as HTMLElement,
   );
-  expect($error).toContainElement(getByText(/email/i));
+
+  expect($error.textContent).toContain("email");
 
   /**
    * And page should be automatically scrolled to the top
@@ -122,7 +141,7 @@ it("renders error if server returns error", async () => {
   /**
    * Then we should no longer see any error UI
    */
-  expect(queryByTestId(uiTexts.formErrorTestId)).not.toBeInTheDocument();
+  expect(document.getElementById(domErrorsId) as HTMLElement).toBeNull();
 });
 
 it("renders error if nicht verbinden", async () => {
@@ -134,23 +153,26 @@ it("renders error if nicht verbinden", async () => {
   /**
    * When we interact the component
    */
-  const { getByText, getByLabelText, queryByText } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(queryByText(/You are not connected/)).not.toBeInTheDocument();
+  expect(document.getElementById(domErrorsId)).toBeNull();
 
   /**
    * When we complete and submit the form
    */
-  fillAndSubmitForm(getByLabelText, getByText);
+  fillAndSubmitForm();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() => getByText(/You are not connected/));
-  expect($error).toBeInTheDocument();
+  const $error = await waitForElement(() => {
+    return document.getElementById(domErrorsId);
+  });
+
+  expect($error).not.toBeNull();
 
   /**
    * And page should be automatically scrolled to the top
@@ -166,32 +188,33 @@ it("renders error if user von Server ist falsch", async () => {
 
   mockRegUser.mockResolvedValue({
     data: {
-      registration: { user: null }
-    }
+      registration: { user: null },
+    },
   });
 
   /**
    * When we interact with the component
    */
-  const { getByText, getByLabelText, queryByText } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI
    */
-  expect(queryByText(/Account creation has failed/)).not.toBeInTheDocument();
+  expect(document.getElementById(domErrorsId)).toBeNull();
 
   /**
    * When we complete and submit the form
    */
-  fillAndSubmitForm(getByLabelText, getByText);
+  fillAndSubmitForm();
 
   /**
    * Then we should see error UI
    */
-  const $error = await waitForElement(() =>
-    getByText(/Account creation has failed/)
-  );
-  expect($error).toBeInTheDocument();
+  const $error = await waitForElement(() => {
+    return document.getElementById(domErrorsId) as HTMLElement;
+  });
+
+  expect($error.textContent).toContain("fail");
 
   /**
    * And page should be automatically scrolled to the top
@@ -209,25 +232,25 @@ it("renders correctly and submits", async () => {
 
   mockRegUser.mockResolvedValue({
     data: {
-      registration: { user }
-    }
+      registration: { user },
+    },
   });
 
   /**
    * When we interact with the component
    */
-  const { getByText, getByLabelText } = render(ui);
+  render(ui);
 
   /**
    * Then we should see that the submit button is disabled
    */
-  const $button = getByText(submitBtnPattern);
-  expect($button).toBeDisabled();
+  const $button = document.getElementById(domSubmitBtnId) as HTMLButtonElement;
+  expect($button.disabled).toBe(true);
 
   /**
    * And source filled is pre-filled
    */
-  const $source = getByLabelText("Source") as any;
+  const $source = document.getElementById(domSourceInputId) as HTMLInputElement;
   expect($source.value).toBe("password");
 
   /**
@@ -235,23 +258,23 @@ it("renders correctly and submits", async () => {
    */
   expect($source).toHaveAttribute("readonly");
   expect(($source.closest(".form-field") as any).classList).toContain(
-    "disabled"
+    "disabled",
   );
 
   /**
    * When we complete the form
    */
-  fillForm(getByLabelText);
+  fillForm();
 
   /**
    * Then submit button should be enabled
    */
-  expect($button).not.toHaveAttribute("disabled");
+  expect($button.disabled).toBe(false);
 
   /**
    * When we submit the form
    */
-  fireEvent.click($button);
+  $button.click();
 
   /**
    * Then correct value should be sent to the server
@@ -262,7 +285,7 @@ it("renders correctly and submits", async () => {
       email: "me@me.com",
       password: "awesome pass",
       passwordConfirmation: "awesome pass",
-      source: "password"
+      source: "password",
     });
   });
 
@@ -282,16 +305,31 @@ it("renders correctly and submits", async () => {
   expect(mockRefreshToMyResumes).toBeCalled();
 });
 
-function fillForm(getByLabelText: any) {
-  fillField(getByLabelText("Name"), "Kanmii");
-  fillField(getByLabelText("Email"), "me@me.com");
-  fillField(getByLabelText(passwortMuster), "awesome pass");
-  fillField(getByLabelText(passBestMuster), "awesome pass");
+function fillForm() {
+  fillField(
+    document.getElementById(domNameInputId) as HTMLInputElement,
+    "Kanmii",
+  );
+
+  fillField(
+    document.getElementById(domEmailInputId) as HTMLElement,
+    "me@me.com",
+  );
+
+  fillField(
+    document.getElementById(domPasswordInputId) as HTMLElement,
+    "awesome pass",
+  );
+
+  fillField(
+    document.getElementById(domPasswordConfirmInputId) as HTMLElement,
+    "awesome pass",
+  );
 }
 
-function fillAndSubmitForm(getByLabelText: any, getByText: any) {
-  fillForm(getByLabelText);
-  fireEvent.click(getByText(submitBtnPattern));
+function fillAndSubmitForm() {
+  fillForm();
+  (document.getElementById(domSubmitBtnId) as HTMLButtonElement).click();
 }
 
 ////////////////////////// HELPERS ////////////////////////////
@@ -300,7 +338,7 @@ const SignUpP = SignUp as React.FunctionComponent<Partial<Props>>;
 
 function makeComp({
   isConnected = true,
-  props = {}
+  props = {},
 }: { props?: Partial<Props>; isConnected?: boolean } = {}) {
   mockGetConnStatus.mockReset();
   mockGetConnStatus.mockResolvedValue(isConnected);
@@ -321,6 +359,6 @@ function makeComp({
     ),
 
     mockRegUser,
-    mockUpdateLocalUser
+    mockUpdateLocalUser,
   };
 }

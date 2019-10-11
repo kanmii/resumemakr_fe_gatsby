@@ -4,10 +4,16 @@ import { WithApolloClient } from "react-apollo";
 import { ApolloError } from "apollo-client";
 import { FormikErrors } from "formik";
 import { Reducer } from "react";
-
 import { RegMutationProps } from "../../graphql/apollo/user-reg.mutation";
 import { UserLocalMutationProps } from "../../state/user.local.mutation";
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
+import {
+  domPasswordInputId,
+  domPasswordConfirmInputId,
+  domNameInputId,
+  domEmailInputId,
+  domSourceInputId,
+} from "./signup.dom-selectors";
 
 export interface Props
   extends RouteComponentProps,
@@ -26,7 +32,7 @@ export const initialFormValues: RegistrationInput = {
   email: "",
   password: "",
   passwordConfirmation: "",
-  source: "password"
+  source: "password",
 };
 
 export const passworteNichtGleich = "Passworte nicht gleich";
@@ -51,36 +57,39 @@ export const ValidationSchema = Yup.object<RegistrationInput>().shape({
     .required("is required"),
   passwordConfirmation: PasswortGleichPrüfer,
 
-  source: Yup.string().default("password")
+  source: Yup.string().default("password"),
 });
 
 export const RouterThings = {
-  documentTitle: "Sign up"
+  documentTitle: "Sign up",
 };
 
 export const FORMULAR_PASSWORT_RENDERN_MERKMALE = {
-  password: ["Password", "password"],
-  passwordConfirmation: ["Password Confirmation", "password"]
+  password: ["Password", "password", domPasswordInputId],
+  passwordConfirmation: [
+    "Password Confirmation",
+    "password",
+    domPasswordConfirmInputId,
+  ],
 };
 
 export const FORM_RENDER_PROPS = {
-  name: ["Name", "text"],
-  email: ["Email", "email"],
-  source: ["Source", "text"],
-  ...FORMULAR_PASSWORT_RENDERN_MERKMALE
+  name: ["Name", "text", domNameInputId],
+  email: ["Email", "email", domEmailInputId],
+  source: ["Source", "text", domSourceInputId],
+  ...FORMULAR_PASSWORT_RENDERN_MERKMALE,
 };
 
 export const uiTexts = {
   submitBtn: "Sign up for resumemakr",
-
-  formErrorTestId: "sign-up-form-error"
+  formErrorTestId: "sign-up-form-error",
 };
 
 export enum ActionTypes {
   reset_all_errors = "@components/signup/reset_all_errors",
   set_other_errors = "@components/signup/set_other_errors",
   set_form_errors = "@components/signup/set_form_errors",
-  set_graphql_errors = "@components/signup/set_graphql_errors"
+  set_graphql_errors = "@components/signup/set_graphql_errors",
 }
 
 interface State {
@@ -101,34 +110,34 @@ interface ReducerAction {
 }
 
 const reducerFunctionsObject: {
-  [k in ActionTypes]: Reducer<State, ReducerPayload>
+  [k in ActionTypes]: Reducer<State, ReducerPayload>;
 } = {
   [ActionTypes.reset_all_errors]: prevState => ({
     ...prevState,
     otherErrors: null,
     formErrors: null,
-    gqlFehler: null
+    gqlFehler: null,
   }),
 
   [ActionTypes.set_other_errors]: (previousState, payload) => ({
     ...previousState,
-    otherErrors: payload as string
+    otherErrors: payload as string,
   }),
 
   [ActionTypes.set_form_errors]: (prevState, payload) => ({
     ...prevState,
-    formErrors: payload as FormikErrors<RegistrationInput>
+    formErrors: payload as FormikErrors<RegistrationInput>,
   }),
 
   [ActionTypes.set_graphql_errors]: (prevState, payload) => ({
     ...prevState,
-    gqlFehler: payload as ApolloError
-  })
+    gqlFehler: payload as ApolloError,
+  }),
 };
 
 export const reducer: Reducer<State, ReducerAction> = (
   prevState,
-  { type, payload }
+  { type, payload },
 ) => {
   const fn = reducerFunctionsObject[type];
 

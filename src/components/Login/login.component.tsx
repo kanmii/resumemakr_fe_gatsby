@@ -7,11 +7,11 @@ import {
   FieldProps,
   FormikProps,
   Field,
-  FormikErrors
+  FormikErrors,
 } from "formik";
-import { Props, ValidationSchema } from "./utils";
+import { Props, ValidationSchema } from "./login.utils";
 import { LoginInput } from "../../graphql/apollo/types/globalTypes";
-import { PwdInput } from "../PwdInput";
+import { PasswordInput } from "../PasswordInput/password-input.index";
 import { AuthCard } from "../AuthCard";
 import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";
 import { isConnected } from "../../state/get-conn-status";
@@ -22,6 +22,12 @@ import { OtherAuthLink } from "../OtherAuthLink";
 import { Header } from "../Header";
 import { LoginMutationFn } from "../../graphql/apollo/login.mutation";
 import { UserLocalMutationFn } from "../../state/user.local.mutation";
+import {
+  domSubmitBtnId,
+  domEmailInputId,
+  domPasswordInputId,
+  domFormErrorId,
+} from "./login.dom-selectors";
 
 const Errors = React.memo(ErrorsComp, ErrorsDiff);
 
@@ -30,7 +36,7 @@ export function Login(merkmale: Props) {
     userLocal,
     updateLocalUser,
     loggedOutUser: loggedOutUserProp,
-    login
+    login,
   } = merkmale;
 
   /* istanbul ignore next: */
@@ -38,7 +44,7 @@ export function Login(merkmale: Props) {
   const user = userLocal && userLocal.user;
 
   const [graphQlErrors, setGraphQlErrors] = useState<ApolloError | undefined>(
-    undefined
+    undefined,
   );
 
   const [otherErrors, setOtherErrors] = useState<undefined | string>(undefined);
@@ -55,19 +61,19 @@ export function Login(merkmale: Props) {
       if (updateLocalUser) {
         updateLocalUser({
           variables: {
-            user: null
-          }
+            user: null,
+          },
         });
       }
     },
     /* eslint-disable react-hooks/exhaustive-deps */
-    []
+    [],
   );
 
   function onSubmit({
     values,
     setSubmitting,
-    validateForm
+    validateForm,
   }: FormikProps<LoginInput>) {
     return async function() {
       clearToken();
@@ -92,8 +98,8 @@ export function Login(merkmale: Props) {
       try {
         const result = await (login as LoginMutationFn)({
           variables: {
-            input: values
-          }
+            input: values,
+          },
         });
 
         const resultUser =
@@ -106,7 +112,7 @@ export function Login(merkmale: Props) {
         }
 
         await (updateLocalUser as UserLocalMutationFn)({
-          variables: { user: resultUser }
+          variables: { user: resultUser },
         });
 
         refreshToMyResumes();
@@ -141,10 +147,14 @@ export function Login(merkmale: Props) {
           <Form onSubmit={onSubmit(props)}>
             <FastField name="email" component={EmailInput} />
 
-            <Field name="password" component={PwdInput} />
+            <Field
+              id={domPasswordInputId}
+              name="password"
+              component={PasswordInput}
+            />
 
             <Button
-              id="login-submit"
+              id={domSubmitBtnId}
               name="login-submit"
               color="green"
               inverted={true}
@@ -181,7 +191,7 @@ export function Login(merkmale: Props) {
               /* istanbul ignore next: */
               (loggedOutUser && loggedOutUser.email) ||
               "",
-            password: ""
+            password: "",
           }}
           onSubmit={noOp}
           render={renderForm}
@@ -198,14 +208,14 @@ function EmailInput(props: FieldProps<LoginInput>) {
 
   return (
     <Form.Field>
-      <label htmlFor="email">Email</label>
+      <label htmlFor={domEmailInputId}>Email</label>
 
       <Input
         {...field}
         type="email"
         autoComplete="off"
         autoFocus={true}
-        id="email"
+        id={domEmailInputId}
       />
     </Form.Field>
   );
@@ -234,7 +244,7 @@ function ErrorsDiff({ errors: p }: ErrorsProps, { errors: n }: ErrorsProps) {
 function ErrorsComp(props: ErrorsProps) {
   const {
     errors: { otherErrors, formErrors, graphQlErrors },
-    handleErrorsDismissed
+    handleErrorsDismissed,
   } = props;
 
   function messageContent() {
@@ -280,7 +290,7 @@ function ErrorsComp(props: ErrorsProps) {
   }
 
   return (
-    <Card.Content data-testid="login-form-error" extra={true}>
+    <Card.Content id={domFormErrorId} data-testid="login-form-error" extra={true}>
       <Message error={true} onDismiss={handleErrorsDismissed}>
         <Message.Content>{content}</Message.Content>
       </Message>

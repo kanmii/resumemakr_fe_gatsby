@@ -3,7 +3,7 @@ import USER_LOCAL_QUERY, {
   UserLocalGqlProps,
   UserLocalGqlData
 } from "../../state/auth.local.query";
-import { Login as Comp } from "./component";
+import { Login as Comp } from "./login.component";
 import { userLocalMutationGql } from "../../state/user.local.mutation";
 import {
   LoginMutation,

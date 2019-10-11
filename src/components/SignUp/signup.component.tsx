@@ -5,11 +5,10 @@ import {
   FastField,
   FieldProps,
   FormikProps,
-  FormikErrors
+  FormikErrors,
 } from "formik";
 import loIsEmpty from "lodash/isEmpty";
 import { ApolloError } from "apollo-client";
-
 import {
   Props,
   initialFormValues,
@@ -19,8 +18,8 @@ import {
   uiTexts,
   reducer,
   ActionTypes,
-  DispatchType
-} from "./utils";
+  DispatchType,
+} from "./signup.utils";
 import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
 import { LOGIN_URL } from "../../routing";
 import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";
@@ -31,6 +30,7 @@ import { AuthCard } from "../AuthCard";
 import { OtherAuthLink } from "../OtherAuthLink";
 import { RegUserFn } from "../../graphql/apollo/user-reg.mutation";
 import { scrollToTop } from "./scroll-to-top";
+import { domSubmitBtnId, domErrorsId } from "./signup.dom-selectors";
 
 export function SignUp(props: Props) {
   const { regUser, updateLocalUser } = props;
@@ -47,7 +47,7 @@ export function SignUp(props: Props) {
       clearToken();
       setSubmitting(true);
       dispatch({
-        type: ActionTypes.reset_all_errors
+        type: ActionTypes.reset_all_errors,
       });
 
       const errors = await validateForm(values);
@@ -63,7 +63,7 @@ export function SignUp(props: Props) {
         setSubmitting(false);
         dispatch({
           type: ActionTypes.set_other_errors,
-          payload: "You are not connected"
+          payload: "You are not connected",
         });
         scrollToTop(mainRef);
         return;
@@ -71,7 +71,7 @@ export function SignUp(props: Props) {
 
       try {
         const result = await (regUser as RegUserFn)({
-          variables: { input: values }
+          variables: { input: values },
         });
 
         const user =
@@ -84,7 +84,7 @@ export function SignUp(props: Props) {
           setSubmitting(false);
           dispatch({
             type: ActionTypes.set_other_errors,
-            payload: "Account creation has failed."
+            payload: "Account creation has failed.",
           });
           scrollToTop(mainRef);
           return;
@@ -121,24 +121,29 @@ export function SignUp(props: Props) {
 
         <Card.Content>
           <Form onSubmit={onSubmit(formProps)}>
-            {Object.entries(FORM_RENDER_PROPS).map(([name, [label, type]]) => {
-              return (
-                <FastField
-                  key={name}
-                  name={name}
-                  render={(formRenderProps: FieldProps<RegistrationInput>) => (
-                    <RenderInput
-                      label={label}
-                      type={type}
-                      formProps={formRenderProps}
-                    />
-                  )}
-                />
-              );
-            })}
+            {Object.entries(FORM_RENDER_PROPS).map(
+              ([name, [label, type, domId]]) => {
+                return (
+                  <FastField
+                    key={name}
+                    name={name}
+                    render={(
+                      formRenderProps: FieldProps<RegistrationInput>,
+                    ) => (
+                      <RenderInput
+                        label={label}
+                        type={type}
+                        formProps={formRenderProps}
+                        id={domId}
+                      />
+                    )}
+                  />
+                );
+              },
+            )}
 
             <Button
-              id="sign-up-submit"
+              id={domSubmitBtnId}
               name="sign-up-submit"
               color="green"
               inverted={true}
@@ -180,7 +185,7 @@ function RenderFormErrors({
   formErrors,
   otherErrors,
   gqlFehler,
-  dispatch
+  dispatch,
 }: {
   formErrors?: FormikErrors<RegistrationInput> | null;
   otherErrors?: string | null;
@@ -211,10 +216,10 @@ function RenderFormErrors({
   }
 
   if (gqlFehler) {
-    const errors: Array<{
+    const errors: {
       [k: string]: string;
-    }> = gqlFehler.graphQLErrors.map(
-      ({ message }) => JSON.parse(message).errors
+    }[] = gqlFehler.graphQLErrors.map(
+      ({ message }) => JSON.parse(message).errors,
     );
 
     content = errors.map(err => {
@@ -230,12 +235,16 @@ function RenderFormErrors({
 
   if (content) {
     return (
-      <Card.Content extra={true} data-testid={uiTexts.formErrorTestId}>
+      <Card.Content
+        id={domErrorsId}
+        extra={true}
+        data-testid={uiTexts.formErrorTestId}
+      >
         <Message
           error={true}
           onDismiss={() => {
             dispatch({
-              type: ActionTypes.reset_all_errors
+              type: ActionTypes.reset_all_errors,
             });
           }}
         >
@@ -251,11 +260,13 @@ function RenderFormErrors({
 function RenderInput({
   label,
   type,
-  formProps
+  formProps,
+  id,
 }: {
   label: string;
   type: string;
   formProps: FieldProps<RegistrationInput>;
+  id: string;
 }) {
   const { field } = formProps;
   const name = field.name as FormValuesKey;
@@ -269,7 +280,7 @@ function RenderInput({
       control={Input}
       autoComplete="off"
       label={label}
-      id={name}
+      id={id}
       readOnly={isSourceField}
       tabIndex={isSourceField ? -1 : 0}
     />

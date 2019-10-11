@@ -4,7 +4,7 @@ import { Menu } from "semantic-ui-react";
 import { NavigateFn } from "@reach/router";
 import { Header } from "../Header";
 import { SIGN_UP_URL, RESUMES_HOME_PATH } from "../../routing";
-import { SignUp } from "../SignUp";
+import { SignUp } from "../SignUp/signup.index";
 import { Props, uiTexts } from "./utils";
 
 export function HomePage(props: Props) {

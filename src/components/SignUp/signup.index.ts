@@ -1,17 +1,14 @@
 import { graphql, compose, withApollo } from "react-apollo";
-
 import {
   UserRegMutation,
   UserRegMutationVariables
 } from "../../graphql/apollo/types/UserRegMutation";
-
 import REG_USER_MUTATION, {
   RegUserFn,
   RegMutationProps
 } from "../../graphql/apollo/user-reg.mutation";
-
 import { userLocalMutationGql } from "../../state/user.local.mutation";
-import { SignUp as Comp } from "./component";
+import { SignUp as Comp } from "./signup.component";
 
 const regUserGql = graphql<
   {},
