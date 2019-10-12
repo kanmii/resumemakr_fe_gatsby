@@ -1,31 +1,58 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ComponentType } from "react";
-import "jest-dom/extend-expect";
-import "react-testing-library/cleanup-after-each";
-import { render } from "react-testing-library";
-import { HomePage } from "../components/HomePage/component";
-import { Props, uiTexts } from "../components/HomePage/utils";
+import { render, cleanup } from "react-testing-library";
+import { HomePage } from "../components/HomePage/home-page.component";
+import { Props } from "../components/HomePage/home-page.utils";
+import { prefix as domId } from "../components/HomePage/home-page.dom-selectors";
 import { RESUMES_HOME_PATH } from "../routing";
+import { renderWithRouter } from "./test_utils";
+import { getUser } from "../state/tokens";
 
 jest.mock("../components/SignUp/signup.index", () => ({
-  SignUp: jest.fn(() => null)
+  SignUp: jest.fn(() => null),
 }));
 
 jest.mock("../components/Header", () => ({
-  Header: jest.fn(() => null)
+  Header: jest.fn(() => null),
 }));
 
-const HomeP = HomePage as ComponentType<Partial<Props>>;
+jest.mock("../state/tokens");
+
+const mockGetUser = getUser as jest.Mock;
+
+beforeEach(() => {
+  mockGetUser.mockReset();
+});
+
+afterEach(() => {
+  cleanup();
+});
 
 it("navigates to resumes page", () => {
-  const mockNavigate = jest.fn();
-  const {} = render(<HomeP user={{} as any} navigate={mockNavigate} />);
+  mockGetUser.mockReturnValue({});
+  const { ui, mockNavigate } = makeComp();
+
+  render(ui);
   expect(mockNavigate).toHaveBeenCalledWith(RESUMES_HOME_PATH);
 });
 
 it("renders home page", () => {
-  const mockNavigate = jest.fn();
-  const { getByText } = render(<HomeP navigate={mockNavigate} />);
-  expect(getByText(uiTexts.story.header)).toBeInTheDocument();
+  const { ui, mockNavigate } = makeComp();
+
+  render(ui);
+  expect(document.getElementById(domId)).not.toBeNull();
   expect(mockNavigate).not.toHaveBeenCalled();
 });
+
+////////////////////////// HELPERS ////////////////////////////
+
+const HomeP = HomePage as ComponentType<Partial<Props>>;
+
+function makeComp(props: Partial<Props> = {}) {
+  const { Ui, ...rest } = renderWithRouter(HomeP, props);
+
+  return {
+    ui: <Ui />,
+    ...rest,
+  };
+}

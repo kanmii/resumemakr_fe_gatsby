@@ -5,20 +5,22 @@ import { NavigateFn } from "@reach/router";
 import { Header } from "../Header";
 import { SIGN_UP_URL, RESUMES_HOME_PATH } from "../../routing";
 import { SignUp } from "../SignUp/signup.index";
-import { Props, uiTexts } from "./utils";
+import { Props, uiTexts } from "./home-page.utils";
+import { getUser } from "../../state/tokens";
+import { prefix as domId } from "./home-page.dom-selectors";
 
 export function HomePage(props: Props) {
-  const { user, navigate } = props;
+  const { navigate } = props;
 
   useLayoutEffect(() => {
-    if (user) {
+    if (getUser()) {
       (navigate as NavigateFn)(RESUMES_HOME_PATH);
       return;
     }
-  }, [user, navigate]);
+  }, [navigate]);
 
   return (
-    <div className="app-container">
+    <div id={domId} className="app-container">
       <Header
         rightMenuItems={[
           <Menu.Item
@@ -28,9 +30,9 @@ export function HomePage(props: Props) {
             name={SIGN_UP_URL}
             style={{
               border: "2px solid black",
-              fontWeight: "900"
+              fontWeight: "900",
             }}
-          />
+          />,
         ]}
       />
 
@@ -39,13 +41,13 @@ export function HomePage(props: Props) {
           backgroundColor: "#2b3137",
           color: "#fff",
           overflowY: "scroll",
-          flex: 1
+          flex: 1,
         }}
       >
         <div
           style={{
             textAlign: "center",
-            padding: "20px"
+            padding: "20px",
           }}
         >
           <h1>{uiTexts.story.header}</h1>

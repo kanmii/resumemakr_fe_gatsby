@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { cleanup, render, wait, waitForElement } from "react-testing-library";
+import { cleanup, render, wait, waitForElement } from "@testing-library/react";
 import { Login } from "../components/Login/login.component";
 import { Props } from "../components/Login/login.utils";
 import { fillField } from "./test_utils";
@@ -313,7 +313,7 @@ it("renders error if server did not return a valid user", async () => {
   /**
    * While using the component
    */
-  const { getByText, queryByText } = render(ui);
+  render(ui);
 
   /**
    * Then we should not see any error UI

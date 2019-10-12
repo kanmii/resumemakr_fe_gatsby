@@ -1,5 +1,5 @@
 import React from "react";
-import { render, cleanup } from "react-testing-library";
+import { render, cleanup } from "@testing-library/react";
 import { Formik, Field } from "formik";
 import { PasswordInput } from "../components/PasswordInput/password-input.index";
 import {

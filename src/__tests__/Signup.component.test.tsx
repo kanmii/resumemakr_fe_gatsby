@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { render, fireEvent, wait, waitForElement } from "react-testing-library";
-import { SignUp } from "../components/SignUp/signup.component";
 import {
-  Props,
-  passworteNichtGleich,
-  uiTexts,
-} from "../components/SignUp/signup.utils";
+  render,
+  fireEvent,
+  wait,
+  waitForElement,
+} from "@testing-library/react";
+import { SignUp } from "../components/SignUp/signup.component";
+import { Props } from "../components/SignUp/signup.utils";
 import { fillField } from "./test_utils";
 import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
 import { isConnected } from "../state/get-conn-status";

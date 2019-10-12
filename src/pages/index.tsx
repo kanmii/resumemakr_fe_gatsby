@@ -1,5 +1,5 @@
 import React from "react";
-import { HomePage } from "../components/HomePage";
+import { HomePage } from "../components/HomePage/home-page.component";
 import { RouteComponentProps } from "@reach/router";
 import { Layout } from "../components/Layout";
 import { Helmet } from "react-helmet-async";
