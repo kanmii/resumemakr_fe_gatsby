@@ -16,8 +16,13 @@ export const deleteResumeMutation = gql`
 
 export default deleteResumeMutation;
 
+export type DeleteResumeMutationFn = MutationFn<
+  DeleteResume,
+  DeleteResumeVariables
+>;
+
 export interface DeleteResumeProps {
-  deleteResume?: MutationFn<DeleteResume, DeleteResumeVariables>;
+  deleteResume?: DeleteResumeMutationFn;
 }
 
 export const deleteResumeGql = graphql<
@@ -32,7 +37,7 @@ export const deleteResumeGql = graphql<
     }
 
     return {
-      deleteResume: mutate
+      deleteResume: mutate,
     };
-  }
+  },
 });

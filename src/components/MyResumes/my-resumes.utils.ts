@@ -42,26 +42,28 @@ export const validationSchema = Yup.object<CreateResumeInput>().shape({
   title: Yup.string()
     .required()
     .min(2),
-  description: Yup.string()
+  description: Yup.string(),
 });
 
 export enum Action {
   createResume = "CreateResume",
-  cloneResume = "CloneResume"
+  cloneResume = "CloneResume",
 }
 
 export const emptyVal = { title: "", description: "" };
 
 export const uiTexts = {
   noResumesMsg: "You have no resumes. Click here to create your first resume.",
+  deleteSuccessMsg: "deleted successfully",
+  confirmDeleteMsg: "Sure to delete:",
+  delete: "delete",
+  notToDelete: "no to delete",
+  cloneFromTitle: "Clone from:",
 
   form: {
     title: "Title e.g. name of company to send to",
-
     description: "Description",
-
     submitBtnText: "Yes",
-
-    closeModalBtnText: "No"
-  }
+    closeModalBtnText: "No",
+  },
 };

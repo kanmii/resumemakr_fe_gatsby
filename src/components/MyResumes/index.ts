@@ -1,6 +1,5 @@
 import { graphql, compose } from "react-apollo";
-
-import { MyResumes as App } from "./component";
+import { MyResumes as App } from "./my-resumes.component";
 import CREATE_RESUME_TITLE, {
   CreateResumeProps
 } from "../../graphql/apollo/create-resume.mutation";

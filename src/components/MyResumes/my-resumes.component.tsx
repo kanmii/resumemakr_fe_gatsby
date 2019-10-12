@@ -16,7 +16,13 @@ import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
 import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
 import { CircularLabel } from "../CircularLabel";
 import { makeResumeRoute } from "../../routing";
-import { Props, validationSchema, Action, emptyVal, uiTexts } from "./utils";
+import {
+  Props,
+  validationSchema,
+  Action,
+  emptyVal,
+  uiTexts,
+} from "./my-resumes.utils";
 import { Loading } from "../Loading";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../UpdateResumeForm/update-resume.utils";
@@ -25,6 +31,24 @@ import { AutoTextarea } from "../AutoTextarea";
 import { AppModal } from "../AppModal";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";
 import { Header } from "../Header";
+import { DeleteResumeMutationFn } from "../../graphql/apollo/delete-resume.mutation";
+import {
+  triggerCreateNewResumeId,
+  dataLoadingErrorId,
+  noResumesMsgId,
+  createNewResumeId,
+  makeResumeRowId,
+  makeGoToEditResumeId,
+  titleInputId,
+  makeYesConfirmDeleteId,
+  createNewResumeSubmitBtnId,
+  deleteSuccessMsgId,
+  confirmDeleteMsgId,
+  makeDeleteId,
+  makeNoConfirmDeleteId,
+  createClonedResumeId,
+  makeTriggerCloneId,
+} from "./my-resumes.dom-selectors";
 
 let initialValues = emptyVal;
 let action = Action.createResume;
@@ -39,7 +63,6 @@ export function MyResumes(merkmale: Props) {
     createResume,
     cloneResume,
   } = merkmale;
-  const verlauf = navigate as NavigateFn;
   const edges = listResumes && listResumes.edges;
 
   const [offnenModal, einstellenOffnenModal] = useState(false);
@@ -102,7 +125,7 @@ export function MyResumes(merkmale: Props) {
   }
 
   function goToResume(title: string) {
-    verlauf(makeResumeRoute(title));
+    (navigate as NavigateFn)(makeResumeRoute(title));
   }
 
   function handleDeleteErrorPopup() {
@@ -124,7 +147,7 @@ export function MyResumes(merkmale: Props) {
       }
 
       let input;
-      // tslint:disable-next-line:no-any
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       let fun: any;
       let path;
 
@@ -164,24 +187,18 @@ export function MyResumes(merkmale: Props) {
   }
 
   function herunterladenLebenslauf(title: string) {
-    verlauf(makeResumeRoute(title, "") + "#" + PreviewMode.preview);
+    (navigate as NavigateFn)(
+      makeResumeRoute(title, "") + "#" + PreviewMode.preview,
+    );
   }
 
   async function loschenLebenslauf(id: string) {
-    if (!deleteResume) {
-      einstellenLoschenFehler({
-        id,
-        errors: ["Something is wrong:", "unable to delete resume"],
-      });
-
-      return;
-    }
-
-    const result = await deleteResume({
+    const result = await (deleteResume as DeleteResumeMutationFn)({
       variables: {
         input: { id },
       },
 
+      /* eslint-disable-next-line @typescript-eslint/no-use-before-define */
       update: updateAfterDelete,
     });
 
@@ -260,6 +277,7 @@ export function MyResumes(merkmale: Props) {
 
     return (
       <div
+        id={deleteSuccessMsgId}
         className="deleted-resume-success"
         onClick={() => einstellenGeloschtLebenslauf(undefined)}
       >
@@ -273,7 +291,7 @@ export function MyResumes(merkmale: Props) {
           >
             {nachricht}
           </span>
-          deleted successfully
+          {uiTexts.deleteSuccessMsg}
         </div>
       </div>
     );
@@ -281,11 +299,19 @@ export function MyResumes(merkmale: Props) {
 
   function renderModal() {
     return (
-      <AppModal open={offnenModal} onClose={() => einstellenOffnenModal(false)}>
+      <AppModal
+        id={
+          action === Action.createResume
+            ? createNewResumeId
+            : createClonedResumeId
+        }
+        open={offnenModal}
+        onClose={() => einstellenOffnenModal(false)}
+      >
         <Modal.Header>
           {action === Action.createResume
             ? "Create new resume"
-            : `Clone from: "${titleToClone}"?`}
+            : `${uiTexts.cloneFromTitle} "${titleToClone}"?`}
         </Modal.Header>
 
         <Formik<CreateResumeInput>
@@ -306,11 +332,11 @@ export function MyResumes(merkmale: Props) {
                         titleError ? "error" : ""
                       }`}
                     >
-                      <label htmlFor="resume-title">{uiTexts.form.title}</label>
+                      <label htmlFor={titleInputId}>{uiTexts.form.title}</label>
 
                       <FastField
                         component={"input"}
-                        id="resume-title"
+                        id={titleInputId}
                         name="title"
                       />
 
@@ -355,6 +381,7 @@ export function MyResumes(merkmale: Props) {
                   />
 
                   <Button
+                    id={createNewResumeSubmitBtnId}
                     type="button"
                     positive={true}
                     icon="checkmark"
@@ -379,6 +406,7 @@ export function MyResumes(merkmale: Props) {
     if (!edges.length) {
       return (
         <a
+          id={noResumesMsgId}
           className="no-resume"
           onClick={evt => {
             evt.preventDefault();
@@ -415,7 +443,12 @@ export function MyResumes(merkmale: Props) {
             const { id, title, updatedAt, description } = node;
 
             return (
-              <div className="row" key={id} data-testid={`${title} row`}>
+              <div
+                id={makeResumeRowId(id)}
+                className="row"
+                key={id}
+                data-testid={`${title} row`}
+              >
                 {lebenslaufGeloscht === id && (
                   <Loading data-testid={`deleting ${title}`} />
                 )}
@@ -437,12 +470,19 @@ export function MyResumes(merkmale: Props) {
                   >
                     <Icon name="copy outline" />
 
-                    <span className="control-label-text">
+                    <span
+                      id={makeTriggerCloneId(id)}
+                      className="control-label-text"
+                    >
                       {`clone ${title}`}
                     </span>
                   </CircularLabel>
 
-                  <CircularLabel color="blue" onClick={() => goToResume(title)}>
+                  <CircularLabel
+                    id={makeGoToEditResumeId(id)}
+                    color="blue"
+                    onClick={() => goToResume(title)}
+                  >
                     <Icon name="pencil" />
                   </CircularLabel>
 
@@ -462,6 +502,7 @@ export function MyResumes(merkmale: Props) {
                     <Icon name="delete" />
 
                     <span
+                      id={makeDeleteId(id)}
                       className="control-label-text"
                       ref={setConfirmDeleteTriggerRef(id)}
                     >
@@ -495,10 +536,7 @@ export function MyResumes(merkmale: Props) {
     );
   }
 
-  function renderDeleteError({
-    id,
-    title,
-  }: ResumeTitles_listResumes_edges_node) {
+  function renderDeleteError({ id }: ResumeTitles_listResumes_edges_node) {
     if (!(loschenFehler && loschenFehler.id === id)) {
       return null;
     }
@@ -530,13 +568,14 @@ export function MyResumes(merkmale: Props) {
 
     return (
       <Popup
+        id={confirmDeleteMsgId}
         context={deleteTriggerRefs.current[id]}
         position="top center"
         offset={10}
         open={bestatigenLoschenId === id}
         onClose={handleConfirmDeletePopup}
       >
-        Sure to delete:
+        {uiTexts.confirmDeleteMsg}
         <span
           style={{
             fontWeight: "bolder",
@@ -555,6 +594,7 @@ export function MyResumes(merkmale: Props) {
         >
           <Button
             data-testid={`yes to delete ${title}`}
+            id={makeYesConfirmDeleteId(id)}
             color="red"
             onClick={evt => {
               evt.stopPropagation();
@@ -566,7 +606,8 @@ export function MyResumes(merkmale: Props) {
           </Button>
 
           <Button
-            data-testid={`no to delete ${title}`}
+            id={makeNoConfirmDeleteId(id)}
+            data-testid={`${uiTexts.notToDelete} ${title}`}
             color="blue"
             content="No"
             onClick={evt => {
@@ -587,13 +628,17 @@ export function MyResumes(merkmale: Props) {
     return (
       <>
         <div className="main-content">
-          {error && <div>{error.message}</div>}
+          {error && <div id={dataLoadingErrorId}>{error.message}</div>}
 
           {renderTitles()}
         </div>
 
         {edges && !!edges.length && (
-          <div className="new" onClick={openModalForCreate}>
+          <div
+            id={triggerCreateNewResumeId}
+            className="new"
+            onClick={openModalForCreate}
+          >
             <span>+</span>
           </div>
         )}
