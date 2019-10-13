@@ -38,11 +38,6 @@ export const defaultVal: CreateExperienceInput = {
   index: 1,
 };
 
-export interface Props extends RouteComponentProps, ChildProps {
-  values: (CreateExperienceInput | null)[] | null | undefined;
-  label: Section;
-}
-
 export const uiTexts = {
   positionLabel: "Title/Position/Responsibility",
 
@@ -62,4 +57,10 @@ export function makeExperienceFieldName(
   key: keyof CreateExperienceInput,
 ) {
   return `experiences[${index}].${key}`;
+}
+
+export interface Props extends RouteComponentProps, ChildProps {
+  values: (CreateExperienceInput | null)[] | null | undefined;
+  label: Section;
+  defaultValues: CreateExperienceInput[];
 }

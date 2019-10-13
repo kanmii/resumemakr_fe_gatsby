@@ -18,11 +18,12 @@ import { prefix } from "./experiences.dom-selectors";
 import { ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 const HeaderLabelText = "Company";
+const fieldName = "experiences";
 
 export function Experiences(props: Props) {
-  const { location, label, setFieldValue } = props;
+  const { location, label, setFieldValue, defaultValues } = props;
 
-  const values = (props.values || [{ ...emptyVal }]) as CreateExperienceInput[];
+  const values = props.values || defaultValues;
 
   useEffect(
     function scrollToExperience() {
@@ -61,7 +62,9 @@ export function Experiences(props: Props) {
       <FieldArray
         name="experiences"
         render={() =>
-          values.map((experience, index, iterableExperiences) => {
+          values.map((e, index, iterableExperiences) => {
+            const experience = e as CreateExperienceInput;
+
             return (
               <ExperienceComponent
                 key={experience.id || index}
@@ -80,13 +83,6 @@ export function Experiences(props: Props) {
   );
 }
 
-interface ExperienceComponentProps {
-  experience: CreateExperienceInput;
-  index: number;
-  setFieldValue: ChildProps["setFieldValue"];
-  iterableExperiences: CreateExperienceInput[];
-}
-
 function ExperienceComponent(props: ExperienceComponentProps) {
   const { setFieldValue, experience, index, iterableExperiences } = props;
 
@@ -95,8 +91,6 @@ function ExperienceComponent(props: ExperienceComponentProps) {
   if (achievements.length === 0) {
     achievements = [""];
   }
-
-  const fieldName = "experiences";
 
   return (
     <Card key={index}>
@@ -180,4 +174,11 @@ function ExperienceComponent(props: ExperienceComponentProps) {
       </Card.Content>
     </Card>
   );
+}
+
+interface ExperienceComponentProps {
+  experience: CreateExperienceInput;
+  index: number;
+  setFieldValue: ChildProps["setFieldValue"];
+  iterableExperiences: CreateExperienceInput[];
 }
