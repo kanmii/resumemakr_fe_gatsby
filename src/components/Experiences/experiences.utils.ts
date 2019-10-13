@@ -39,7 +39,7 @@ export const defaultVal: CreateExperienceInput = {
 };
 
 export interface Props extends RouteComponentProps, ChildProps {
-  values: Array<CreateExperienceInput | null> | null | undefined;
+  values: (CreateExperienceInput | null)[] | null | undefined;
   label: Section;
 }
 
