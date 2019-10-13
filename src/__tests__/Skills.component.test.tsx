@@ -1,4 +1,4 @@
-// tslint:disable: no-any
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ComponentType } from "react";
 import "jest-dom/extend-expect";
 import "react-testing-library/cleanup-after-each";
@@ -7,41 +7,41 @@ import {
   fireEvent,
   wait,
   Matcher,
-  MatcherOptions
+  MatcherOptions,
 } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 import {
   UpdateResumeForm,
-  makeUrlHashSegment
+  makeUrlHashSegment,
 } from "../components/UpdateResumeForm/update-resume.component";
 import {
   makeSkillFieldName,
   uiTexts,
   emptyVal,
-  fieldName
+  fieldName,
 } from "../components/Skills/skills.utils";
 import {
   Props,
   formikConfig,
-  Section
+  Section,
 } from "../components/UpdateResumeForm/update-resume.utils";
 import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
   makeListStringHiddenLabelText,
-  makeListStringFieldName
-} from "../components/ListStrings";
+  makeListStringFieldName,
+} from "../components/ListStrings/list-strings.index";
 import { fillField } from "./test_utils";
 import {
   makeListDisplayCtrlTestId,
-  ListDisplayCtrlNames
+  ListDisplayCtrlNames,
 } from "../components/components";
 
 type P = ComponentType<Partial<Props>>;
 const UpdateResumeFormP = UpdateResumeForm as P;
 const location = {
   hash: makeUrlHashSegment(ResumePathHash.edit, Section.skills),
-  pathname: makeResumeRoute("title")
+  pathname: makeResumeRoute("title"),
 } as WindowLocation;
 
 let mockUpdateResume: jest.Mock;
@@ -52,10 +52,10 @@ describe("basics", () => {
 
     const props = {
       getResume: {
-        skills: [emptyVal]
+        skills: [emptyVal],
       },
 
-      location
+      location,
     } as Partial<Props>;
 
     const Ui = withFormik(formikConfig)(p => (
@@ -66,14 +66,14 @@ describe("basics", () => {
      * Given that user is on skills section of resume update page
      */
     const { getByLabelText } = render(
-      <Ui updateResume={mockUpdateResume} {...props} />
+      <Ui updateResume={mockUpdateResume} {...props} />,
     );
 
     /**
      * The user should see that description field of skill 0 is blank
      */
     const $description = getByLabelText(
-      makeSkillFieldName(0, "description")
+      makeSkillFieldName(0, "description"),
     ) as any;
     expect($description.value).toBe("");
 
@@ -99,7 +99,7 @@ describe("basics", () => {
         expect(skillsArg.description).toBe("desc");
         expect(skillsArg.achievements[0]).toBeUndefined();
       },
-      { interval: 1 }
+      { interval: 1 },
     );
 
     /**
@@ -124,7 +124,7 @@ describe("basics", () => {
         expect(skillsArg.description).toBe("desc");
         expect(skillsArg.achievements[0]).toBe("a");
       },
-      { interval: 1 }
+      { interval: 1 },
     );
   });
 });
@@ -132,7 +132,7 @@ describe("basics", () => {
 describe("add/remove/swap skills", () => {
   let getByTestId: (
     text: Matcher,
-    options?: MatcherOptions | undefined
+    options?: MatcherOptions | undefined,
   ) => HTMLElement;
 
   beforeEach(() => {
@@ -143,11 +143,11 @@ describe("add/remove/swap skills", () => {
         skills: [
           { index: 1, description: "a" },
           { index: 2, description: "b" },
-          { index: 3, description: "c" }
-        ]
+          { index: 3, description: "c" },
+        ],
       },
 
-      location
+      location,
     } as Partial<Props>;
 
     const Ui = withFormik(formikConfig)(p => (
@@ -170,8 +170,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 0)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 0),
+        ),
       );
 
       /**
@@ -181,11 +181,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "", "b", "c"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -196,8 +196,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 1)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 1),
+        ),
       );
 
       /**
@@ -207,11 +207,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "b", "", "c"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -222,8 +222,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 2)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 2),
+        ),
       );
 
       /**
@@ -233,11 +233,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "b", "c", ""]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -250,8 +250,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 0)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 0),
+        ),
       );
 
       /**
@@ -261,11 +261,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["b", "c"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -276,8 +276,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 1)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 1),
+        ),
       );
 
       /**
@@ -287,11 +287,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "c"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -302,8 +302,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 2)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 2),
+        ),
       );
 
       /**
@@ -313,11 +313,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "b"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -330,8 +330,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 1)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 1),
+        ),
       );
 
       /**
@@ -341,11 +341,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["b", "a", "c"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -356,8 +356,8 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 2)
-        )
+          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 2),
+        ),
       );
 
       /**
@@ -367,11 +367,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "c", "b"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -382,8 +382,12 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 0)
-        )
+          makeListDisplayCtrlTestId(
+            fieldName,
+            ListDisplayCtrlNames.moveDown,
+            0,
+          ),
+        ),
       );
 
       /**
@@ -393,11 +397,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["b", "a", "c"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
 
@@ -408,8 +412,12 @@ describe("add/remove/swap skills", () => {
 
       fireEvent.click(
         getByTestId(
-          makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 1)
-        )
+          makeListDisplayCtrlTestId(
+            fieldName,
+            ListDisplayCtrlNames.moveDown,
+            1,
+          ),
+        ),
       );
 
       /**
@@ -419,11 +427,11 @@ describe("add/remove/swap skills", () => {
         () => {
           expect(
             getDescriptions(
-              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills
-            )
+              (mockUpdateResume.mock.calls[0][0] as any).variables.input.skills,
+            ),
           ).toEqual(["a", "c", "b"]);
         },
-        { interval: 1 }
+        { interval: 1 },
       );
     });
   });
@@ -435,10 +443,10 @@ function achievementsLabelText(skillIndex: number, achievementIndex: number) {
   return makeListStringHiddenLabelText(
     makeListStringFieldName(
       makeSkillFieldName(skillIndex, "achievements"),
-      achievementIndex
+      achievementIndex,
     ),
 
-    uiTexts.achievementsHiddenLabel
+    uiTexts.achievementsHiddenLabel,
   );
 }
 

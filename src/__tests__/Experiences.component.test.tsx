@@ -9,34 +9,34 @@ import {
   wait,
   Matcher,
   MatcherOptions,
-  SelectorMatcherOptions
+  SelectorMatcherOptions,
 } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 import {
   UpdateResumeForm,
-  makeUrlHashSegment
+  makeUrlHashSegment,
 } from "../components/UpdateResumeForm/update-resume.component";
 import {
   Props,
   formikConfig,
-  Section
+  Section,
 } from "../components/UpdateResumeForm/update-resume.utils";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import {
   uiTexts,
-  makeExperienceFieldName
+  makeExperienceFieldName,
 } from "../components/Experiences/experiences.utils";
 import {
   ListDisplayCtrlNames,
-  makeListDisplayCtrlTestId
+  makeListDisplayCtrlTestId,
 } from "../components/components";
 import {
   makeListStringFieldName,
-  makeListStringHiddenLabelText
-} from "../components/ListStrings";
+  makeListStringHiddenLabelText,
+} from "../components/ListStrings/list-strings.index";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;
@@ -52,7 +52,7 @@ jest.mock("../components/Preview", () => {
 
 const location = {
   hash: makeUrlHashSegment(ResumePathHash.edit, Section.experiences),
-  pathname: makeResumeRoute("updates experiences", "")
+  pathname: makeResumeRoute("updates experiences", ""),
 } as WindowLocation;
 
 let mockUpdateResume: jest.Mock;
@@ -60,17 +60,17 @@ const fieldName = "experiences";
 
 let getByTestId: (
   text: Matcher,
-  options?: MatcherOptions | undefined
+  options?: MatcherOptions | undefined,
 ) => HTMLElement;
 
 let getByLabelText: (
   text: Matcher,
-  options?: SelectorMatcherOptions | undefined
+  options?: SelectorMatcherOptions | undefined,
 ) => HTMLElement;
 
 let queryByLabelText: (
   text: Matcher,
-  options?: SelectorMatcherOptions | undefined
+  options?: SelectorMatcherOptions | undefined,
 ) => HTMLElement | null;
 
 describe("Experiences achievements", () => {
@@ -82,29 +82,29 @@ describe("Experiences achievements", () => {
         position: "p",
         fromDate: "f",
         toDate: "t",
-        achievements: ["a0", "a1", "a2"]
-      }
-    ]
+        achievements: ["a0", "a1", "a2"],
+      },
+    ],
   } as GetResume_getResume;
 
   const achievementsPrefixFieldName = makeExperienceFieldName(
     0,
-    "achievements"
+    "achievements",
   );
 
   const achievement0FieldName = makeListStringFieldName(
     achievementsPrefixFieldName,
-    0
+    0,
   );
 
   const achievement1FieldName = makeListStringFieldName(
     achievementsPrefixFieldName,
-    1
+    1,
   );
 
   const achievement1Label = makeListStringHiddenLabelText(
     achievement1FieldName,
-    uiTexts.achievementsLabels2
+    uiTexts.achievementsLabels2,
   );
 
   beforeEach(() => {
@@ -114,7 +114,7 @@ describe("Experiences achievements", () => {
       getResume: initial,
       debounceTime,
       location,
-      updateResume: mockUpdateResume
+      updateResume: mockUpdateResume,
     };
 
     const { Ui: ui } = renderWithApollo(ResumeFormP, props);
@@ -137,7 +137,10 @@ describe("Experiences achievements", () => {
      * When user clicks on achievement 0 add button
      */
     const $achievement0CtrlAddBtn = getByTestId(
-      makeListDisplayCtrlTestId(achievement0FieldName, ListDisplayCtrlNames.add)
+      makeListDisplayCtrlTestId(
+        achievement0FieldName,
+        ListDisplayCtrlNames.add,
+      ),
     );
 
     fireEvent.click($achievement0CtrlAddBtn);
@@ -157,12 +160,12 @@ describe("Experiences achievements", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements
+            .achievements,
         ).toEqual(["a0", "", "a1", "a2"]);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
 
     /**
@@ -183,12 +186,12 @@ describe("Experiences achievements", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[1][0].variables.input.experiences[0]
-            .achievements
+            .achievements,
         ).toEqual(["a0", "an", "a1", "a2"]);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
   });
 
@@ -199,8 +202,8 @@ describe("Experiences achievements", () => {
     const $achievement1CtrlRemoveBtn = getByTestId(
       makeListDisplayCtrlTestId(
         achievement1FieldName,
-        ListDisplayCtrlNames.remove
-      )
+        ListDisplayCtrlNames.remove,
+      ),
     );
 
     fireEvent.click($achievement1CtrlRemoveBtn);
@@ -213,12 +216,12 @@ describe("Experiences achievements", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements
+            .achievements,
         ).toEqual(["a0", "a2"]);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
   });
 
@@ -229,8 +232,8 @@ describe("Experiences achievements", () => {
     const $achievement1CtrlUpBtn = getByTestId(
       makeListDisplayCtrlTestId(
         achievement1FieldName,
-        ListDisplayCtrlNames.moveUp
-      )
+        ListDisplayCtrlNames.moveUp,
+      ),
     );
 
     fireEvent.click($achievement1CtrlUpBtn);
@@ -243,12 +246,12 @@ describe("Experiences achievements", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements
+            .achievements,
         ).toEqual(["a1", "a0", "a2"]);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
   });
 
@@ -259,8 +262,8 @@ describe("Experiences achievements", () => {
     const $achievement1CtrlDownBtn = getByTestId(
       makeListDisplayCtrlTestId(
         achievement1FieldName,
-        ListDisplayCtrlNames.moveDown
-      )
+        ListDisplayCtrlNames.moveDown,
+      ),
     );
 
     fireEvent.click($achievement1CtrlDownBtn);
@@ -272,12 +275,12 @@ describe("Experiences achievements", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements
+            .achievements,
         ).toEqual(["a0", "a2", "a1"]);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
   });
 });
@@ -287,8 +290,8 @@ describe("Experiences - add/remove/swap", () => {
     experiences: [
       { companyName: "c0", index: 1 },
       { companyName: "c1", index: 2 },
-      { companyName: "c2", index: 3 }
-    ]
+      { companyName: "c2", index: 3 },
+    ],
   } as GetResume_getResume;
 
   const company2LabelText = makeExperienceFieldName(2, "companyName");
@@ -300,7 +303,7 @@ describe("Experiences - add/remove/swap", () => {
       getResume: initial,
       debounceTime,
       location,
-      updateResume: mockUpdateResume
+      updateResume: mockUpdateResume,
     };
 
     /**
@@ -332,7 +335,7 @@ describe("Experiences - add/remove/swap", () => {
     const experience1AddCtrlBtnId = makeListDisplayCtrlTestId(
       fieldName,
       ListDisplayCtrlNames.add,
-      1
+      1,
     );
 
     fireEvent.click(getByTestId(experience1AddCtrlBtnId));
@@ -349,8 +352,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         mockUpdateResume.mock.calls[0][0].variables.input.experiences.map(
-          (e: any) => e.companyName
-        )
+          (e: any) => e.companyName,
+        ),
       ).toEqual(["c0", "c1", "", "c2"]);
     });
 
@@ -369,8 +372,8 @@ describe("Experiences - add/remove/swap", () => {
      */
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 2)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.add, 2),
+      ),
     );
 
     /**
@@ -385,8 +388,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         mockUpdateResume.mock.calls[0][0].variables.input.experiences.map(
-          (e: any) => e.companyName
-        )
+          (e: any) => e.companyName,
+        ),
       ).toEqual(["c0", "c1", "c2", ""]);
     });
 
@@ -400,8 +403,8 @@ describe("Experiences - add/remove/swap", () => {
 
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 0)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 0),
+      ),
     );
 
     /**
@@ -411,8 +414,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c1", "c2"]);
     });
 
@@ -432,8 +435,8 @@ describe("Experiences - add/remove/swap", () => {
 
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 2)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 2),
+      ),
     );
 
     /**
@@ -448,8 +451,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c0", "c1"]);
     });
 
@@ -463,8 +466,8 @@ describe("Experiences - add/remove/swap", () => {
 
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 1)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.remove, 1),
+      ),
     );
 
     /**
@@ -473,8 +476,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c0", "c2"]);
     });
 
@@ -487,8 +490,8 @@ describe("Experiences - add/remove/swap", () => {
      */
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 1)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 1),
+      ),
     );
 
     /**
@@ -497,8 +500,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c1", "c0", "c2"]);
     });
 
@@ -511,8 +514,8 @@ describe("Experiences - add/remove/swap", () => {
      */
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 2)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveUp, 2),
+      ),
     );
 
     /**
@@ -522,8 +525,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c0", "c2", "c1"]);
     });
 
@@ -536,8 +539,8 @@ describe("Experiences - add/remove/swap", () => {
      */
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 1)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 1),
+      ),
     );
     /**
      * Then the correct data should be uploaded to the server
@@ -546,8 +549,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c0", "c2", "c1"]);
     });
 
@@ -560,8 +563,8 @@ describe("Experiences - add/remove/swap", () => {
      */
     fireEvent.click(
       getByTestId(
-        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 0)
-      )
+        makeListDisplayCtrlTestId(fieldName, ListDisplayCtrlNames.moveDown, 0),
+      ),
     );
 
     /**
@@ -571,8 +574,8 @@ describe("Experiences - add/remove/swap", () => {
     setTimeout(() => {
       expect(
         getCompanyNames(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences
-        )
+          mockUpdateResume.mock.calls[0][0].variables.input.experiences,
+        ),
       ).toEqual(["c1", "c0", "c2"]);
     });
 
