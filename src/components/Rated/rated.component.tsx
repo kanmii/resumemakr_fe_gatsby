@@ -8,7 +8,7 @@ import {
   RatedInput,
   CreateExperienceInput,
 } from "../../graphql/apollo/types/globalTypes";
-import { ListIndexHeader } from "../ListIndexHeader";
+import { IterableControls } from "../IterableControls/iterable-controls.index";
 import { SetFieldValue } from "../utils";
 import { SubFieldLabel } from "../components";
 
@@ -80,7 +80,7 @@ function Item({
 
   return (
     <Card>
-      <ListIndexHeader
+      <IterableControls
         index={index}
         label={""}
         idPrefix={idPrefix}

@@ -12,10 +12,15 @@ import {
   Props,
   uiTexts,
 } from "./utils";
-import { ListIndexHeader } from "../ListIndexHeader";
-import { ListStrings } from "../ListStrings";
+import { IterableControls } from "../IterableControls/iterable-controls.index";
+import { ListStrings } from "../ListStrings/list-strings.index";
 import { SubFieldLabel } from "../components";
-import { prefix } from "./education.dom-selectors";
+import {
+  prefix,
+  makeControlsId,
+  makeCourseInputId,
+  makeAchievementId,
+} from "./education.dom-selectors";
 
 const headerLabelText = "School";
 
@@ -62,7 +67,8 @@ function School({
 
   return (
     <Card>
-      <ListIndexHeader
+      <IterableControls
+        id={makeControlsId(edu.id || index)}
         index={index}
         label={headerLabelText}
         fieldName={eduFieldName}
@@ -88,10 +94,12 @@ function School({
           name={makeEduFieldName(index, "course")}
           defaultValue={edu.course}
           component={RegularField}
+          id={makeCourseInputId(edu.id || index)}
           label={
             <SubFieldLabel
               text={uiTexts.courseLabel}
               fieldName={makeEduFieldName(index, "course")}
+              id={makeCourseInputId(edu.id || index)}
             />
           }
         />
@@ -125,6 +133,7 @@ function School({
           render={helper => {
             return (
               <ListStrings
+                idFn={makeAchievementId}
                 values={achievements as string[]}
                 arrayHelper={helper}
                 header={

@@ -10,8 +10,8 @@ import {
   uiTexts,
   makeExperienceFieldName,
 } from "./experiences.utils";
-import { ListIndexHeader } from "../ListIndexHeader";
-import { ListStrings } from "../ListStrings";
+import { IterableControls } from "../IterableControls/iterable-controls.index";
+import { ListStrings } from "../ListStrings/list-strings.index";
 import { SubFieldLabel } from "../components";
 import { prefix } from "./experiences.dom-selectors";
 
@@ -70,7 +70,7 @@ export class Experiences extends React.Component<Props, {}> {
 
     return (
       <Card key={index}>
-        <ListIndexHeader
+        <IterableControls
           index={index}
           label={HeaderLabelText}
           fieldName={fieldName}

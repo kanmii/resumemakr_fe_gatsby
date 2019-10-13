@@ -9,20 +9,20 @@ export enum ListDisplayCtrlNames {
 
   moveDown = "move down",
 
-  none = "none"
+  none = "none",
 }
 
 export function makeListDisplayCtrlTestId(
   fieldName: string,
   ctrlName: ListDisplayCtrlNames,
-  ...others: Array<number | string>
+  ...others: (number | string)[]
 ) {
   return fieldName + " " + ctrlName + (others || []).join(" ");
 }
 
 export function addClassNames(
   className1: string,
-  ...otherClassNames: Array<string | undefined>
+  ...otherClassNames: (string | undefined)[]
 ) {
   if (otherClassNames) {
     return className1 + " " + otherClassNames.join(" ");
@@ -33,14 +33,16 @@ export function addClassNames(
 
 export function SubFieldLabel({
   fieldName,
-  text
+  text,
+  id,
 }: {
   fieldName: string;
   text: string;
+  id?: string;
 }) {
   return (
     <>
-      <label htmlFor={fieldName} className="visually-hidden">
+      <label htmlFor={id || fieldName} className="visually-hidden">
         {fieldName}
       </label>
 

@@ -5,8 +5,8 @@ import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
 import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./skills.utils";
-import { ListIndexHeader } from "../ListIndexHeader";
-import { ListStrings } from "../ListStrings";
+import { IterableControls } from "../IterableControls/iterable-controls.index";
+import { ListStrings } from "../ListStrings/list-strings.index";
 import { SubFieldLabel } from "../components";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { prefix } from "./skills.dom-selectors";
@@ -60,7 +60,7 @@ function Skill({
 
   return (
     <Card key={index}>
-      <ListIndexHeader
+      <IterableControls
         index={index}
         label={HeaderLabelText}
         fieldName={fieldName}

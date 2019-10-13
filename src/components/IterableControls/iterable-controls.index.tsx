@@ -5,6 +5,12 @@ import { SetFieldValue } from "../utils";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { CircularLabel } from "../CircularLabel";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
+import {
+  makeMoveDownId,
+  makeAddId,
+  makeRemoveId,
+  makeMoveUpId,
+} from "./iterable-controls.dom-selectors";
 
 interface Props<TValues> {
   index: number;
@@ -14,10 +20,11 @@ interface Props<TValues> {
   values: TValues[];
   empty: TValues;
   idPrefix?: string;
+  id?: string;
 }
 
-export function ListIndexHeader<TValues extends { index: number }>(
-  props: Props<TValues>
+export function IterableControls<TValues extends { index: number }>(
+  props: Props<TValues>,
 ) {
   const {
     index,
@@ -26,7 +33,8 @@ export function ListIndexHeader<TValues extends { index: number }>(
     fieldName,
     values,
     empty,
-    idPrefix
+    idPrefix,
+    id: domId = "",
   } = props;
 
   const id = (idPrefix || label) + "-" + index;
@@ -63,6 +71,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
       setSwapped(ListDisplayCtrlNames.none);
       valueChanged();
     }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [swapped, len]);
 
   return (
@@ -75,15 +84,16 @@ export function ListIndexHeader<TValues extends { index: number }>(
         {!(len === 1 || len === index1) && (
           <CircularLabel
             color="blue"
-            onClick={function onSwapExperienceDown() {
+            onClick={function onSwapDown() {
               setFieldValue(fieldName, swap<TValues>(values, index, index1));
               setSwapped(ListDisplayCtrlNames.moveDown);
             }}
             data-testid={makeListDisplayCtrlTestId(
               fieldName,
               ListDisplayCtrlNames.moveDown,
-              index
+              index,
             )}
+            id={makeMoveDownId(domId)}
           >
             <Icon name="arrow down" />
           </CircularLabel>
@@ -99,8 +109,9 @@ export function ListIndexHeader<TValues extends { index: number }>(
             data-testid={makeListDisplayCtrlTestId(
               fieldName,
               ListDisplayCtrlNames.remove,
-              index
+              index,
             )}
+            id={makeRemoveId(domId)}
           >
             <Icon name="remove" />
           </CircularLabel>
@@ -115,8 +126,9 @@ export function ListIndexHeader<TValues extends { index: number }>(
           data-testid={makeListDisplayCtrlTestId(
             fieldName,
             ListDisplayCtrlNames.add,
-            index
+            index,
           )}
+          id={makeAddId(domId)}
         >
           <Icon name="add" />
         </CircularLabel>
@@ -124,15 +136,16 @@ export function ListIndexHeader<TValues extends { index: number }>(
         {index1 > 1 && (
           <CircularLabel
             color="blue"
-            onClick={function onSwapExperienceUp() {
+            onClick={function onSwapUp() {
               setFieldValue(fieldName, swap<TValues>(values, index, index - 1));
               setSwapped(ListDisplayCtrlNames.moveUp);
             }}
             data-testid={makeListDisplayCtrlTestId(
               fieldName,
               ListDisplayCtrlNames.moveUp,
-              index
+              index,
             )}
+            id={makeMoveUpId(domId)}
           >
             <Icon name="arrow up" />
           </CircularLabel>
@@ -144,7 +157,7 @@ export function ListIndexHeader<TValues extends { index: number }>(
 
 enum SwapDirection {
   down = -1, // Swap down: indexA < indexB e.g 2 to 3 (2 - 3 = -1)
-  up = 1 // Swap up: indexA > indexB e.g 3 to 2 (3 - 2 = 1)
+  up = 1, // Swap up: indexA > indexB e.g 3 to 2 (3 - 2 = 1)
 }
 
 /**
@@ -153,7 +166,7 @@ enum SwapDirection {
 function swap<TValue extends { index: number }>(
   fields: TValue[],
   indexA: number,
-  indexB: number
+  indexB: number,
 ): TValue[] {
   const swapDirection = indexA - indexB;
 
@@ -196,13 +209,13 @@ function swap<TValue extends { index: number }>(
 
       return acc;
     },
-    Array(fields.length) as TValue[]
+    Array(fields.length) as TValue[],
   );
 }
 
 function remove<TValues extends { index: number }>(
   fields: TValues[],
-  removeIndex: number // 0-based
+  removeIndex: number, // 0-based
 ): TValues[] {
   const result = fields.reduce(
     (acc, value, iterationIndex) => {
@@ -215,7 +228,7 @@ function remove<TValues extends { index: number }>(
 
       return acc;
     },
-    [] as TValues[]
+    [] as TValues[],
   );
 
   return result;
@@ -224,7 +237,7 @@ function remove<TValues extends { index: number }>(
 function add<TValues extends { index: number }>(
   fields: TValues[],
   index: number, // 0-based
-  empty: TValues
+  empty: TValues,
 ): TValues[] {
   if (fields.length === index + 1) {
     return [...fields, { ...empty, index: index + 2 }];
@@ -244,6 +257,6 @@ function add<TValues extends { index: number }>(
 
       return acc;
     },
-    [] as TValues[]
+    [] as TValues[],
   );
 }

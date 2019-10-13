@@ -20,7 +20,7 @@ import {
 } from "../../graphql/apollo/types/CloneResume";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
-import { ResumeTitlesProps } from "./utils";
+import { ResumeTitlesProps } from "./my-resumes.utils";
 
 const createResumeGql = graphql<
   {},

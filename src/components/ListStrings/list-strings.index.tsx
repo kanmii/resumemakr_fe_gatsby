@@ -5,16 +5,7 @@ import { CircularLabel } from "../CircularLabel";
 import { RegularField } from "../RegularField";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
-
-interface Props {
-  values: string[];
-  fieldName: string;
-  arrayHelper: FieldArrayRenderProps;
-  hiddenLabel?: string;
-  header?: JSX.Element;
-  controlComponent?: React.ComponentClass | React.FunctionComponent;
-  appendToHiddenLabel?: string;
-}
+import { Id, makeInputId } from "./list-strings.dom-selectors";
 
 export const ListStrings = memo(ListStringsComp, ListStringsDiff);
 
@@ -26,13 +17,12 @@ export function ListStringsComp(props: Props) {
     hiddenLabel,
     header,
     controlComponent,
-    appendToHiddenLabel
+    appendToHiddenLabel,
+    idFn,
   } = props;
 
   const len = values.length;
-
   const [swapped, setSwapped] = useState(ListDisplayCtrlNames.none);
-
   const { valueChanged } = useContext(FormContext);
 
   useEffect(() => {
@@ -40,6 +30,7 @@ export function ListStringsComp(props: Props) {
       setSwapped(ListDisplayCtrlNames.none);
       valueChanged();
     }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [swapped]);
 
   return (
@@ -49,9 +40,12 @@ export function ListStringsComp(props: Props) {
       {values.map((value, index) => {
         const fieldName = makeListStringFieldName(parentFieldName, index);
         const index1 = index + 1;
+        const id = idFn ? idFn(index) : "";
+        const inputId = makeInputId(id);
 
         return (
           <Field
+            id={inputId}
             key={index}
             name={fieldName}
             label={
@@ -63,7 +57,7 @@ export function ListStringsComp(props: Props) {
                     <CircularLabel
                       data-testid={makeListDisplayCtrlTestId(
                         fieldName,
-                        ListDisplayCtrlNames.moveDown
+                        ListDisplayCtrlNames.moveDown,
                       )}
                       color="blue"
                       onClick={function onSwapAchievementsUp() {
@@ -79,7 +73,7 @@ export function ListStringsComp(props: Props) {
                     <CircularLabel
                       data-testid={makeListDisplayCtrlTestId(
                         fieldName,
-                        ListDisplayCtrlNames.remove
+                        ListDisplayCtrlNames.remove,
                       )}
                       color="red"
                       onClick={function onRemoveAchievement() {
@@ -94,7 +88,7 @@ export function ListStringsComp(props: Props) {
                   <CircularLabel
                     data-testid={makeListDisplayCtrlTestId(
                       fieldName,
-                      ListDisplayCtrlNames.add
+                      ListDisplayCtrlNames.add,
                     )}
                     color="green"
                     onClick={function onAddAchievement() {
@@ -109,7 +103,7 @@ export function ListStringsComp(props: Props) {
                     <CircularLabel
                       data-testid={makeListDisplayCtrlTestId(
                         fieldName,
-                        ListDisplayCtrlNames.moveUp
+                        ListDisplayCtrlNames.moveUp,
                       )}
                       color="blue"
                       onClick={function onSwapAchievementsUp() {
@@ -123,16 +117,22 @@ export function ListStringsComp(props: Props) {
                 </div>
 
                 {appendToHiddenLabel && (
-                  <label className="visually-hidden" htmlFor={fieldName}>
+                  <label
+                    className="visually-hidden"
+                    htmlFor={inputId || fieldName}
+                  >
                     {makeListStringHiddenLabelText(
                       fieldName,
-                      appendToHiddenLabel
+                      appendToHiddenLabel,
                     )}
                   </label>
                 )}
 
                 {hiddenLabel && (
-                  <label className="visually-hidden" htmlFor={fieldName}>
+                  <label
+                    className="visually-hidden"
+                    htmlFor={inputId || fieldName}
+                  >
                     {hiddenLabel}
                   </label>
                 )}
@@ -150,7 +150,7 @@ export function ListStringsComp(props: Props) {
 
 function ListStringsDiff(
   { values: values1 }: Props,
-  { values: values2 }: Props
+  { values: values2 }: Props,
 ) {
   const len1 = values1.length;
   const len2 = values2.length;
@@ -170,14 +170,25 @@ function ListStringsDiff(
 
 export function makeListStringFieldName(
   parentFieldName: string,
-  index: number
+  index: number,
 ) {
   return `${parentFieldName}[${index}]`;
 }
 
 export function makeListStringHiddenLabelText(
   fieldName: string,
-  suffix: string
+  suffix: string,
 ) {
   return fieldName + suffix;
+}
+
+interface Props {
+  values: string[];
+  fieldName: string;
+  arrayHelper: FieldArrayRenderProps;
+  hiddenLabel?: string;
+  header?: JSX.Element;
+  controlComponent?: React.ComponentClass | React.FunctionComponent;
+  appendToHiddenLabel?: string;
+  idFn?: (id: Id) => string;
 }
