@@ -5,7 +5,7 @@ import { OwnProps, WithLogo } from "./utils";
 import {
   LogoImageQuery,
   LogoImageQuery_file_childImageSharp_fixed
-} from "../../graphql/gatsby/types/LogoImageQuery";
+} from "../../graphql/gatsby-types/LogoImageQuery";
 
 export function fetchLogoHOC(
   Component: React.FunctionComponent<OwnProps & WithLogo>
