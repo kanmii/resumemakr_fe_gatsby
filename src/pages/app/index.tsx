@@ -1,9 +1,8 @@
 import React from "react";
 import { Router } from "@reach/router";
-
 import { AuthRequired } from "../../components/AuthRequired";
 import { MyResumes } from "../../components/MyResumes";
-import { Resume } from "../../components/Resume";
+import { Resume } from "../../components/Resume/resume-component";
 import { RESUMES_HOME_PATH, RESUME_PATH } from "../../routing";
 import { NotFound } from "../../components/NotFound";
 import { Layout } from "../../components/Layout";
