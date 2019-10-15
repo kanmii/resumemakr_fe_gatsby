@@ -14,13 +14,13 @@ import {
   Props,
   ResumeTitlesProps,
 } from "../components/MyResumes/my-resumes.utils";
-import { CreateResume } from "../graphql/apollo/types/CreateResume";
-import { CloneResume } from "../graphql/apollo/types/CloneResume";
+import { CreateResume } from "../graphql/apollo-types/CreateResume";
+import { CloneResume } from "../graphql/apollo-types/CloneResume";
 import {
   ResumeTitles_listResumes,
   ResumeTitles_listResumes_edges,
-} from "../graphql/apollo/types/ResumeTitles";
-import { DeleteResume } from "../graphql/apollo/types/DeleteResume";
+} from "../graphql/apollo-types/ResumeTitles";
+import { DeleteResume } from "../graphql/apollo-types/DeleteResume";
 import { ResumeTitlesProps as RTP } from "../graphql/apollo/resume-titles.query";
 import {
   triggerCreateNewResumeId,

@@ -9,8 +9,8 @@ import {
   PersonalInfoInput,
   CreateSkillInput,
   RatedInput
-} from "../graphql/apollo/types/globalTypes";
-import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
+} from "../graphql/apollo-types/globalTypes";
+import { GetResume_getResume } from "../graphql/apollo-types/GetResume";
 import { Preview } from "../components/Preview/preview.component";
 import { Mode, Props } from "../components/Preview/preview.utils";
 import { renderWithRouter, renderWithApollo } from "./test_utils";

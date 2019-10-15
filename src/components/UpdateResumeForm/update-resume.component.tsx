@@ -37,7 +37,7 @@ import { ALREADY_UPLOADED } from "../../constants";
 import {
   UpdateResumeInput,
   CreateExperienceInput,
-} from "../../graphql/apollo/types/globalTypes";
+} from "../../graphql/apollo-types/globalTypes";
 import { ResumePathHash } from "../../routing";
 import { Rated } from "../Rated/rated.component";
 import { SectionLabel } from "../SectionLabel";

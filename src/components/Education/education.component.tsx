@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Icon, Card } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
-import { EducationInput } from "../../graphql/apollo/types/globalTypes";
+import { EducationInput } from "../../graphql/apollo-types/globalTypes";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";

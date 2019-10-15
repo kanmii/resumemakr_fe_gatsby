@@ -1,8 +1,7 @@
 import gql from "graphql-tag";
 import { MutationFn, graphql } from "react-apollo";
-
 import { resumeFullFrag } from "./resume_full.fragment";
-import { UpdateResume, UpdateResumeVariables } from "./types/UpdateResume";
+import { UpdateResume, UpdateResumeVariables } from "../apollo-types/UpdateResume";
 
 export const updateResume = gql`
   mutation UpdateResume($input: UpdateResumeInput!) {

@@ -9,15 +9,15 @@ import CLONE_RESUME, {
 import {
   CreateResume,
   CreateResumeVariables
-} from "../../graphql/apollo/types/CreateResume";
+} from "../../graphql/apollo-types/CreateResume";
 import {
   ResumeTitles,
   ResumeTitlesVariables
-} from "../../graphql/apollo/types/ResumeTitles";
+} from "../../graphql/apollo-types/ResumeTitles";
 import {
   CloneResume,
   CloneResumeVariables
-} from "../../graphql/apollo/types/CloneResume";
+} from "../../graphql/apollo-types/CloneResume";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
 import { ResumeTitlesProps } from "./my-resumes.utils";

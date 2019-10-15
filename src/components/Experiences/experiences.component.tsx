@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Card, Icon } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
-import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
+import { CreateExperienceInput } from "../../graphql/apollo-types/globalTypes";
 import { RegularField } from "../RegularField";
 import { SectionLabel } from "../SectionLabel";
 import {

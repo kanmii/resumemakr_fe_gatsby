@@ -7,7 +7,7 @@ import { emptyVal, RowItemsLabels, Props, makeRatedName } from "./rated-utils";
 import {
   RatedInput,
   CreateExperienceInput,
-} from "../../graphql/apollo/types/globalTypes";
+} from "../../graphql/apollo-types/globalTypes";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
 import { SetFieldValue } from "../utils";
 import { SubFieldLabel } from "../components";

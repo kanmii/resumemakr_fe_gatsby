@@ -5,7 +5,7 @@ import userFragment from "./user.fragment";
 import {
   UserRegMutation,
   UserRegMutationVariables
-} from "./types/UserRegMutation";
+} from "../apollo-types/UserRegMutation";
 
 export const userRegMutation = gql`
   mutation UserRegMutation($input: RegistrationInput!) {

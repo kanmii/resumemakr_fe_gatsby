@@ -10,7 +10,7 @@ import {
   FormikErrors,
 } from "formik";
 import { Props, ValidationSchema } from "./login.utils";
-import { LoginInput } from "../../graphql/apollo/types/globalTypes";
+import { LoginInput } from "../../graphql/apollo-types/globalTypes";
 import { PasswordInput } from "../PasswordInput/password-input.index";
 import { AuthCard } from "../AuthCard";
 import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";

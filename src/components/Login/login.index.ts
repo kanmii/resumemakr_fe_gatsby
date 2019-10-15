@@ -8,7 +8,7 @@ import { userLocalMutationGql } from "../../state/user.local.mutation";
 import {
   LoginMutation,
   LoginMutationVariables
-} from "../../graphql/apollo/types/LoginMutation";
+} from "../../graphql/apollo-types/LoginMutation";
 import LOGIN_MUTATION, {
   LoginMutationProps
 } from "../../graphql/apollo/login.mutation";

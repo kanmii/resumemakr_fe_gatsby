@@ -6,7 +6,7 @@ import { FormikErrors } from "formik";
 import { Reducer } from "react";
 import { RegMutationProps } from "../../graphql/apollo/user-reg.mutation";
 import { UserLocalMutationProps } from "../../state/user.local.mutation";
-import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
+import { RegistrationInput } from "../../graphql/apollo-types/globalTypes";
 import {
   domPasswordInputId,
   domPasswordConfirmInputId,

@@ -5,7 +5,7 @@ import userFragment from "./user.fragment";
 import {
   PasswortZuruckSetzenVeranderung,
   PasswortZuruckSetzenVeranderungVariables
-} from "./types/PasswortZuruckSetzenVeranderung";
+} from "../apollo-types/PasswortZuruckSetzenVeranderung";
 
 export const PASSWORT_ZURÜCK_SETZEN_VERANDERUNG = gql`
   mutation PasswortZuruckSetzenVeranderung(

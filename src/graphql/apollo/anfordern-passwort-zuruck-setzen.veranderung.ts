@@ -4,7 +4,7 @@ import { MutationFn } from "react-apollo";
 import {
   AnfordernPasswortZuruckSetzen,
   AnfordernPasswortZuruckSetzenVariables
-} from "./types/AnfordernPasswortZuruckSetzen";
+} from "../apollo-types/AnfordernPasswortZuruckSetzen";
 
 export const ANFORDERN_PASSWORT_ZURUCK_SETZEN = gql`
   mutation AnfordernPasswortZuruckSetzen($email: String!) {

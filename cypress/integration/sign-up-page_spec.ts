@@ -1,5 +1,5 @@
 import { FORM_RENDER_PROPS, uiTexts } from "../../src/components/SignUp/utils";
-import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
+import { RegistrationInput } from "../../src/graphql/apollo-types/globalTypes";
 import { TEST_USER, createUser } from "../support/utils";
 import { SIGN_UP_URL } from "../../src/routing";
 

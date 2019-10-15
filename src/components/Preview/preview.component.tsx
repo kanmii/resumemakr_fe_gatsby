@@ -7,8 +7,8 @@ import {
   GetResume_getResume_education,
   GetResume_getResume_additionalSkills,
   GetResume_getResume_languages,
-} from "../../graphql/apollo/types/GetResume";
-import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
+} from "../../graphql/apollo-types/GetResume";
+import { CreateExperienceInput } from "../../graphql/apollo-types/globalTypes";
 import { Props, Mode } from "./preview.utils";
 import { toServerUrl } from "../utils";
 import {prefix} from './preview.dom-selectors'

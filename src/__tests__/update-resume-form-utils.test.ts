@@ -2,7 +2,7 @@ import {
   initialFormValues,
   getInitialValues
 } from "../components/UpdateResumeForm/update-resume.utils";
-import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
+import { GetResume_getResume } from "../graphql/apollo-types/GetResume";
 // import { defaultVal as educationDefaultVal } from "../components/Education/education";
 
 describe("getInitialValues", () => {

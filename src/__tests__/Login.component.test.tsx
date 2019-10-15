@@ -4,7 +4,7 @@ import { cleanup, render, wait, waitForElement } from "@testing-library/react";
 import { Login } from "../components/Login/login.component";
 import { Props } from "../components/Login/login.utils";
 import { fillField } from "./test_utils";
-import { LoginMutation_login_user } from "../graphql/apollo/types/LoginMutation";
+import { LoginMutation_login_user } from "../graphql/apollo-types/LoginMutation";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
 import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";

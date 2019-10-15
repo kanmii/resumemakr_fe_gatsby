@@ -12,7 +12,7 @@ import { fillField } from "./test_utils";
 import { refreshToMyResumes } from "../utils/refresh-to-my-resumes";
 import { isConnected } from "../state/get-conn-status";
 import { scrollToTop } from "../components/SignUp/scroll-to-top";
-import { UserRegMutation_registration_user } from "../graphql/apollo/types/UserRegMutation";
+import { UserRegMutation_registration_user } from "../graphql/apollo-types/UserRegMutation";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
 import {

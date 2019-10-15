@@ -16,7 +16,7 @@ import {
 } from "../components/UpdateResumeForm/update-resume.utils";
 import { fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
-import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
+import { GetResume_getResume } from "../graphql/apollo-types/GetResume";
 import {
   uiTexts,
   makeExperienceFieldName,

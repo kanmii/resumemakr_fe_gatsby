@@ -1,7 +1,6 @@
 import gql from "graphql-tag";
 import { MutationFn, graphql } from "react-apollo";
-
-import { DeleteResume, DeleteResumeVariables } from "./types/DeleteResume";
+import { DeleteResume, DeleteResumeVariables } from "../apollo-types/DeleteResume";
 
 export const deleteResumeMutation = gql`
   mutation DeleteResume($input: DeleteResumeInput!) {

@@ -1,15 +1,15 @@
-import { RegistrationInput } from "../../src/graphql/apollo/types/globalTypes";
+import { RegistrationInput } from "../../src/graphql/apollo-types/globalTypes";
 import {
   UserRegMutation,
   UserRegMutationVariables
-} from "../../src/graphql/apollo/types/UserRegMutation";
+} from "../../src/graphql/apollo-types/UserRegMutation";
 import { userRegMutation } from "../../src/graphql/apollo/user-reg.mutation";
 import { USER_TOKEN_ENV_KEY } from "./constants";
 import {
   userLocalMutation,
   Variable as UserLocalMutation
 } from "../../src/state/user.local.mutation";
-import { CreateResumeInput } from "../../src/graphql/apollo/types/globalTypes";
+import { CreateResumeInput } from "../../src/graphql/apollo-types/globalTypes";
 
 export const TEST_USER: RegistrationInput = {
   email: "a@b.com",

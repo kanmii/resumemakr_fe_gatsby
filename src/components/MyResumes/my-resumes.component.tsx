@@ -11,9 +11,9 @@ import {
   ResumeTitlesVariables,
   ResumeTitles_listResumes_edges_node,
   ResumeTitles_listResumes_edges,
-} from "../../graphql/apollo/types/ResumeTitles";
-import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
-import { DeleteResume } from "../../graphql/apollo/types/DeleteResume";
+} from "../../graphql/apollo-types/ResumeTitles";
+import { CreateResumeInput } from "../../graphql/apollo-types/globalTypes";
+import { DeleteResume } from "../../graphql/apollo-types/DeleteResume";
 import { CircularLabel } from "../CircularLabel";
 import { makeResumeRoute } from "../../routing";
 import {

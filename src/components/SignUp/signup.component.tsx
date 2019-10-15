@@ -20,7 +20,7 @@ import {
   ActionTypes,
   DispatchType,
 } from "./signup.utils";
-import { RegistrationInput } from "../../graphql/apollo/types/globalTypes";
+import { RegistrationInput } from "../../graphql/apollo-types/globalTypes";
 import { LOGIN_URL } from "../../routing";
 import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";
 import { isConnected } from "../../state/get-conn-status";

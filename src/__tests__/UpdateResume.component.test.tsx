@@ -31,7 +31,7 @@ import {
   renderWithRouter,
 } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
-import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
+import { GetResume_getResume } from "../graphql/apollo-types/GetResume";
 import { ALREADY_UPLOADED } from "../constants";
 import {
   gqlErrorId,

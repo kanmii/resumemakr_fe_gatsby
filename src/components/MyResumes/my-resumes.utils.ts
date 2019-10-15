@@ -7,7 +7,7 @@ import { CreateResumeProps } from "../../graphql/apollo/create-resume.mutation";
 import { ResumeTitlesProps as RTP } from "../../graphql/apollo/resume-titles.query";
 import { DeleteResumeProps } from "../../graphql/apollo/delete-resume.mutation";
 import { CloneResumeProps } from "../../graphql/apollo/clone-resume.mutation";
-import { CreateResumeInput } from "../../graphql/apollo/types/globalTypes";
+import { CreateResumeInput } from "../../graphql/apollo-types/globalTypes";
 
 export interface ResumeTitlesProps {
   resumeTitlesGql: RTP;

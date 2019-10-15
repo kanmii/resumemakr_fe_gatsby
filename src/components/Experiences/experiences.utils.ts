@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 import { RouteComponentProps } from "@reach/router";
-import { CreateExperienceInput } from "../../graphql/apollo/types/globalTypes";
+import { CreateExperienceInput } from "../../graphql/apollo-types/globalTypes";
 import { Section, ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 export const emptyVal: CreateExperienceInput = {

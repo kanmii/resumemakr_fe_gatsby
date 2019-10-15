@@ -4,7 +4,7 @@ import {
   GetResume,
   GetResumeVariables,
   GetResume_getResume,
-} from "../../graphql/apollo/types/GetResume";
+} from "../../graphql/apollo-types/GetResume";
 import { UpdateResumeForm as App } from "./update-resume.component";
 import { updateResumeGql } from "../../graphql/apollo/update-resume.mutation";
 import {

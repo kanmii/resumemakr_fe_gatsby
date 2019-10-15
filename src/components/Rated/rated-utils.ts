@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { RatedInput } from "../../graphql/apollo/types/globalTypes";
+import { RatedInput } from "../../graphql/apollo-types/globalTypes";
 import { Section, ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 export const emptyVal: RatedInput = {

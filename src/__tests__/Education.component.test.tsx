@@ -16,7 +16,7 @@ import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
   GetResume_getResume,
   GetResume_getResume_education,
-} from "../graphql/apollo/types/GetResume";
+} from "../graphql/apollo-types/GetResume";
 import { fillField } from "./test_utils";
 import {
   makeControlsId,

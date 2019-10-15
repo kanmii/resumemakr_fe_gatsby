@@ -4,7 +4,7 @@ import { ApolloError } from "apollo-client";
 import { WithApolloClient } from "react-apollo";
 import { RouteComponentProps } from "@reach/router";
 
-import { LoginInput as FormValues } from "../../graphql/apollo/types/globalTypes";
+import { LoginInput as FormValues } from "../../graphql/apollo-types/globalTypes";
 import { LoginMutationProps } from "../../graphql/apollo/login.mutation";
 import { UserLocalMutationProps } from "../../state/user.local.mutation";
 import { UserLocalGqlProps } from "../../state/auth.local.query";

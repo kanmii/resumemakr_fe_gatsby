@@ -1,5 +1,5 @@
 import { TOKEN_KEY, USER_KEY } from "../constants";
-import { UserFragment } from "../graphql/apollo/types/UserFragment";
+import { UserFragment } from "../graphql/apollo-types/UserFragment";
 
 export const getToken = () => {
   return localStorage.getItem(TOKEN_KEY) || null;

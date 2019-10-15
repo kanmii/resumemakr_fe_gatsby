@@ -1,8 +1,7 @@
 import gql from "graphql-tag";
 import { DataValue } from "react-apollo";
-
 import { resumeFullFrag } from "./resume_full.fragment";
-import { GetResume, GetResumeVariables } from "./types/GetResume";
+import { GetResume, GetResumeVariables } from "../apollo-types/GetResume";
 
 export const getResumeQuery = gql`
   query GetResume($input: GetResumeInput!) {

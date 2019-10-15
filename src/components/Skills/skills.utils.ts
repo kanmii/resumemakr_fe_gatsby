@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
+import { CreateSkillInput } from "../../graphql/apollo-types/globalTypes";
 import { Section, ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 export interface Props extends ChildProps {

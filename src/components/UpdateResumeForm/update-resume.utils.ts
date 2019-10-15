@@ -22,8 +22,8 @@ import {
   CreateSkillInput,
   RatedInput,
   UpdateResumeInput,
-} from "../../graphql/apollo/types/globalTypes";
-import { GetResume_getResume } from "../../graphql/apollo/types/GetResume";
+} from "../../graphql/apollo-types/globalTypes";
+import { GetResume_getResume } from "../../graphql/apollo-types/GetResume";
 import {
   validationSchema as ratedSchema,
   languageDefaultVal,

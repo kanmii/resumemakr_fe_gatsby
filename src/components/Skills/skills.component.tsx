@@ -3,7 +3,7 @@ import { Icon, Card } from "semantic-ui-react";
 import { FastField, FieldArray } from "formik";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
-import { CreateSkillInput } from "../../graphql/apollo/types/globalTypes";
+import { CreateSkillInput } from "../../graphql/apollo-types/globalTypes";
 import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./skills.utils";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
 import { ListStrings } from "../ListStrings/list-strings.index";

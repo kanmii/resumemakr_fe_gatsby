@@ -1,6 +1,6 @@
 import * as Yup from "yup";
 
-import { PersonalInfoInput } from "../../graphql/apollo/types/globalTypes";
+import { PersonalInfoInput } from "../../graphql/apollo-types/globalTypes";
 
 export const defaultVal: PersonalInfoInput = {
   firstName: "Adekanmi",

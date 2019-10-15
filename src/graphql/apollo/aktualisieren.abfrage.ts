@@ -5,7 +5,7 @@ import userFragment from "./user.fragment";
 import {
   AktualisierenAbfrage,
   AktualisierenAbfrageVariables
-} from "./types/AktualisierenAbfrage";
+} from "../apollo-types/AktualisierenAbfrage";
 
 export const AKTUALISIEREN_ABFRAGE = gql`
   query AktualisierenAbfrage($jwt: String!) {
