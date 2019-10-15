@@ -6,7 +6,7 @@ import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import { PhotoField } from "../PhotoField/photo-field.component";
 import { Section } from "../UpdateResumeForm/update-resume.utils";
-import { emptyVal, uiTexts } from "./utils";
+import { emptyVal, uiTexts } from "./personal-info.utils";
 import { prefix, addressFieldId } from "./personal-info.dom-selectors";
 
 interface Props {

@@ -2,15 +2,7 @@
 import "jest-dom/extend-expect";
 import React from "react";
 import "jest-dom/extend-expect";
-import "react-testing-library/cleanup-after-each";
-import {
-  render,
-  fireEvent,
-  wait,
-  Matcher,
-  MatcherOptions,
-  SelectorMatcherOptions,
-} from "react-testing-library";
+import { render, fireEvent, wait, cleanup } from "react-testing-library";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 import {
@@ -22,7 +14,7 @@ import {
   formikConfig,
   Section,
 } from "../components/UpdateResumeForm/update-resume.utils";
-import { renderWithApollo, fillField } from "./test_utils";
+import { fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
 import { GetResume_getResume } from "../graphql/apollo/types/GetResume";
 import {
@@ -38,10 +30,6 @@ import {
   makeListStringHiddenLabelText,
 } from "../components/ListStrings/list-strings.index";
 
-type P = React.ComponentType<Partial<Props>>;
-const ResumeFormP = UpdateResumeForm as P;
-const debounceTime = 0;
-
 /**
  * Mock out the Preview component
  */
@@ -50,28 +38,15 @@ jest.mock("../components/Preview", () => {
   return () => <div data-testid="preview-resume-section">1</div>;
 });
 
-const location = {
-  hash: makeUrlHashSegment(ResumePathHash.edit, Section.experiences),
-  pathname: makeResumeRoute("updates experiences", ""),
-} as WindowLocation;
+jest.mock("../components/UpdateResumeForm/update-resume.injectables", () => ({
+  debounceTime: 0,
+}));
 
-let mockUpdateResume: jest.Mock;
+afterEach(() => {
+  cleanup();
+});
+
 const fieldName = "experiences";
-
-let getByTestId: (
-  text: Matcher,
-  options?: MatcherOptions | undefined,
-) => HTMLElement;
-
-let getByLabelText: (
-  text: Matcher,
-  options?: SelectorMatcherOptions | undefined,
-) => HTMLElement;
-
-let queryByLabelText: (
-  text: Matcher,
-  options?: SelectorMatcherOptions | undefined,
-) => HTMLElement | null;
 
 describe("Experiences achievements", () => {
   const initial = {
@@ -107,32 +82,12 @@ describe("Experiences achievements", () => {
     uiTexts.achievementsLabels2,
   );
 
-  beforeEach(() => {
-    mockUpdateResume = jest.fn();
-
-    const props = {
-      getResume: initial,
-      debounceTime,
-      location,
-      updateResume: mockUpdateResume,
-    };
-
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-    const Ui = withFormik(formikConfig)(ui) as P;
-
-    /**
-     * Given user is on update resume page
-     */
-
-    const renderArgs = render(<Ui {...props} />);
-    // const renderArgs = {} as any;
-
-    getByTestId = renderArgs.getByTestId;
-
-    getByLabelText = renderArgs.getByLabelText;
-  });
-
   it("adds achievement", async () => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId, getByLabelText } = render(ui);
     /**
      * When user clicks on achievement 0 add button
      */
@@ -156,17 +111,12 @@ describe("Experiences achievements", () => {
      * And correct data should be sent to the server
      */
 
-    await wait(
-      () => {
-        expect(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements,
-        ).toEqual(["a0", "", "a1", "a2"]);
-      },
-      {
-        interval: 1,
-      },
-    );
+    await wait(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+          .achievements,
+      ).toEqual(["a0", "", "a1", "a2"]);
+    });
 
     /**
      * When user fills achievement 1 with text
@@ -182,20 +132,21 @@ describe("Experiences achievements", () => {
     /**
      * Then correct data should be sent to the server
      */
-    await wait(
-      () => {
-        expect(
-          mockUpdateResume.mock.calls[1][0].variables.input.experiences[0]
-            .achievements,
-        ).toEqual(["a0", "an", "a1", "a2"]);
-      },
-      {
-        interval: 1,
-      },
-    );
+    await wait(() => {
+      expect(
+        mockUpdateResume.mock.calls[1][0].variables.input.experiences[0]
+          .achievements,
+      ).toEqual(["a0", "an", "a1", "a2"]);
+    });
   });
 
-  it("removes achievement", async () => {
+  it("removes achievement", async done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on achievement 1 remove button
      */
@@ -212,20 +163,23 @@ describe("Experiences achievements", () => {
      * Then correct data should be sent to the server
      */
 
-    await wait(
-      () => {
-        expect(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements,
-        ).toEqual(["a0", "a2"]);
-      },
-      {
-        interval: 1,
-      },
-    );
+    await wait(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+          .achievements,
+      ).toEqual(["a0", "a2"]);
+    });
+
+    done();
   });
 
   it("swaps achievements up", async () => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on 'move up' button of achievement 1
      */
@@ -242,20 +196,21 @@ describe("Experiences achievements", () => {
      * Then correct data should be sent to the server
      */
 
-    await wait(
-      () => {
-        expect(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements,
-        ).toEqual(["a1", "a0", "a2"]);
-      },
-      {
-        interval: 1,
-      },
-    );
+    await wait(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+          .achievements,
+      ).toEqual(["a1", "a0", "a2"]);
+    });
   });
 
   it("swaps achievements down", async () => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on 'move down' button of achievement 1
      */
@@ -271,17 +226,12 @@ describe("Experiences achievements", () => {
     /**
      * Then correct data should be sent to the server
      */
-    await wait(
-      () => {
-        expect(
-          mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
-            .achievements,
-        ).toEqual(["a0", "a2", "a1"]);
-      },
-      {
-        interval: 1,
-      },
-    );
+    await wait(() => {
+      expect(
+        mockUpdateResume.mock.calls[0][0].variables.input.experiences[0]
+          .achievements,
+      ).toEqual(["a0", "a2", "a1"]);
+    });
   });
 });
 
@@ -296,33 +246,12 @@ describe("Experiences - add/remove/swap", () => {
 
   const company2LabelText = makeExperienceFieldName(2, "companyName");
 
-  beforeEach(() => {
-    mockUpdateResume = jest.fn();
-
-    const props = {
-      getResume: initial,
-      debounceTime,
-      location,
-      updateResume: mockUpdateResume,
-    };
-
-    /**
-     * Given user is on update resume page
-     */
-    const { Ui: ui } = renderWithApollo(ResumeFormP, props);
-
-    const Ui = withFormik(formikConfig)(ui) as P;
-
-    const renderArgs = render(<Ui {...props} />);
-
-    getByTestId = renderArgs.getByTestId;
-
-    getByLabelText = renderArgs.getByLabelText;
-
-    queryByLabelText = renderArgs.queryByLabelText;
-  });
-
   it("adds experience in middle", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId, getByLabelText } = render(ui);
     /**
      * Given that a user sees company 2 at position 2
      */
@@ -361,6 +290,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("adds experience to the end", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { queryByLabelText, getByTestId, getByLabelText } = render(ui);
+
     /**
      * Given that user does not see any company position 3
      */
@@ -397,6 +332,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("removes first experience", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on remove button of experience 0
      */
@@ -423,6 +364,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("removes last experience", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByLabelText, getByTestId, queryByLabelText } = render(ui);
+
     /**
      * Given that user sees company 2 in the document
      */
@@ -460,6 +407,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("removes experience from the middle", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on remove button of experience 1
      */
@@ -485,6 +438,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("moves experience up from middle", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on move up button of experience 1
      */
@@ -509,6 +468,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("moves last experience up", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks on experience 2 move up button
      */
@@ -534,6 +499,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("moves experience down from the middle", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks move down button on experience 1
      */
@@ -558,6 +529,12 @@ describe("Experiences - add/remove/swap", () => {
   });
 
   it("moves first experience down", done => {
+    const { ui, mockUpdateResume } = makeComp({
+      getResume: initial,
+    });
+
+    const { getByTestId } = render(ui);
+
     /**
      * When user clicks the move down button on experience at position 0
      */
@@ -583,7 +560,28 @@ describe("Experiences - add/remove/swap", () => {
   });
 });
 
-//////////////////////
+////////////////////////////// HELPERS //////////////////////////////////////
+
+const location = {
+  hash: makeUrlHashSegment(ResumePathHash.edit, Section.experiences),
+  pathname: makeResumeRoute("updates experiences", ""),
+} as WindowLocation;
+
+type P = React.ComponentType<Partial<Props>>;
+const UpdateResumeP = UpdateResumeForm as P;
+
+function makeComp(props: Partial<Props> = {}) {
+  const C = withFormik(formikConfig)(p => (
+    <UpdateResumeP {...p} {...props} />
+  )) as P;
+
+  const mockUpdateResume = jest.fn();
+
+  return {
+    ui: <C {...props} location={location} updateResume={mockUpdateResume} />,
+    mockUpdateResume,
+  };
+}
 
 function getCompanyNames(experiences: any) {
   return experiences.map((e: any) => e.companyName);

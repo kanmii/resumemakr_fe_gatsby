@@ -40,15 +40,10 @@ export const defaultVal: CreateExperienceInput = {
 
 export const uiTexts = {
   positionLabel: "Title/Position/Responsibility",
-
   companyNameLabel: "Company, department etc.",
-
   fromDateLabel: "Date from",
-
   toDateLabel: "Date to (optional)",
-
   achievementsLabels1: "Achievements",
-
   achievementsLabels2: "(responsibilities, activities)",
 };
 
@@ -62,5 +57,4 @@ export function makeExperienceFieldName(
 export interface Props extends RouteComponentProps, ChildProps {
   values: (CreateExperienceInput | null)[] | null | undefined;
   label: Section;
-  defaultValues: CreateExperienceInput[];
 }

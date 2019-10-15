@@ -17,11 +17,6 @@ import {
   GetResume_getResume,
   GetResume_getResume_education,
 } from "../graphql/apollo/types/GetResume";
-import { makeEduFieldName, uiTexts } from "../components/Education/utils";
-import {
-  makeListStringHiddenLabelText,
-  makeListStringFieldName,
-} from "../components/ListStrings/list-strings.index";
 import { fillField } from "./test_utils";
 import {
   makeControlsId,
@@ -35,6 +30,10 @@ import {
   makeMoveDownId,
 } from "../components/IterableControls/iterable-controls.dom-selectors";
 import { makeInputId as makeListStringInputId } from "../components/ListStrings/list-strings.dom-selectors";
+
+jest.mock("../components/UpdateResumeForm/update-resume.injectables", () => ({
+  debounceTime: 0,
+}));
 
 afterEach(() => {
   cleanup();
@@ -433,7 +432,8 @@ it("updates education on blur", async () => {
 ////////////////////////// HELPERS ////////////////////////////
 
 type P = ComponentType<Partial<Props>>;
-const UpdateResumeFormP = UpdateResumeForm as any;
+const UpdateResumeP = UpdateResumeForm as any;
+
 const location = {
   hash: makeUrlHashSegment(ResumePathHash.edit, Section.education),
   pathname: makeResumeRoute("title"),
@@ -441,7 +441,7 @@ const location = {
 
 function makeComp(props: Partial<Props> = {}) {
   const C = withFormik(formikConfig)(p => (
-    <UpdateResumeFormP {...p} {...props} />
+    <UpdateResumeP {...p} {...props} />
   )) as P;
 
   const mockUpdateResume = jest.fn();

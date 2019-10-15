@@ -19,11 +19,12 @@ import { ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 const HeaderLabelText = "Company";
 const fieldName = "experiences";
+const defaultValues = [{ ...emptyVal }];
 
 export function Experiences(props: Props) {
-  const { location, label, setFieldValue, defaultValues } = props;
+  const { location, label, setFieldValue } = props;
 
-  const values = props.values || defaultValues;
+  const values = (props.values || defaultValues) as CreateExperienceInput[];
 
   useEffect(
     function scrollToExperience() {
@@ -62,9 +63,7 @@ export function Experiences(props: Props) {
       <FieldArray
         name="experiences"
         render={() =>
-          values.map((e, index, iterableExperiences) => {
-            const experience = e as CreateExperienceInput;
-
+          values.map((experience, index, iterableExperiences) => {
             return (
               <ExperienceComponent
                 key={experience.id || index}

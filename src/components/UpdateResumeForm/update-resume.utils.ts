@@ -7,11 +7,11 @@ import {
   validationSchema as expSchema,
   defaultVal as experience,
 } from "../Experiences/experiences.utils";
-import { validationSchema as personalInfoSchema } from "../PersonalInfo/utils";
+import { validationSchema as personalInfoSchema } from "../PersonalInfo/personal-info.utils";
 import {
   validationSchema as edSchema,
   defaultVal as education,
-} from "../Education/utils";
+} from "../Education/education.utils";
 import {
   defaultVal as skills,
   validationSchema as skillsSchema,

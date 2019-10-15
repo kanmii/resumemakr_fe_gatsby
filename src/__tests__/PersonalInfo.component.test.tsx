@@ -9,11 +9,14 @@ import { UpdateResumeForm } from "../components/UpdateResumeForm/update-resume.c
 import {
   Props,
   formikConfig,
-  getInitialValues
+  getInitialValues,
 } from "../components/UpdateResumeForm/update-resume.utils";
 import { renderWithApollo, fillField } from "./test_utils";
 import { makeResumeRoute } from "../routing";
-import { uiTexts, defaultVal } from "../components/PersonalInfo/utils";
+import {
+  uiTexts,
+  defaultVal,
+} from "../components/PersonalInfo/personal-info.utils";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;
@@ -31,7 +34,7 @@ describe("Personal info", () => {
   it("updates on input blur", async () => {
     const location = {
       hash: "",
-      pathname: makeResumeRoute("first resume", "")
+      pathname: makeResumeRoute("first resume", ""),
     } as WindowLocation;
 
     const initial = getInitialValues(null);
@@ -45,7 +48,7 @@ describe("Personal info", () => {
 
       debounceTime,
 
-      location
+      location,
     } as Partial<Props>;
 
     /**
@@ -118,12 +121,12 @@ describe("Personal info", () => {
 
         expect([args.firstName, args.lastName]).toEqual([
           defaultVal.firstName,
-          undefined
+          undefined,
         ]);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
 
     // -------------------------------------------------------------------
@@ -143,12 +146,12 @@ describe("Personal info", () => {
       () => {
         expect(
           mockUpdateResume.mock.calls[1][0].variables.input.personalInfo
-            .lastName
+            .lastName,
         ).toEqual(defaultVal.lastName);
       },
       {
-        interval: 1
-      }
+        interval: 1,
+      },
     );
   });
 });
