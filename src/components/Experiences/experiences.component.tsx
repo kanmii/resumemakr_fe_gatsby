@@ -12,9 +12,12 @@ import {
   makeExperienceFieldName,
 } from "./experiences.utils";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
-import { ListStrings } from "../ListStrings/list-strings.index";
+import { ListStrings } from "../ListStrings/list-strings.component";
 import { SubFieldLabel } from "../components";
-import { prefix } from "./experiences.dom-selectors";
+import {
+  prefix as domId,
+  makeAchievementId,
+} from "./experiences.dom-selectors";
 import { ChildProps } from "../UpdateResumeForm/update-resume.utils";
 
 const HeaderLabelText = "Company";
@@ -57,7 +60,7 @@ export function Experiences(props: Props) {
         label={label}
         ico={<Icon name="won" />}
         data-testid="experiences-section"
-        id={prefix}
+        id={domId}
       />
 
       <FieldArray
@@ -156,6 +159,7 @@ function ExperienceComponent(props: ExperienceComponentProps) {
           render={helper => {
             return (
               <ListStrings
+                idFn={makeAchievementId}
                 values={achievements as string[]}
                 arrayHelper={helper}
                 header={

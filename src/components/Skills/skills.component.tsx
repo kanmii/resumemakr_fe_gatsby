@@ -6,7 +6,7 @@ import { RegularField } from "../RegularField";
 import { CreateSkillInput } from "../../graphql/apollo-types/globalTypes";
 import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./skills.utils";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
-import { ListStrings } from "../ListStrings/list-strings.index";
+import { ListStrings } from "../ListStrings/list-strings.component";
 import { SubFieldLabel } from "../components";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { prefix } from "./skills.dom-selectors";

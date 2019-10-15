@@ -5,7 +5,14 @@ import { CircularLabel } from "../CircularLabel";
 import { RegularField } from "../RegularField";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";
-import { Id, makeInputId } from "./list-strings.dom-selectors";
+import {
+  Id,
+  makeInputId,
+  makeMoveDownId,
+  makeRemoveId,
+  makeAddId,
+  makeMoveUpId,
+} from "./list-strings.dom-selectors";
 
 export const ListStrings = memo(ListStringsComp, ListStringsDiff);
 
@@ -60,10 +67,11 @@ export function ListStringsComp(props: Props) {
                         ListDisplayCtrlNames.moveDown,
                       )}
                       color="blue"
-                      onClick={function onSwapAchievementsUp() {
+                      onClick={function onSwapDown() {
                         arrayHelper.swap(index, index1);
                         setSwapped(ListDisplayCtrlNames.moveDown);
                       }}
+                      id={makeMoveDownId(id || fieldName)}
                     >
                       <Icon name="arrow down" />
                     </CircularLabel>
@@ -76,10 +84,11 @@ export function ListStringsComp(props: Props) {
                         ListDisplayCtrlNames.remove,
                       )}
                       color="red"
-                      onClick={function onRemoveAchievement() {
+                      onClick={function onRemove() {
                         arrayHelper.remove(index);
                         setSwapped(ListDisplayCtrlNames.remove);
                       }}
+                      id={makeRemoveId(id || fieldName)}
                     >
                       <Icon name="remove" />
                     </CircularLabel>
@@ -91,10 +100,11 @@ export function ListStringsComp(props: Props) {
                       ListDisplayCtrlNames.add,
                     )}
                     color="green"
-                    onClick={function onAddAchievement() {
+                    onClick={function onAdd() {
                       arrayHelper.insert(index1, "");
                       setSwapped(ListDisplayCtrlNames.add);
                     }}
+                    id={makeAddId(id || fieldName)}
                   >
                     <Icon name="add" />
                   </CircularLabel>
@@ -106,10 +116,11 @@ export function ListStringsComp(props: Props) {
                         ListDisplayCtrlNames.moveUp,
                       )}
                       color="blue"
-                      onClick={function onSwapAchievementsUp() {
+                      onClick={function onSwapUp() {
                         arrayHelper.swap(index, index - 1);
                         setSwapped(ListDisplayCtrlNames.moveUp);
                       }}
+                      id={makeMoveUpId(id || fieldName)}
                     >
                       <Icon name="arrow up" />
                     </CircularLabel>

@@ -13,7 +13,7 @@ import {
   uiTexts,
 } from "./education.utils";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
-import { ListStrings } from "../ListStrings/list-strings.index";
+import { ListStrings } from "../ListStrings/list-strings.component";
 import { SubFieldLabel } from "../components";
 import {
   prefix,

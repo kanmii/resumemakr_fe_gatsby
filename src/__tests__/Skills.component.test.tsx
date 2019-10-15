@@ -30,7 +30,7 @@ import { ResumePathHash, makeResumeRoute } from "../routing";
 import {
   makeListStringHiddenLabelText,
   makeListStringFieldName,
-} from "../components/ListStrings/list-strings.index";
+} from "../components/ListStrings/list-strings.component";
 import { fillField } from "./test_utils";
 import {
   makeListDisplayCtrlTestId,
