@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { MutationFn, graphql } from "react-apollo";
+import { MutationFunction, graphql } from "react-apollo";
 import { DeleteResume, DeleteResumeVariables } from "../apollo-types/DeleteResume";
 
 export const deleteResumeMutation = gql`
@@ -15,7 +15,7 @@ export const deleteResumeMutation = gql`
 
 export default deleteResumeMutation;
 
-export type DeleteResumeMutationFn = MutationFn<
+export type DeleteResumeMutationFn = MutationFunction<
   DeleteResume,
   DeleteResumeVariables
 >;

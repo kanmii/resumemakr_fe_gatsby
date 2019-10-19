@@ -1,4 +1,5 @@
-import { graphql, compose, withApollo } from "react-apollo";
+import { graphql,  withApollo } from "react-apollo";
+import compose from 'lodash/flowRight'
 import {
   UserRegMutation,
   UserRegMutationVariables

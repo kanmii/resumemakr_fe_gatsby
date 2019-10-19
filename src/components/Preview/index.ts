@@ -1,4 +1,5 @@
-import { compose, graphql } from "react-apollo";
+import {  graphql } from "react-apollo";
+import compose from 'lodash/flowRight'
 import {
   GetResume,
   GetResumeVariables

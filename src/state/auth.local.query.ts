@@ -1,6 +1,5 @@
 import gql from "graphql-tag";
 import { DataValue } from "react-apollo";
-
 import { userFragment } from "../graphql/apollo/user.fragment";
 import { UserFragment } from "../graphql/apollo-types/UserFragment";
 

@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { MutationFn } from "react-apollo";
+import { MutationFunction } from "react-apollo";
 
 import userFragment from "./user.fragment";
 import {
@@ -20,7 +20,7 @@ export const userRegMutation = gql`
 
 export default userRegMutation;
 
-export type RegUserFn = MutationFn<UserRegMutation, UserRegMutationVariables>;
+export type RegUserFn = MutationFunction<UserRegMutation, UserRegMutationVariables>;
 
 export interface RegMutationProps {
   regUser?: RegUserFn;

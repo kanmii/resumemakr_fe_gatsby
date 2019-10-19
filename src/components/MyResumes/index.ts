@@ -1,4 +1,5 @@
-import { graphql, compose } from "react-apollo";
+import { graphql,  } from "react-apollo";
+import compose from 'lodash/flowRight'
 import { MyResumes as App } from "./my-resumes.component";
 import CREATE_RESUME_TITLE, {
   CreateResumeProps

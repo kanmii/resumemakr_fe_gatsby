@@ -2,7 +2,7 @@ import React, { FunctionComponent, ComponentClass } from "react";
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloLink } from "apollo-link";
-import { ApolloProvider } from "react-apollo";
+import { ApolloProvider } from "@apollo/react-hooks";
 import { fireEvent } from "@testing-library/react";
 import { RouteComponentProps } from "@reach/router";
 
