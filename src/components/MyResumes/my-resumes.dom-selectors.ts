@@ -8,6 +8,7 @@ export const titleInputId = `${prefix}-title-input`;
 export const createNewResumeSubmitBtnId = `${prefix}-create-new-resume-submit`;
 export const deleteSuccessMsgId = `${prefix}-delete-success`;
 export const confirmDeleteMsgId = `${prefix}-confirm-delete`;
+export const descriptionInputId = `${prefix}-description-input`
 
 export function makeResumeRowId(id: Id) {
   return `${prefix}-${id}`;

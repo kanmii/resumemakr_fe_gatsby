@@ -48,6 +48,7 @@ import {
   makeNoConfirmDeleteId,
   createClonedResumeId,
   makeTriggerCloneId,
+  descriptionInputId,
 } from "./my-resumes.dom-selectors";
 
 let initialValues = emptyVal;
@@ -347,14 +348,14 @@ export function MyResumes(merkmale: Props) {
                       className="field home-form-field"
                       style={{ marginTop: "15px" }}
                     >
-                      <label htmlFor="resume-description">
+                      <label htmlFor={descriptionInputId}>
                         {uiTexts.form.description}
                         <span style={{ opacity: 0.6 }}> (optional)</span>
                       </label>
 
                       <FastField
                         component={AutoTextarea}
-                        id="resume-description"
+                        id={descriptionInputId}
                         name="description"
                         onTextChanged={(text: string) => {
                           formikProps.setFieldValue("description", text);

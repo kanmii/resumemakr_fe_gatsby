@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "target": "es5",
-    "lib": ["es6", "dom", "esnext"],
+    "allowSyntheticDefaultImports": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "types": [
       "cypress",
       "cypress-testing-library/typings",
       "cypress-file-upload"
     ]
-  },
-  "include": ["node_modules/cypress", "**/*.ts"]
+  }
 }

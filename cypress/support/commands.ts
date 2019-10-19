@@ -1,13 +1,15 @@
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/no-namespace */
 import "cypress-testing-library/add-commands";
 import "cypress-file-upload";
 import { MutationOptions } from "apollo-client/core/watchQueryOptions";
 import { getBackendUrls } from "../../src/state/get-backend-urls";
 import {
   buildClientCache,
-  CYPRESS_APOLLO_KEY
+  CYPRESS_APOLLO_KEY,
 } from "../../src/state/apollo-setup";
-import { FetchResult } from "apollo-link";
 import ApolloClient from "apollo-client";
+import { FetchResult } from "apollo-link";
 
 const serverUrl = getBackendUrls(Cypress.env("API_URL"));
 
@@ -19,7 +21,7 @@ Cypress.Commands.add(
     const client = Cypress.env(CYPRESS_APOLLO_KEY).client as ApolloClient<{}>;
 
     return client.mutate<TData, TVariables>(options);
-  }
+  },
 );
 
 function checkoutSession() {
@@ -27,7 +29,7 @@ function checkoutSession() {
 
   buildClientCache({
     uri: serverUrl.apiUrl,
-    newE2eTest: true
+    newE2eTest: true,
   });
 
   cy.request("POST", serverUrl.root + "/iennc67hx1", {}).then(response => {
@@ -59,9 +61,9 @@ declare global {
        */
 
       mutate: <TData, TVariables>(
-        options: MutationOptions<TData, TVariables>
+        options: MutationOptions<TData, TVariables>,
       ) => Promise<
-        // tslint:disable-next-line: no-any
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
         FetchResult<TData, Record<string, any>, Record<string, any>>
       >;
     }
