@@ -8,6 +8,10 @@ import {
 } from "../components/PasswordInput/password-input.dom-selectors";
 import { fillField } from "./test_utils";
 
+afterEach(() => {
+  cleanup();
+});
+
 it("renders correctly", () => {
   const name = "pwd";
   const id = "id";

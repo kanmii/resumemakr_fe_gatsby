@@ -60,6 +60,8 @@ import {
 } from "./update-resume.dom-selectors";
 import { debounceTime } from "./update-resume.injectables";
 
+const loadingTimeoutMs = 5000;
+
 const reducer: Reducer<State, State> = (prevState, state = {}) => {
   return { ...prevState, ...state };
 };
@@ -87,9 +89,7 @@ export function UpdateResumeForm(props: Props) {
   const updateResumeFnDebounced = useRef<null | UpdateResumeFn>(null);
 
   useEffect(() => {
-    return () => {
-      getUpdateFn().cancel();
-    };
+    return getUpdateFn().cancel;
     /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
@@ -99,7 +99,7 @@ export function UpdateResumeForm(props: Props) {
         dispatch({
           loadingTooLong: true,
         });
-      }, 10000);
+      }, loadingTimeoutMs);
     }
 
     return () => {

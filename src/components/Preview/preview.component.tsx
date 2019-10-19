@@ -1,6 +1,7 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+import React, { useLayoutEffect, useEffect } from "react";
 import { Icon } from "semantic-ui-react";
-import "./styles.scss";
+import "./preview.styles.scss";
 import {
   GetResume_getResume_personalInfo,
   GetResume_getResume_skills,
@@ -11,172 +12,169 @@ import {
 import { CreateExperienceInput } from "../../graphql/apollo-types/globalTypes";
 import { Props, Mode } from "./preview.utils";
 import { toServerUrl } from "../utils";
-import {prefix} from './preview.dom-selectors'
+import { prefix as domId } from "./preview.dom-selectors";
 
-export class Preview extends React.Component<Props> {
-  containerRef = React.createRef<HTMLDivElement>();
+export function Preview(props: Props) {
+  const { mode, getResume, loading, error } = props;
+  const containerRef = React.createRef<HTMLDivElement>();
 
-  componentDidMount() {
-    if (this.props.mode === Mode.download) {
+  useLayoutEffect(function requireGlobalOverrides() {
+    if (mode === Mode.download) {
       require("./override-globals.scss");
     }
-  }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, []);
 
-  componentDidUpdate() {
-    const els = document.querySelectorAll(".right .break-here");
+  useEffect(
+    function setDimensions() {
+      const els = document.querySelectorAll(".right .break-here");
 
-    if (!els.length) {
-      return;
-    }
+      if (!els.length) {
+        return;
+      }
 
-    const { mode } = this.props;
-    let sumHeight = 0;
-    let totalHeight = 0;
-    const maxHeights = {
-      [Mode.download]: 850,
-      [Mode.preview]: 1000,
-    };
+      let sumHeight = 0;
+      let totalHeight = 0;
+      const maxHeights = {
+        [Mode.download]: 850,
+        [Mode.preview]: 1000,
+      };
 
-    [].forEach.call(els, (el: HTMLElement, index: number) => {
-      const h = getHeight(el);
-      sumHeight += h;
-      totalHeight += h;
+      [].forEach.call(els, (el: HTMLElement, index: number) => {
+        const h = getHeight(el);
+        sumHeight += h;
+        totalHeight += h;
 
-      if (sumHeight >= maxHeights[mode]) {
-        const id = "page-break" + index;
+        if (sumHeight >= maxHeights[mode]) {
+          const id = "page-break" + index;
 
-        if (!document.getElementById(id)) {
-          const pageBreak = document.createElement("div");
-          pageBreak.id = id;
+          if (!document.getElementById(id)) {
+            const pageBreak = document.createElement("div");
+            pageBreak.id = id;
 
-          const classNames = ["html2pdf__page-break"];
-          if (mode === Mode.preview) {
-            classNames.push("preview");
+            const classNames = ["html2pdf__page-break"];
+            if (mode === Mode.preview) {
+              classNames.push("preview");
+            }
+
+            pageBreak.classList.add(...classNames);
+            el.before(pageBreak);
           }
 
-          pageBreak.classList.add(...classNames);
-          el.before(pageBreak);
+          sumHeight = 0;
         }
+      });
 
-        sumHeight = 0;
+      const { current } = containerRef;
+
+      if (mode === Mode.download && current) {
+        current.style.height = 1120 * Math.ceil(totalHeight / 900) + "px";
       }
-    });
+    },
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+    [mode],
+  );
 
-    const { current } = this.containerRef;
-
-    if (mode === Mode.download && current) {
-      current.style.height = 1120 * Math.ceil(totalHeight / 900) + "px";
-    }
+  if (loading) {
+    return <div>loading</div>;
   }
 
-  render() {
-    const { getResume, loading, error } = this.props;
+  if (error) {
+    return <div>{JSON.stringify(error)}</div>;
+  }
 
-    if (loading) {
-      return <div>loading</div>;
-    }
+  if (!getResume) {
+    return <div>An error occurred</div>;
+  }
 
-    if (error) {
-      return <div>{JSON.stringify(error)}</div>;
-    }
+  const { skills, experiences, education, personalInfo } = getResume;
 
-    if (!getResume) {
-      return <div>An error occurred</div>;
-    }
+  const additionalSkills = (getResume.additionalSkills || []).filter(
+    a => a && a.description && a.description.trim(),
+  ) as GetResume_getResume_additionalSkills[];
 
-    const { skills, experiences, education, personalInfo } = getResume;
+  const languages = (getResume.languages || []).filter(
+    a => a && a.description && a.description.trim(),
+  ) as GetResume_getResume_languages[];
 
-    const { mode } = this.props;
+  const hobbies = (getResume.hobbies || []).filter(s => s && s.trim());
 
-    const additionalSkills = (getResume.additionalSkills || []).filter(
-      a => a && a.description && a.description.trim(),
-    ) as GetResume_getResume_additionalSkills[];
+  return (
+    <div
+      className={`components-preview ${
+        mode === Mode.download ? "download" : ""
+      }`}
+      ref={containerRef}
+      data-testid="preview-resume-section"
+      id={domId}
+    >
+      <div className="main-column left">
+        {personalInfo && <PersonalInfo personalInfo={personalInfo} />}
 
-    const languages = (getResume.languages || []).filter(
-      a => a && a.description && a.description.trim(),
-    ) as GetResume_getResume_languages[];
+        {additionalSkills && !!additionalSkills.length && (
+          <div className="section-container">
+            <h3 className="break-here section-title left">Additional Skills</h3>
 
-    const hobbies = (getResume.hobbies || []).filter(s => s && s.trim());
+            {additionalSkills.map((s, index) => {
+              const { description, level } = s;
 
-    return (
-      <div
-        className={`components-preview ${
-          mode === Mode.download ? "download" : ""
-        }`}
-        ref={this.containerRef}
-        data-testid="preview-resume-section"
-        id={prefix}
-      >
-        <div className="main-column left">
-          {personalInfo && <PersonalInfo personalInfo={personalInfo} />}
+              if (!description) {
+                return null;
+              }
 
-          {additionalSkills && !!additionalSkills.length && (
-            <div className="section-container">
-              <h3 className="break-here section-title left">
-                Additional Skills
-              </h3>
-
-              {additionalSkills.map((s, index) => {
-                const { description, level } = s;
-
-                if (!description) {
-                  return null;
-                }
-
-                return (
-                  <div key={index} className="break-here has-level">
-                    {description} {level && `[${level}]`}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {languages && !!languages.length && (
-            <div className="section-container">
-              <h3 className="break-here section-title left">Languages</h3>
-
-              {languages.map((s, index) => {
-                const { description, level } = s;
-
-                return (
-                  <div key={index} className="break-here has-level">
-                    {description} {level && `[${level}]`}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {hobbies && !!hobbies.length && (
-            <div className="section-container">
-              <h3 className="break-here section-title left">Hobbies</h3>
-
-              {hobbies.map((s, index) => (
-                <div key={index} className="break-here  has-level">
-                  {s}
+              return (
+                <div key={index} className="break-here has-level">
+                  {description} {level && `[${level}]`}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
-        <div className="main-column right">
-          {skills && <Skills skills={skills as GetResume_getResume_skills[]} />}
+        {languages && !!languages.length && (
+          <div className="section-container">
+            <h3 className="break-here section-title left">Languages</h3>
 
-          {experiences && !!experiences.length && (
-            <Experiences experiences={experiences as CreateExperienceInput[]} />
-          )}
+            {languages.map((s, index) => {
+              const { description, level } = s;
 
-          {education && !!education.length && (
-            <Educations
-              educations={education as GetResume_getResume_education[]}
-            />
-          )}
-        </div>
+              return (
+                <div key={index} className="break-here has-level">
+                  {description} {level && `[${level}]`}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {hobbies && !!hobbies.length && (
+          <div className="section-container">
+            <h3 className="break-here section-title left">Hobbies</h3>
+
+            {hobbies.map((s, index) => (
+              <div key={index} className="break-here  has-level">
+                {s}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
-    );
-  }
+
+      <div className="main-column right">
+        {skills && <Skills skills={skills as GetResume_getResume_skills[]} />}
+
+        {experiences && !!experiences.length && (
+          <Experiences experiences={experiences as CreateExperienceInput[]} />
+        )}
+
+        {education && !!education.length && (
+          <Educations
+            educations={education as GetResume_getResume_education[]}
+          />
+        )}
+      </div>
+    </div>
+  );
 }
 
 function PersonalInfo({
@@ -348,7 +346,7 @@ let elmKey = 0;
 function Achievements({
   achievements,
 }: {
-  achievements: Array<string | null> | null | undefined;
+  achievements: (string | null)[] | null | undefined;
 }) {
   achievements = (achievements || []).filter(a => !!a);
 

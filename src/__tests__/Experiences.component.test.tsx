@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { render, fireEvent, wait, cleanup } from "react-testing-library";
+import { render, fireEvent, wait, cleanup } from "@testing-library/react";
 import { withFormik } from "formik";
 import { WindowLocation } from "@reach/router";
 import {
@@ -15,10 +15,6 @@ import {
 import { fillField } from "./test_utils";
 import { makeResumeRoute, ResumePathHash } from "../routing";
 import { GetResume_getResume } from "../graphql/apollo-types/GetResume";
-import {
-  ListDisplayCtrlNames,
-  makeListDisplayCtrlTestId,
-} from "../components/components";
 import { makeAchievementId } from "../components/Experiences/experiences.dom-selectors";
 import {
   makeInputId,

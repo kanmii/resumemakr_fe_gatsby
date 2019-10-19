@@ -54,18 +54,9 @@ export const validationSchema = Yup.object<CreateSkillInput>().shape({
     .min(1),
 });
 
-export const fieldName = "skills";
-
-export function makeSkillFieldName(index: number, key: keyof CreateSkillInput) {
-  return `${fieldName}[${index}].${key}`;
-}
-
 export const uiTexts = {
   descriptionLabel: "Description (e.g Leadership)",
-
   achievementsHeader1: "Achievements",
-
   achievementsHeader2: "(responsibilities, activities)",
-
   achievementsHiddenLabel: "skills-achievement",
 };

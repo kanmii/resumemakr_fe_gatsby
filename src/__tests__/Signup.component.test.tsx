@@ -257,7 +257,7 @@ it("renders correctly and submits", async () => {
   /**
    * And source field is greyed out
    */
-  expect($source).toHaveAttribute("readonly");
+  expect($source.readOnly).toBe(true);
   expect(($source.closest(".form-field") as any).classList).toContain(
     "disabled",
   );

@@ -46,22 +46,25 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
         switch (type) {
           case ActionType.DELETE_PHOTO:
             {
-              proxy.value = "empty";
+              proxy.value = "deleted";
             }
 
             break;
 
           case ActionType.EDIT_INIT:
             {
-              const filled = (proxy as FilledState).filled as EditState;
-              filled.value = "editing";
+              const filledState = (proxy as FilledState).filled;
 
-              const editing = filled.editing || {
+              const editingState = filledState as EditState;
+
+              editingState.value = "editing";
+
+              const editing = editingState.editing || {
                 value: "initial",
               };
 
               editing.value = "initial";
-              filled.editing = editing;
+              editingState.editing = editing;
             }
 
             break;
@@ -83,7 +86,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
               const state = proxy as FilledState;
 
-              if (proxy.value === "empty") {
+              if (proxy.value !== "filled") {
                 state.value = "filled";
                 state.filled = {
                   value: "preview",
@@ -136,7 +139,11 @@ export interface Props extends FieldProps<{ photo: string | null }> {
   removeFilePreview?: () => void;
 }
 
-type StateMachine = EmptyState | FilledState;
+type StateMachine = EmptyState | FilledState | DeletedState;
+
+interface DeletedState {
+  value: "deleted";
+}
 
 interface EmptyState {
   value: "empty";

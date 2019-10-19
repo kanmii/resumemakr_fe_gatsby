@@ -13,9 +13,11 @@ import {
 } from "./photo-field.utils";
 import {
   previewId,
-  fileChooser,
+  fileChooserId,
   deletePhotoId,
   stopPhotoDeleteId,
+  changePhotoId,
+  photoDeleteConfirmedId,
 } from "./photo-field.dom-selectors";
 
 export const PhotoField = memo(PhotoFieldComp, PhotoFieldDiff);
@@ -26,37 +28,53 @@ function PhotoFieldComp(props: Props) {
     form,
   } = props;
 
-  const formContext = useContext(FormContext);
-
   const [stateMachine, dispatch] = useReducer(
     reducer,
     { value },
     initStateFromProps,
   );
 
-  const currentValueRef = useRef<string | null>(value);
+  const formContext = useContext(FormContext);
+  const changedRef = useRef<null | boolean>(null);
 
   useEffect(() => {
-    /**
-     * We only update state if user selected a different photo than the one
-     * currently in state i.e user changes or deletes photo
-     */
-    if (currentValueRef.current !== value) {
-      currentValueRef.current = value;
+    const { current } = changedRef;
+
+    if (current) {
       formContext.valueChanged();
+      changedRef.current = false;
     }
-    /* eslint-disable react-hooks/exhaustive-deps */
+  });
+
+  useEffect(() => {
+    // formik will first load default values and then initialize with values
+    // from server causing two renders. In the first render,
+    // changedRef.current === null && value === null | undefined and on second
+    // render, changedRef.current === null and
+    // value === null | undefined | string
+    if (changedRef.current === null && value) {
+      changedRef.current = false;
+
+      dispatch({
+        type: ActionType.CHANGE_PHOTO,
+        value,
+      });
+    }
   }, [value]);
 
   function onDelete() {
+    changedRef.current = false;
     form.setFieldValue(fieldName, null);
 
     dispatch({
       type: ActionType.DELETE_PHOTO,
     });
+
+    changedRef.current = true;
   }
 
   function handleFileUpload(evt: React.SyntheticEvent<HTMLInputElement>) {
+    changedRef.current = false;
     const file = (evt.currentTarget.files || [])[0];
 
     if (!file) {
@@ -73,6 +91,8 @@ function PhotoFieldComp(props: Props) {
         type: ActionType.CHANGE_PHOTO,
         value: base64Encoded,
       });
+
+      changedRef.current = true;
     };
 
     reader.readAsDataURL(file);
@@ -81,12 +101,12 @@ function PhotoFieldComp(props: Props) {
   function renderFileInput(label: string) {
     return (
       <>
-        <label className="change-photo" htmlFor={fileChooser}>
+        <label className="change-photo" htmlFor={fileChooserId}>
           <Icon name="upload" /> {label}
         </label>
 
         <input
-          id={fileChooser}
+          id={fileChooserId}
           type="file"
           accept="image/*"
           className="input-file"
@@ -98,9 +118,40 @@ function PhotoFieldComp(props: Props) {
   }
 
   function touch() {
-    dispatch({
-      type: ActionType.EDIT_INIT,
+    // If user places mouse on the overlay in the
+    // region where the remove photo button will be rendered, then the click
+    // event is immediately sent to the button. Using setTimeout prevents
+    // this (since user may wish to change the photo instead)
+    setTimeout(() => {
+      dispatch({
+        type: ActionType.EDIT_INIT,
+      });
     });
+  }
+
+  function thumbEventListeners() {
+    if (stateMachine.value === "filled") {
+      const filled = stateMachine.filled;
+
+      if (filled.value === "preview") {
+        return {
+          onMouseOver: touch,
+        };
+      } else if (
+        filled.value === "editing" &&
+        filled.editing.value !== "startPhotoDelete"
+      ) {
+        return {
+          onMouseLeave() {
+            dispatch({
+              type: ActionType.PREVIEW,
+            });
+          },
+        };
+      }
+    }
+
+    return {};
   }
 
   function renderThumb() {
@@ -109,25 +160,18 @@ function PhotoFieldComp(props: Props) {
         className="components-photo-field thumb"
         data-testid="photo-preview"
         id={previewId}
-        onClick={touch}
-        onMouseLeave={() => {
-          dispatch({
-            type: ActionType.PREVIEW,
-          });
-        }}
-        onMouseOver={touch}
         style={{
           backgroundImage: (stateMachine as FilledState).filled.context.url,
         }}
+        {...thumbEventListeners()}
       >
         {(stateMachine as FilledState).filled.value == "editing" && (
-          <div className="editor-container" data-testid="edit-btns">
+          <div id={changePhotoId} className="editor-container">
             {renderFileInput(uiTexts.changePhotoText)}
 
             <label
               className="change-photo"
-              onClick={evt => {
-                evt.stopPropagation();
+              onClick={() => {
                 dispatch({
                   type: ActionType.START_PHOTO_DELETE,
                 });
@@ -143,14 +187,31 @@ function PhotoFieldComp(props: Props) {
     );
   }
 
-  function renderModal() {
-    return (
+  return (
+    <>
+      {stateMachine.value === "filled" && renderThumb()}
+
+      {(stateMachine.value === "empty" || stateMachine.value === "deleted") && (
+        <div className="components-photo-field file-chooser">
+          <div className="upload-photo-icon-wrapper">
+            <Icon name="camera" />
+          </div>
+
+          {renderFileInput(uiTexts.uploadPhotoText)}
+        </div>
+      )}
+
       <AppModal
         open={
           stateMachine.value === "filled" &&
           stateMachine.filled.value === "editing" &&
           stateMachine.filled.editing.value === "startPhotoDelete"
         }
+        onClose={() => {
+          dispatch({
+            type: ActionType.PREVIEW,
+          });
+        }}
       >
         <Modal.Header>{uiTexts.dialogHeader}</Modal.Header>
 
@@ -162,13 +223,14 @@ function PhotoFieldComp(props: Props) {
 
         <Modal.Actions>
           <Button
+            id={stopPhotoDeleteId}
             positive={true}
             icon="remove"
             labelPosition="right"
             content={uiTexts.negativeToRemovePhotoText}
             onClick={() => {
               dispatch({
-                type: ActionType.STOP_PHOTO_DELETE,
+                type: ActionType.PREVIEW,
               });
             }}
           />
@@ -179,28 +241,10 @@ function PhotoFieldComp(props: Props) {
             labelPosition="right"
             content={uiTexts.positiveToRemovePhotoText}
             onClick={onDelete}
-            id={stopPhotoDeleteId}
+            id={photoDeleteConfirmedId}
           />
         </Modal.Actions>
       </AppModal>
-    );
-  }
-
-  return (
-    <>
-      {stateMachine.value === "filled" && renderThumb()}
-
-      {stateMachine.value === "empty" && (
-        <div className="components-photo-field file-chooser">
-          <div className="upload-photo-icon-wrapper">
-            <Icon name="camera" />
-          </div>
-
-          {renderFileInput(uiTexts.uploadPhotoText)}
-        </div>
-      )}
-
-      {renderModal()}
     </>
   );
 }

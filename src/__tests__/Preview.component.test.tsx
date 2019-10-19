@@ -1,21 +1,23 @@
-import React from "react";
-import "jest-dom/extend-expect";
-import "react-testing-library/cleanup-after-each";
-import { render } from "react-testing-library";
-import "jest-dom/extend-expect";
+import React, { ComponentType } from "react";
+import { render, cleanup } from "@testing-library/react";
 import {
   EducationInput,
   CreateExperienceInput,
   PersonalInfoInput,
   CreateSkillInput,
-  RatedInput
+  RatedInput,
 } from "../graphql/apollo-types/globalTypes";
 import { GetResume_getResume } from "../graphql/apollo-types/GetResume";
 import { Preview } from "../components/Preview/preview.component";
 import { Mode, Props } from "../components/Preview/preview.utils";
-import { renderWithRouter, renderWithApollo } from "./test_utils";
+import { renderWithRouter } from "./test_utils";
+import { prefix as domId } from "../components/Preview/preview.dom-selectors";
 
-const PreviewP = Preview as React.ComponentClass<Partial<Props>>;
+afterEach(() => {
+  cleanup();
+});
+
+const PreviewP = Preview as ComponentType<Partial<Props>>;
 
 it("renders form preview", () => {
   const personalInfoOthers = {
@@ -25,50 +27,50 @@ it("renders form preview", () => {
     phone: "010388736633",
     address: "67 Williams Butler street Kings Plaza",
     dateOfBirth: "2015-06-12",
-    profession: "IT manager"
+    profession: "IT manager",
   };
 
   const personalInfo: PersonalInfoInput = {
     ...personalInfoOthers,
-    photo: "photo"
+    photo: "photo",
   };
 
   const expOthers = {
     position: "Account Manager",
     companyName: "Union Bank PLC",
     fromDate: "03/2014",
-    toDate: "04/2015"
+    toDate: "04/2015",
   };
 
   const experience = {
     ...expOthers,
     achievements: [
       "Took the company to the highest level",
-      "Trained 6000 company employees"
-    ]
+      "Trained 6000 company employees",
+    ],
   } as CreateExperienceInput;
 
   const education = {
     id: "1",
     school: "Community college",
     course: "Psychoanalysis",
-    fromDate: "06/2017"
+    fromDate: "06/2017",
   } as EducationInput;
 
   const skill = {
     description: "App development",
-    achievements: ["Built 1000 apps", "Saved my company money"]
+    achievements: ["Built 1000 apps", "Saved my company money"],
   } as CreateSkillInput;
 
   const additionalSkill = {
-    description: "Adobe photoshop"
+    description: "Adobe photoshop",
   } as RatedInput;
 
   const hobbies = ["Singing", "Swimming", "dancing"];
 
   const language = {
     description: "English",
-    level: "fluent"
+    level: "fluent",
   } as RatedInput;
 
   const values = {
@@ -78,37 +80,14 @@ it("renders form preview", () => {
     skills: [skill],
     additionalSkills: [additionalSkill],
     hobbies,
-    languages: [language]
+    languages: [language],
   } as GetResume_getResume;
 
-  const { Ui: ui } = renderWithRouter(PreviewP);
-  const { Ui } = renderWithApollo(ui);
+  const { Ui } = renderWithRouter(PreviewP);
 
-  const { getByText, getByTestId } = render(
-    <Ui mode={Mode.download} getResume={values} />
-  );
+  render(<Ui mode={Mode.download} getResume={values} />);
 
-  expect(
-    getByTestId(`${personalInfo.firstName} ${personalInfo.lastName} photo`)
-  ).toBeInTheDocument();
-
-  for (const exp of Object.values(expOthers)
-    .concat(Object.values(language))
-    .concat(Object.values(additionalSkill))
-    .concat(Object.values(personalInfoOthers))
-    .concat(Object.values(education))
-    .concat(experience.achievements as string[])
-    .concat([skill.description as string])
-    .concat(skill.achievements as string[])
-    .concat(hobbies)) {
-    expect(getByText(new RegExp(exp, "i"))).toBeInTheDocument();
-  }
-
-  // debug();
+  expect(document.getElementById(domId)).not.toBeNull();
 });
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 ////////////////////////// HELPER FUNCTIONS ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////

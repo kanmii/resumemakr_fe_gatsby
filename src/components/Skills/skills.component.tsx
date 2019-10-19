@@ -4,12 +4,18 @@ import { FastField, FieldArray } from "formik";
 import { SectionLabel } from "../SectionLabel";
 import { RegularField } from "../RegularField";
 import { CreateSkillInput } from "../../graphql/apollo-types/globalTypes";
-import { emptyVal, Props, makeSkillFieldName, uiTexts } from "./skills.utils";
+import { emptyVal, Props, uiTexts } from "./skills.utils";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
 import { ListStrings } from "../ListStrings/list-strings.component";
 import { SubFieldLabel } from "../components";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
-import { prefix } from "./skills.dom-selectors";
+import {
+  prefix,
+  makeSkillId,
+  makeDescriptionInputId,
+  makeAchievementId,
+  makeSkillFieldName,
+} from "./skills.dom-selectors";
 
 const HeaderLabelText = "Skill";
 
@@ -31,7 +37,12 @@ export function Skills(props: Props) {
         name="skills"
         render={() =>
           values.map((skill, index) => (
-            <Skill key={index} skill={skill} index={index} values={values} />
+            <Skill
+              key={skill.id || index}
+              skill={skill}
+              index={index}
+              values={values}
+            />
           ))
         }
       />
@@ -57,10 +68,15 @@ function Skill({
   }
 
   const { setFieldValue } = useContext(FormContext);
+  const domId = skill.id || index;
+  const descriptionId = makeDescriptionInputId(domId);
+  const descriptionName = makeSkillFieldName(domId, "description");
+  const achievementsName = makeSkillFieldName(domId, "achievements");
 
   return (
-    <Card key={index}>
+    <Card>
       <IterableControls
+        id={makeSkillId(domId)}
         index={index}
         label={HeaderLabelText}
         fieldName={fieldName}
@@ -71,22 +87,25 @@ function Skill({
 
       <Card.Content>
         <FastField
-          name={makeSkillFieldName(index, "description")}
+          id={descriptionId}
+          name={descriptionName}
           defaultValue={description}
           component={RegularField}
           label={
             <SubFieldLabel
               text={uiTexts.descriptionLabel}
-              fieldName={makeSkillFieldName(index, "description")}
+              fieldName={descriptionName}
+              id={makeDescriptionInputId(domId)}
             />
           }
         />
 
         <FieldArray
-          name={makeSkillFieldName(index, "achievements")}
+          name={achievementsName}
           render={helper => {
             return (
               <ListStrings
+                idFn={makeAchievementId}
                 values={achievements as string[]}
                 arrayHelper={helper}
                 header={
@@ -95,7 +114,7 @@ function Skill({
                     <span> {uiTexts.achievementsHeader2}</span>
                   </div>
                 }
-                fieldName={makeSkillFieldName(index, "achievements")}
+                fieldName={achievementsName}
                 appendToHiddenLabel={uiTexts.achievementsHiddenLabel}
               />
             );

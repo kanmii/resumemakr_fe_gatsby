@@ -153,11 +153,8 @@ type ValueChangedFn = () => void;
 
 export interface ResumeFormContextValue {
   updatingResume?: boolean;
-
   valueChanged: ValueChangedFn;
-
   prevFormValues: Partial<UpdateResumeInput>;
-
   setFieldValue: SetFieldValue<CreateExperienceInput>;
 }
 

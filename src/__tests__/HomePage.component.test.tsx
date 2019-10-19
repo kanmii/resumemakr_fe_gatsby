@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ComponentType } from "react";
-import { render, cleanup } from "react-testing-library";
+import { render, cleanup } from "@testing-library/react";
 import { HomePage } from "../components/HomePage/home-page.component";
 import { Props } from "../components/HomePage/home-page.utils";
 import { prefix as domId } from "../components/HomePage/home-page.dom-selectors";

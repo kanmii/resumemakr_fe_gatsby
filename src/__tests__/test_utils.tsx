@@ -3,7 +3,7 @@ import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { ApolloLink } from "apollo-link";
 import { ApolloProvider } from "react-apollo";
-import { fireEvent } from "react-testing-library";
+import { fireEvent } from "@testing-library/react";
 import { RouteComponentProps } from "@reach/router";
 
 export function makeClient() {

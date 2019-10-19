@@ -7,7 +7,16 @@ import { RegularField } from "../RegularField";
 import { PhotoField } from "../PhotoField/photo-field.component";
 import { Section } from "../UpdateResumeForm/update-resume.utils";
 import { emptyVal, uiTexts } from "./personal-info.utils";
-import { prefix, addressFieldId } from "./personal-info.dom-selectors";
+import {
+  prefix,
+  addressFieldId,
+  firstNameFieldId,
+  lastNameFieldId,
+  professionFieldId,
+  phoneFieldId,
+  emailFieldId,
+  dateOfBirthFieldId,
+} from "./personal-info.dom-selectors";
 
 interface Props {
   values: PersonalInfoInput | null | undefined;
@@ -45,9 +54,11 @@ function BioData({ values }: { values: PersonalInfoInput }) {
               label={uiTexts.firstNameLabel}
               component={RegularField}
               value={values.firstName}
+              id={firstNameFieldId}
             />
 
             <FastField
+              id={lastNameFieldId}
               name={makeName("lastName")}
               label={uiTexts.lastNameLabel}
               component={RegularField}
@@ -56,6 +67,7 @@ function BioData({ values }: { values: PersonalInfoInput }) {
           </div>
 
           <FastField
+            id={professionFieldId}
             name={makeName("profession")}
             label={uiTexts.professionLabel}
             component={RegularField}
@@ -93,6 +105,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
         />
 
         <FastField
+          id={phoneFieldId}
           name={makeName("phone")}
           label={uiTexts.phoneLabel}
           component={RegularField}
@@ -100,6 +113,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
         />
 
         <FastField
+          id={emailFieldId}
           name={makeName("email")}
           label={uiTexts.emailLabel}
           type="email"
@@ -108,6 +122,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
         />
 
         <FastField
+          id={dateOfBirthFieldId}
           name={makeName("dateOfBirth")}
           label={uiTexts.dateOfBirthLabel}
           component={RegularField}

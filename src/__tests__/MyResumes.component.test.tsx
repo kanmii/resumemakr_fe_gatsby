@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { render, wait, waitForElement, cleanup } from "react-testing-library";
+import { render, wait, waitForElement, cleanup } from "@testing-library/react";
 import { ApolloError } from "apollo-client";
 import { MyResumes } from "../components/MyResumes/my-resumes.component";
 import {

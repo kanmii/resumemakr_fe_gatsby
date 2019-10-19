@@ -1,21 +1,41 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import "jest-dom/extend-expect";
-import "react-testing-library/cleanup-after-each";
-import { render, wait, fireEvent } from "react-testing-library";
-import { getByText as domGetByText, waitForElement } from "dom-testing-library";
+import {
+  render,
+  wait,
+  fireEvent,
+  cleanup,
+  waitForElement,
+} from "@testing-library/react";
 import { PhotoField } from "../components/PhotoField/photo-field.component";
 import {
   createFile,
   uploadFile,
   jpegMime,
-  jpegBase64StringPrefix
+  jpegBase64StringPrefix,
 } from "./test_utils";
 import {
   FormContextProvider,
-  ResumeFormContextValue
+  ResumeFormContextValue,
 } from "../components/UpdateResumeForm/update-resume.utils";
-import { uiTexts, Props } from "../components/PhotoField/photo-field.utils";
+import { Props } from "../components/PhotoField/photo-field.utils";
+import {
+  previewId,
+  fileChooserId,
+  changePhotoId,
+  deletePhotoId,
+  photoDeleteConfirmedId,
+} from "../components/PhotoField/photo-field.dom-selectors";
+import { act } from "react-dom/test-utils";
+
+beforeEach(() => {
+  jest.useFakeTimers();
+});
+
+afterEach(() => {
+  jest.clearAllTimers();
+  cleanup();
+});
 
 it("changes to preview on file select", async () => {
   /**
@@ -23,45 +43,35 @@ it("changes to preview on file select", async () => {
    */
   const { ui } = setUp();
 
-  const {
-    getByLabelText,
-    queryByTestId,
-    queryByLabelText,
-    getByTestId
-  } = render(ui);
+  render(ui);
 
   /**
    * Then user should see that the field as no photo
    */
 
-  expect(queryByTestId("photo-preview")).not.toBeInTheDocument();
+  expect(document.getElementById(previewId)).toBeNull();
 
   /**
    * When user selects a photo
    */
   uploadFile(
-    getByLabelText(uiTexts.uploadPhotoText),
-    createFile("dog.jpg", 1234, jpegMime)
+    document.getElementById(fileChooserId) as HTMLInputElement,
+    createFile("dog.jpg", 1234, jpegMime),
   );
 
   /**
-   * Then the upload field should no longer be visible
+   * Then the preview field should be visible
    */
-  await wait(
-    () => {
-      expect(queryByLabelText(uiTexts.uploadPhotoText)).not.toBeInTheDocument();
-    },
-    {
-      interval: 1
-    }
-  );
+  const $preview = await waitForElement(() => {
+    return document.getElementById(previewId) as HTMLElement;
+  });
+
+  expect($preview).not.toBeNull();
 
   /**
-   * And the preview field should be visible
+   * And upload field should no longer be visible
    */
-  expect(getByTestId("photo-preview").style.backgroundImage).toMatch(
-    /url\(.+?\)/
-  );
+  expect(document.getElementById(fileChooserId) as HTMLInputElement).toBeNull();
 });
 
 it("toggles edit buttons on mouse move on preview", async () => {
@@ -69,37 +79,40 @@ it("toggles edit buttons on mouse move on preview", async () => {
    * Given a user is at the photo field
    */
   const { ui } = setUp();
-  const { getByLabelText, getByTestId, queryByTestId } = render(ui);
-
+  render(ui);
   /**
    * And user selects a photo
    */
+
   uploadFile(
-    getByLabelText(uiTexts.uploadPhotoText),
-    createFile("dog.jpg", 1234, jpegMime)
+    document.getElementById(fileChooserId) as HTMLInputElement,
+    createFile("dog.jpg", 1234, jpegMime),
   );
 
   /**
    * Then user should see the photo in preview mode
    */
-  const $preview = await waitForElement(
-    () => getByTestId("photo-preview") as HTMLDivElement
-  );
+  const $preview = await waitForElement(() => {
+    return document.getElementById(previewId) as HTMLInputElement;
+  });
 
   /**
    * And user should not see UI elements that can be used to edit the photo
    */
-  expect(queryByTestId("edit-btns")).not.toBeInTheDocument();
+  expect(document.getElementById(changePhotoId)).toBeNull();
 
   /**
    * When user hovers over the photo
    */
-  fireEvent.mouseEnter($preview);
+  act(() => {
+    fireEvent.mouseOver($preview);
+    jest.runAllTimers();
+  });
 
   /**
    * Then user should see UI elements that can be used to edit the photo
    */
-  expect(getByTestId("edit-btns")).toBeInTheDocument();
+  expect(document.getElementById(changePhotoId)).not.toBeNull();
 
   /**
    * When user removes the mouse from over the photo
@@ -109,39 +122,7 @@ it("toggles edit buttons on mouse move on preview", async () => {
   /**
    * Then user should not see UI elements that can be used to edit the photo
    */
-  expect(queryByTestId("edit-btns")).not.toBeInTheDocument();
-});
-
-it("shows edit buttons when preview clicked", async () => {
-  /**
-   * Given user is at photo field
-   */
-  const { ui } = setUp();
-  const { getByLabelText, getByTestId, queryByTestId } = render(ui);
-
-  /**
-   * And user selects a photo
-   */
-  uploadFile(
-    getByLabelText(uiTexts.uploadPhotoText),
-    createFile("dog.jpg", 1234, jpegMime)
-  );
-
-  /**
-   * Then user should not see UI elements that can be used to edit the photo
-   */
-  expect(queryByTestId("edit-btns")).not.toBeInTheDocument();
-
-  /**
-   * When user clicks on the photo
-   */
-  const $preview = await waitForElement(() => getByTestId("photo-preview"));
-  fireEvent.click($preview);
-
-  /**
-   * Then user should see UI elements that can be used to edit the photo
-   */
-  expect(getByTestId("edit-btns")).toBeInTheDocument();
+  expect(document.getElementById(changePhotoId)).toBeNull();
 });
 
 it("deletes photo", async () => {
@@ -149,113 +130,98 @@ it("deletes photo", async () => {
    * Given a user is at the photo field
    */
   const { ui } = setUp();
-  const { getByLabelText, getByTestId, getByText, queryByTestId } = render(ui);
+  render(ui);
 
   /**
    * And user selects a photo
    */
   uploadFile(
-    getByLabelText(uiTexts.uploadPhotoText),
-    createFile("dog.jpg", 1234, jpegMime)
+    document.getElementById(fileChooserId) as HTMLInputElement,
+    createFile("dog.jpg", 1234, jpegMime),
   );
 
   /**
    * When she mouses over the photo
    */
-  await wait(
-    () => {
-      fireEvent.mouseEnter(getByTestId("photo-preview"));
-    },
-    {
-      interval: 1
-    }
-  );
+  const $preview = await waitForElement(() => {
+    return document.getElementById(previewId) as HTMLElement;
+  });
+
+  act(() => {
+    fireEvent.mouseEnter($preview);
+    jest.runAllTimers();
+  });
 
   /**
    * And clicks the photo remove button
    */
-  fireEvent.click(getByText(uiTexts.deletePhotoText));
+  (document.getElementById(deletePhotoId) as HTMLElement).click();
 
   /**
    * Then she sees a modal dialog on the page
    */
 
-  const $modalDescription = getByText(
-    new RegExp(uiTexts.deletePhotoConfirmationText, "i")
-  );
-
   /**
    * When she clicks on the yes button
    */
 
-  fireEvent.click(
-    domGetByText(
-      $modalDescription.closest(".modal") as HTMLDivElement,
-      uiTexts.positiveToRemovePhotoText
-    )
-  );
+  (document.getElementById(photoDeleteConfirmedId) as HTMLElement).click();
 
   /**
    * She sees that the photo preview has gone from the page
    */
 
-  expect(queryByTestId("photo-preview")).not.toBeInTheDocument();
+  expect(document.getElementById(previewId)).toBeNull();
 });
 
 it("changes photo", async () => {
   const { mockSetFieldValue, ui, fieldName } = setUp();
-  const { getByLabelText, getByTestId } = render(ui);
+  render(ui);
 
   const file1 = createFile("dog.jpg", 1234, jpegMime);
   const file2 = createFile("cat.jpg", 2345, jpegMime);
-  uploadFile(getByLabelText(uiTexts.uploadPhotoText), file1);
 
-  await wait(
-    () => {
-      expect(mockSetFieldValue.mock.calls[0]).toEqual([
-        fieldName,
-        jpegBase64StringPrefix
-      ]);
-    },
-    { interval: 1 }
-  );
+  const $uploadPhoto = document.getElementById(
+    fileChooserId,
+  ) as HTMLInputElement;
 
-  await wait(
-    () => {
-      fireEvent.mouseEnter(getByTestId("photo-preview"));
-    },
-    {
-      interval: 1
-    }
-  );
+  uploadFile($uploadPhoto, file1);
 
-  uploadFile(getByLabelText(uiTexts.changePhotoText), file2);
+  await wait(() => {
+    expect(mockSetFieldValue.mock.calls[0]).toEqual([
+      fieldName,
+      jpegBase64StringPrefix,
+    ]);
+  });
 
-  await wait(
-    () => {
-      expect(mockSetFieldValue.mock.calls[1]).toEqual([
-        fieldName,
-        jpegBase64StringPrefix
-      ]);
-    },
-    { interval: 1 }
-  );
+  const $preview = await waitForElement(() => {
+    return document.getElementById(previewId) as HTMLElement;
+  });
+
+  act(() => {
+    fireEvent.mouseEnter($preview);
+    jest.runAllTimers();
+  });
+
+  uploadFile(document.getElementById(fileChooserId) as HTMLInputElement, file2);
+
+  await wait(() => {
+    expect(mockSetFieldValue.mock.calls[1]).toEqual([
+      fieldName,
+      jpegBase64StringPrefix,
+    ]);
+  });
 });
 
 it("does not set field value if no file selected", async () => {
   const { mockSetFieldValue, ui } = setUp();
+  render(ui);
 
-  const { getByLabelText } = render(ui);
-
-  uploadFile(getByLabelText(uiTexts.uploadPhotoText));
+  uploadFile(document.getElementById(fileChooserId) as HTMLInputElement);
   expect(mockSetFieldValue).not.toBeCalled();
 });
 
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 ////////////////////////// HELPER FUNCTIONS ///////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
 
 function ResumeForm(props: React.PropsWithChildren<{}>) {
   return (
@@ -271,9 +237,7 @@ function setUp(fieldName: string = "photo") {
   const PhotoField1 = PhotoField as React.ComponentType<Partial<Props>>;
   const mockSetFieldValue = jest.fn();
   const mockRemoveFilePreview = jest.fn();
-  // tslint:disable-next-line: no-any
   const field = { name: fieldName } as any;
-  // tslint:disable-next-line: no-any
   const form = { setFieldValue: mockSetFieldValue } as any;
 
   return {
@@ -288,6 +252,6 @@ function setUp(fieldName: string = "photo") {
     ),
     mockSetFieldValue,
     mockRemoveFilePreview,
-    fieldName
+    fieldName,
   };
 }
