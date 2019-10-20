@@ -5,7 +5,7 @@ import {
   Icon,
   Label,
   Dropdown,
-  Responsive
+  Responsive,
 } from "semantic-ui-react";
 import { Link, navigate, WindowLocation } from "@reach/router";
 import "./styles.scss";
@@ -15,10 +15,13 @@ import {
   SIGN_UP_URL,
   PASSWORD_RESET_PATH,
   removeTrailingSlash,
-  RESUMES_HOME_PATH
+  RESUMES_HOME_PATH,
 } from "../../routing";
 import { Props } from "./utils";
 import { UserFragment } from "../../graphql/apollo-types/UserFragment";
+import { getUser } from "../../state/tokens";
+import { useLogo } from "./header.injectables";
+import { useUserLocalMutation } from "../../state/user.local.mutation";
 
 const HOME_URLS = [RESUMES_HOME_PATH, ROOT_URL];
 
@@ -28,19 +31,15 @@ export function Header(merkmale: Props) {
   const {
     leftMenuItems = [],
     rightMenuItems = [],
-    userLocal,
-    logoAttrs,
-    updateLocalUser,
-    matchResumeRouteProps
+    matchResumeRouteProps,
   } = merkmale;
 
-  const user = userLocal && userLocal.user;
-
+  const user = getUser();
   const location = matchResumeRouteProps.location as WindowLocation;
-
   const pathname = removeTrailingSlash(location.pathname);
-
   const homeUrl = matchResumeRouteProps.match ? RESUMES_HOME_PATH : ROOT_URL;
+  const logoAttrs = useLogo();
+  const [updateLocalUser] = useUserLocalMutation();
 
   let homeLinkProps = {};
 
@@ -58,11 +57,7 @@ export function Header(merkmale: Props) {
       <Menu secondary={true}>
         <>
           <style>
-            {`#components-header-logo{ background: url(${
-              logoAttrs.src
-            }) no-repeat 0 !important; background-size: ${logoAttrs.width}px ${
-              logoAttrs.height
-            }px !important;}`}
+            {`#components-header-logo{ background: url(${logoAttrs.src}) no-repeat 0 !important; background-size: ${logoAttrs.width}px ${logoAttrs.height}px !important;}`}
           </style>
 
           <Menu.Item
@@ -103,13 +98,11 @@ export function Header(merkmale: Props) {
                     onClick={async evt => {
                       evt.preventDefault();
 
-                      if (updateLocalUser) {
-                        await updateLocalUser({
-                          variables: {
-                            user: null
-                          }
-                        });
-                      }
+                      await updateLocalUser({
+                        variables: {
+                          user: null,
+                        },
+                      });
 
                       navigate(LOGIN_URL);
                     }}
@@ -138,7 +131,7 @@ export function Header(merkmale: Props) {
   );
 }
 
-function Search({ user }: { user?: UserFragment }) {
+function Search({ user }: { user?: UserFragment | null }) {
   if (!user) {
     return null;
   }

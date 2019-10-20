@@ -4,7 +4,7 @@ import { Menu } from "semantic-ui-react";
 import "./styles.scss";
 import { withLocationHOC } from "../../with-location-hoc";
 import { ResumePathHash } from "../../../routing";
-import { Header } from "../../Header";
+import { Header } from "../../Header/header.index";
 import { ToolTip } from "../../Tooltip";
 
 /* eslint-disable-next-line @typescript-eslint/no-explicit-any */

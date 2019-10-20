@@ -10,7 +10,6 @@ import {
 import loIsEmpty from "lodash/isEmpty";
 import { ApolloError } from "apollo-client";
 import {
-  Props,
   initialFormValues,
   ValidationSchema,
   FormValuesKey,
@@ -31,9 +30,12 @@ import { OtherAuthLink } from "../OtherAuthLink";
 import { RegUserFn } from "../../graphql/apollo/user-reg.mutation";
 import { scrollToTop } from "./scroll-to-top";
 import { domSubmitBtnId, domErrorsId } from "./signup.dom-selectors";
+import { useUserRegistrationMutation } from "./signup.injectables";
+import { useUserLocalMutation } from "../../state/user.local.mutation";
 
-export function SignUp(props: Props) {
-  const { regUser, updateLocalUser } = props;
+export function SignUp() {
+  const [regUser] = useUserRegistrationMutation();
+  const [updateLocalUser] = useUserLocalMutation();
 
   const [state, dispatch] = useReducer(reducer, {});
   const { otherErrors, formErrors, gqlFehler } = state;

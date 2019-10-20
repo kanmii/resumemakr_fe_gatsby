@@ -43,6 +43,7 @@ export function renderWithRouter<TProps extends RouteComponentProps>(
 
   return {
     mockNavigate: navigate,
+    location,
     ...rest,
     Ui: (props: TProps) => (
       <Ui location={location} navigate={navigate} {...rest} {...props} />

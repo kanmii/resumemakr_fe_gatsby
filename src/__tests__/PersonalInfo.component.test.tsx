@@ -21,10 +21,18 @@ import {
   emailFieldId,
   dateOfBirthFieldId,
 } from "../components/PersonalInfo/personal-info.dom-selectors";
+import { useUpdateResumeMutation } from "../graphql/apollo/update-resume.mutation";
+
+jest.mock("../graphql/apollo/update-resume.mutation");
+const mockUseUpdateResumeMutation = useUpdateResumeMutation as jest.Mock;
 
 jest.mock("../components/UpdateResumeForm/update-resume.injectables", () => ({
   debounceTime: 0,
 }));
+
+beforeEach(() => {
+  mockUseUpdateResumeMutation.mockReset();
+});
 
 afterEach(() => {
   cleanup();
@@ -50,6 +58,7 @@ it("updates on input blur", async () => {
   const initial = getInitialValues(null);
 
   const mockUpdateResume = jest.fn();
+  mockUseUpdateResumeMutation.mockReturnValue([mockUpdateResume]);
 
   const props = {
     getResume: initial,

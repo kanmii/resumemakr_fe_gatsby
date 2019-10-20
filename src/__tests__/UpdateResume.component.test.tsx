@@ -61,6 +61,7 @@ import { prefix as experiencesId } from "../components/Experiences/experiences.d
 import { prefix as skillsId } from "../components/Skills/skills.dom-selectors";
 import { prefix as mockPreviewSectionId } from "../components/Preview/preview.dom-selectors";
 import { act } from "react-dom/test-utils";
+import {useUpdateResumeMutation} from '../graphql/apollo/update-resume.mutation';
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;
@@ -79,8 +80,12 @@ jest.mock("../components/UpdateResumeForm/update-resume.injectables", () => ({
   debounceTime: 0,
 }));
 
+jest.mock('../graphql/apollo/update-resume.mutation')
+const mockUseUpdateResumeMutation = useUpdateResumeMutation as jest.Mock;
+
 describe("component", () => {
   beforeEach(() => {
+    mockUseUpdateResumeMutation.mockReset();
     jest.useFakeTimers();
   });
 
@@ -743,14 +748,13 @@ describe("getInitialValues", () => {
 
 function makeComp(props: Partial<Props> = {}) {
   const mockUpdateResume = jest.fn();
+  mockUseUpdateResumeMutation.mockReturnValue([mockUpdateResume]);
   let { Ui: Urouter, ...rest } = renderWithRouter(ResumeFormP);
 
   let Ui = withFormik(formikConfig)(Urouter) as any;
 
   return {
-    ui: (
-      <Ui updateResume={mockUpdateResume} match={{ title: "t" }} {...props} />
-    ),
+    ui: <Ui match={{ title: "t" }} {...props} />,
     mockUpdateResume,
     ...rest,
   };

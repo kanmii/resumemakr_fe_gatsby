@@ -39,7 +39,7 @@ import {
   makeTriggerCloneId,
 } from "../components/MyResumes/my-resumes.dom-selectors";
 
-jest.mock("../components/Header", () => ({
+jest.mock("../components/Header/header.index", () => ({
   Header: jest.fn(() => null),
 }));
 

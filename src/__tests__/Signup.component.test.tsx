@@ -5,6 +5,7 @@ import {
   fireEvent,
   wait,
   waitForElement,
+  cleanup,
 } from "@testing-library/react";
 import { SignUp } from "../components/SignUp/signup.component";
 import { Props } from "../components/SignUp/signup.utils";
@@ -24,14 +25,32 @@ import {
   domErrorsId,
   domSourceInputId,
 } from "../components/SignUp/signup.dom-selectors";
+import { useUserRegistrationMutation } from "../components/SignUp/signup.injectables";
+import { useUserLocalMutation } from "../state/user.local.mutation";
 
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
 jest.mock("../components/SignUp/scroll-to-top");
+jest.mock("../components/SignUp/signup.injectables");
+jest.mock("../state/user.local.mutation");
 
 const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
 const mockGetConnStatus = isConnected as jest.Mock;
 const mockScrollToTop = scrollToTop as jest.Mock;
+const mockUseUserRegistrationMutation = useUserRegistrationMutation as jest.Mock;
+const mockUseLocalUserMutation = useUserLocalMutation as jest.Mock;
+
+beforeEach(() => {
+  mockRefreshToMyResumes.mockReset();
+  mockGetConnStatus.mockReset();
+  mockScrollToTop.mockReset();
+  mockUseUserRegistrationMutation.mockReset();
+  mockUseLocalUserMutation.mockReset();
+});
+
+afterEach(() => {
+  cleanup();
+});
 
 it("renders error if password and password confirm are not same", async () => {
   /**
@@ -341,23 +360,16 @@ function makeComp({
   isConnected = true,
   props = {},
 }: { props?: Partial<Props>; isConnected?: boolean } = {}) {
-  mockGetConnStatus.mockReset();
   mockGetConnStatus.mockResolvedValue(isConnected);
-
-  mockScrollToTop.mockReset();
-  mockRefreshToMyResumes.mockReset();
 
   const mockRegUser = jest.fn();
   const mockUpdateLocalUser = jest.fn();
 
+  mockUseUserRegistrationMutation.mockReturnValue([mockRegUser]);
+  mockUseLocalUserMutation.mockReturnValue([mockUpdateLocalUser]);
+
   return {
-    ui: (
-      <SignUpP
-        regUser={mockRegUser}
-        updateLocalUser={mockUpdateLocalUser}
-        {...props}
-      />
-    ),
+    ui: <SignUpP {...props} />,
 
     mockRegUser,
     mockUpdateLocalUser,

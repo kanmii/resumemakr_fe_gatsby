@@ -1,12 +1,11 @@
 import React from "react";
-import { RouteComponentProps } from "@reach/router";
 import { Helmet } from "react-helmet-async";
 import { Layout } from "../components/Layout";
-import { Header } from "../components/Header";
-import { SignUp } from "../components/SignUp/signup.index";
+import { Header } from "../components/Header/header.index";
+import { SignUp } from "../components/SignUp/signup.component";
 import { makeSiteTitle } from "../constants";
 
-export default function SignUpPage(props: RouteComponentProps) {
+export default function SignUpPage() {
   return (
     <Layout>
       <Helmet>
@@ -16,7 +15,7 @@ export default function SignUpPage(props: RouteComponentProps) {
       <div className="app-container">
         <Header />
 
-        <SignUp {...props} />
+        <SignUp />
       </div>
     </Layout>
   );

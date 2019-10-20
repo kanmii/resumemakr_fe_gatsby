@@ -1,5 +1,5 @@
 import gql from "graphql-tag";
-import { graphql, MutationFunction } from "react-apollo";
+import { useMutation } from "react-apollo";
 import { UserFragment } from "../graphql/apollo-types/UserFragment";
 import { userFragment } from "../graphql/apollo/user.fragment";
 
@@ -13,31 +13,11 @@ export const USER_LOCAL_MUTATION = gql`
   ${userFragment}
 `;
 
-export default USER_LOCAL_MUTATION;
-
 export interface Variable {
   user: UserFragment | null;
 }
 
-export type UserLocalMutationFn = MutationFunction<Variable, Variable>;
-
-export interface UserLocalMutationProps {
-  updateLocalUser?: UserLocalMutationFn;
+export function useUserLocalMutation() {
+  /* eslint-disable-next-line react-hooks/rules-of-hooks */
+  return useMutation<Variable, Variable>(USER_LOCAL_MUTATION);
 }
-
-export const userLocalMutationGql = graphql<
-  {},
-  Variable,
-  Variable,
-  UserLocalMutationProps | void
->(USER_LOCAL_MUTATION, {
-  props: ({ mutate }) => {
-    if (!mutate) {
-      return undefined;
-    }
-
-    return {
-      updateLocalUser: mutate,
-    };
-  },
-});

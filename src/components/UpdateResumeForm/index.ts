@@ -1,5 +1,5 @@
-import { graphql,  } from "react-apollo";
-import compose from 'lodash/flowRight'
+import { graphql } from "react-apollo";
+import compose from "lodash/flowRight";
 import { withFormik } from "formik";
 import {
   GetResume,
@@ -7,7 +7,6 @@ import {
   GetResume_getResume,
 } from "../../graphql/apollo-types/GetResume";
 import { UpdateResumeForm as App } from "./update-resume.component";
-import { updateResumeGql } from "../../graphql/apollo/update-resume.mutation";
 import {
   OwnProps,
   formikConfig,
@@ -40,7 +39,6 @@ const getResumeGql = graphql<
   },
 
   options: ({ match }) => {
-    // istanbul ignore next: trust @reach/router to properly parse url params
     const title = (match && match.title) || "";
 
     return {
@@ -59,5 +57,4 @@ export const UpdateResumeForm = compose(
   withMatchHOC<OwnProps, ResumePathMatch>(RESUME_PATH),
   getResumeGql,
   withFormik(formikConfig),
-  updateResumeGql,
 )(App);

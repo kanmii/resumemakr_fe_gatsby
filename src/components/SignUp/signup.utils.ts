@@ -1,11 +1,8 @@
 import * as Yup from "yup";
 import { RouteComponentProps } from "@reach/router";
-import { WithApolloClient } from "react-apollo";
 import { ApolloError } from "apollo-client";
 import { FormikErrors } from "formik";
 import { Reducer } from "react";
-import { RegMutationProps } from "../../graphql/apollo/user-reg.mutation";
-import { UserLocalMutationProps } from "../../state/user.local.mutation";
 import { RegistrationInput } from "../../graphql/apollo-types/globalTypes";
 import {
   domPasswordInputId,
@@ -15,13 +12,8 @@ import {
   domSourceInputId,
 } from "./signup.dom-selectors";
 
-export interface Props
-  extends RouteComponentProps,
-    RegMutationProps,
-    UserLocalMutationProps,
-    WithApolloClient<{}> {
+export interface Props extends RouteComponentProps {
   mainRef: React.RefObject<HTMLDivElement>;
-
   header?: JSX.Element;
 }
 

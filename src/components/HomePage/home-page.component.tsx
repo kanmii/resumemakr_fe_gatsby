@@ -2,9 +2,9 @@ import React, { useLayoutEffect } from "react";
 import { Link } from "gatsby";
 import { Menu } from "semantic-ui-react";
 import { NavigateFn } from "@reach/router";
-import { Header } from "../Header";
+import { Header } from "../Header/header.index";
 import { SIGN_UP_URL, RESUMES_HOME_PATH } from "../../routing";
-import { SignUp } from "../SignUp/signup.index";
+import { SignUp } from "../SignUp/signup.component";
 import { Props, uiTexts } from "./home-page.utils";
 import { getUser } from "../../state/tokens";
 import { prefix as domId } from "./home-page.dom-selectors";
@@ -59,7 +59,7 @@ export function HomePage(props: Props) {
           </p>
         </div>
 
-        <SignUp {...props} />
+        <SignUp />
       </div>
     </div>
   );

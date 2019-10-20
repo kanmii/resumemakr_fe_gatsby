@@ -45,7 +45,6 @@ import { ListStrings } from "../ListStrings/list-strings.component";
 import { NavBtn } from "../NavBtn";
 import { EpicBtnIcon } from "../EpicBtnIcon";
 import { ToolTip } from "../Tooltip";
-import { UpdateResumeMutationFn } from "../../graphql/apollo/update-resume.mutation";
 import { SetFieldValue } from "../utils";
 import {
   gqlErrorId,
@@ -59,6 +58,10 @@ import {
   backToEditBtnId,
 } from "./update-resume.dom-selectors";
 import { debounceTime } from "./update-resume.injectables";
+import {
+  UpdateResumeMutationFn,
+  useUpdateResumeMutation,
+} from "../../graphql/apollo/update-resume.mutation";
 
 const loadingTimeoutMs = 5000;
 
@@ -74,11 +77,10 @@ export function UpdateResumeForm(props: Props) {
     setFieldValue,
     values,
     match,
-    updateResume,
   } = props;
 
   const resumeTitle = match && (match as { title: string }).title;
-
+  const [updateResume] = useUpdateResumeMutation();
   const [state, dispatch] = useReducer(reducer, {});
 
   const cancelLoadingTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -175,7 +177,7 @@ export function UpdateResumeForm(props: Props) {
               getUpdateFn()({
                 formValues: values,
                 valuesTrackerRef,
-                updateResume: updateResume as UpdateResumeMutationFn,
+                updateResume,
                 dispatch,
               });
             },

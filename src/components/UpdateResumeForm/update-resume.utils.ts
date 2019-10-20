@@ -29,7 +29,6 @@ import {
   languageDefaultVal,
   additionalSkillDefaultVal,
 } from "../Rated/rated-utils";
-import { UpdateResumeProps } from "../../graphql/apollo/update-resume.mutation";
 import { GetResumeProps } from "../../graphql/apollo/get-resume.query";
 import { stripTypeName, SetFieldValue } from "../utils";
 import { ResumePathMatch } from "../../routing";
@@ -39,10 +38,7 @@ export interface OwnProps extends MatchRenderProps<ResumePathMatch> {
   debounceTime?: number;
 }
 
-export type Props = OwnProps &
-  UpdateResumeProps &
-  GetResumeProps &
-  FormikProps<FormValues>;
+export type Props = OwnProps & GetResumeProps & FormikProps<FormValues>;
 
 export type FormValues = Partial<UpdateResumeInput>;
 

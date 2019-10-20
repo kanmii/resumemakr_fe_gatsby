@@ -30,10 +30,18 @@ import {
   makeMoveDownId,
 } from "../components/IterableControls/iterable-controls.dom-selectors";
 import { makeInputId as makeListStringInputId } from "../components/ListStrings/list-strings.dom-selectors";
+import { useUpdateResumeMutation } from "../graphql/apollo/update-resume.mutation";
 
 jest.mock("../components/UpdateResumeForm/update-resume.injectables", () => ({
   debounceTime: 0,
 }));
+
+jest.mock("../graphql/apollo/update-resume.mutation");
+const mockUseUpdateResumeMutation = useUpdateResumeMutation as jest.Mock;
+
+beforeEach(() => {
+  mockUseUpdateResumeMutation.mockReset();
+});
 
 afterEach(() => {
   cleanup();
@@ -445,9 +453,10 @@ function makeComp(props: Partial<Props> = {}) {
   )) as P;
 
   const mockUpdateResume = jest.fn();
+  mockUseUpdateResumeMutation.mockReturnValue([mockUpdateResume]);
 
   return {
-    ui: <C {...props} location={location} updateResume={mockUpdateResume} />,
+    ui: <C {...props} location={location} />,
     mockUpdateResume,
   };
 }

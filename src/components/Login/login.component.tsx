@@ -9,7 +9,7 @@ import {
   Field,
   FormikErrors,
 } from "formik";
-import { Props, ValidationSchema } from "./login.utils";
+import { ValidationSchema } from "./login.utils";
 import { LoginInput } from "../../graphql/apollo-types/globalTypes";
 import { PasswordInput } from "../PasswordInput/password-input.index";
 import { AuthCard } from "../AuthCard";
@@ -17,31 +17,27 @@ import { refreshToMyResumes } from "../../utils/refresh-to-my-resumes";
 import { isConnected } from "../../state/get-conn-status";
 import { SIGN_UP_URL } from "../../routing";
 import { noOp } from "../../constants";
-import { clearToken } from "../../state/tokens";
+import { clearToken, getUser } from "../../state/tokens";
 import { OtherAuthLink } from "../OtherAuthLink";
-import { Header } from "../Header";
-import { LoginMutationFn } from "../../graphql/apollo/login.mutation";
-import { UserLocalMutationFn } from "../../state/user.local.mutation";
+import { Header } from "../Header/header.index";
+import { useUserLocalMutation } from "../../state/user.local.mutation";
 import {
   domSubmitBtnId,
   domEmailInputId,
   domPasswordInputId,
   domFormErrorId,
 } from "./login.dom-selectors";
+import { useLoggedOutUserMutation } from "../../state/logged-out-user.local.query";
+import { useLoginMutation } from "../../graphql/apollo/login.mutation";
 
 const Errors = React.memo(ErrorsComp, ErrorsDiff);
 
-export function Login(merkmale: Props) {
-  const {
-    userLocal,
-    updateLocalUser,
-    loggedOutUser: loggedOutUserProp,
-    login,
-  } = merkmale;
-
-  /* istanbul ignore next: */
-  const loggedOutUser = loggedOutUserProp && loggedOutUserProp.loggedOutUser;
-  const user = userLocal && userLocal.user;
+export function Login() {
+  const [login] = useLoginMutation();
+  const [updateLocalUser] = useUserLocalMutation();
+  const { data } = useLoggedOutUserMutation();
+  const loggedOutUser = data && data.loggedOutUser;
+  const user = getUser();
 
   const [graphQlErrors, setGraphQlErrors] = useState<ApolloError | undefined>(
     undefined,
@@ -58,13 +54,12 @@ export function Login(merkmale: Props) {
       if (!user) {
         return;
       }
-      if (updateLocalUser) {
-        updateLocalUser({
-          variables: {
-            user: null,
-          },
-        });
-      }
+
+      updateLocalUser({
+        variables: {
+          user: null,
+        },
+      });
     },
     /* eslint-disable react-hooks/exhaustive-deps */
     [],
@@ -96,7 +91,7 @@ export function Login(merkmale: Props) {
       }
 
       try {
-        const result = await (login as LoginMutationFn)({
+        const result = await login({
           variables: {
             input: values,
           },
@@ -111,7 +106,7 @@ export function Login(merkmale: Props) {
           return;
         }
 
-        await (updateLocalUser as UserLocalMutationFn)({
+        await updateLocalUser({
           variables: { user: resultUser },
         });
 
@@ -188,7 +183,6 @@ export function Login(merkmale: Props) {
           initialValues={{
             email:
               (user && user.email) ||
-              /* istanbul ignore next: */
               (loggedOutUser && loggedOutUser.email) ||
               "",
             password: "",
@@ -290,7 +284,11 @@ function ErrorsComp(props: ErrorsProps) {
   }
 
   return (
-    <Card.Content id={domFormErrorId} data-testid="login-form-error" extra={true}>
+    <Card.Content
+      id={domFormErrorId}
+      data-testid="login-form-error"
+      extra={true}
+    >
       <Message error={true} onDismiss={handleErrorsDismissed}>
         <Message.Content>{content}</Message.Content>
       </Message>

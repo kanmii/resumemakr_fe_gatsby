@@ -1,11 +1,10 @@
 import React from "react";
-import { RouteComponentProps } from "@reach/router";
 import { Helmet } from "react-helmet-async";
 import { makeSiteTitle } from "../constants";
 import { Layout } from "../components/Layout";
-import { Login } from "../components/Login/login.index";
+import { Login } from "../components/Login/login.component";
 
-export default function LoginPage(props: RouteComponentProps) {
+export default function LoginPage() {
   return (
     <Layout>
       <Helmet>
@@ -13,7 +12,7 @@ export default function LoginPage(props: RouteComponentProps) {
       </Helmet>
 
       <div className="app-container">
-        <Login {...props} />
+        <Login />
       </div>
     </Layout>
   );

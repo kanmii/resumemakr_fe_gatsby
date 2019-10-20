@@ -2,8 +2,7 @@ import React from "react";
 import { Link } from "gatsby";
 import { Button } from "semantic-ui-react";
 import { RouteComponentProps } from "@reach/router";
-
-import { Header } from "../Header";
+import { Header } from "../Header/header.index";
 import { ROOT_URL } from "../../routing";
 
 export function Page404(props: RouteComponentProps) {

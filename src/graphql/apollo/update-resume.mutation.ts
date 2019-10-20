@@ -1,9 +1,12 @@
 import gql from "graphql-tag";
-import { MutationFunction, graphql } from "react-apollo";
+import { useMutation, MutationFunction } from "react-apollo";
 import { resumeFullFrag } from "./resume_full.fragment";
-import { UpdateResume, UpdateResumeVariables } from "../apollo-types/UpdateResume";
+import {
+  UpdateResume,
+  UpdateResumeVariables,
+} from "../apollo-types/UpdateResume";
 
-export const updateResume = gql`
+export const UPDATE_RESUME_MUTATION = gql`
   mutation UpdateResume($input: UpdateResumeInput!) {
     updateResume(input: $input) {
       resume {
@@ -15,30 +18,13 @@ export const updateResume = gql`
   ${resumeFullFrag}
 `;
 
-export default updateResume;
+export function useUpdateResumeMutation() {
+  return useMutation<UpdateResume, UpdateResumeVariables>(
+    UPDATE_RESUME_MUTATION,
+  );
+}
 
 export type UpdateResumeMutationFn = MutationFunction<
   UpdateResume,
   UpdateResumeVariables
 >;
-
-export interface UpdateResumeProps {
-  updateResume?: UpdateResumeMutationFn;
-}
-
-export const updateResumeGql = graphql<
-  {},
-  UpdateResume,
-  UpdateResumeVariables,
-  UpdateResumeProps | void
->(updateResume, {
-  props: ({ mutate }) => {
-    if (!mutate) {
-      return undefined;
-    }
-
-    return {
-      updateResume: mutate
-    };
-  }
-});

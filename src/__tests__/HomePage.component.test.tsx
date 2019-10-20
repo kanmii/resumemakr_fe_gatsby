@@ -8,11 +8,11 @@ import { RESUMES_HOME_PATH } from "../routing";
 import { renderWithRouter } from "./test_utils";
 import { getUser } from "../state/tokens";
 
-jest.mock("../components/SignUp/signup.index", () => ({
+jest.mock("../components/SignUp/signup.component", () => ({
   SignUp: jest.fn(() => null),
 }));
 
-jest.mock("../components/Header", () => ({
+jest.mock("../components/Header/header.index", () => ({
   Header: jest.fn(() => null),
 }));
 

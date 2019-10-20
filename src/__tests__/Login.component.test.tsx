@@ -15,19 +15,35 @@ import {
   domPasswordInputId,
   domFormErrorId,
 } from "../components/Login/login.dom-selectors";
+import { useUserLocalMutation } from "../state/user.local.mutation";
+import { getUser } from "../state/tokens";
+import { useLoggedOutUserMutation } from "../state/logged-out-user.local.query";
+import { useLoginMutation } from "../graphql/apollo/login.mutation";
 
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
-jest.mock("../components/Header", () => ({
+jest.mock("../components/Header/header.index.ts", () => ({
   Header: jest.fn(() => null),
 }));
+jest.mock("../state/user.local.mutation");
+jest.mock("../state/tokens");
+jest.mock("../state/logged-out-user.local.query");
+jest.mock("../graphql/apollo/login.mutation");
 
 const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
 const mockGetConnStatus = isConnected as jest.Mock;
-
-const LoginP = Login as React.FunctionComponent<Partial<Props>>;
+const mockUseLocalUserMutation = useUserLocalMutation as jest.Mock;
+const mockGetUser = getUser as jest.Mock;
+const mockUseLoggedOutUserMutation = useLoggedOutUserMutation as jest.Mock;
+const mockUseLoginMutation = useLoginMutation as jest.Mock;
 
 beforeEach(() => {
+  mockUseLocalUserMutation.mockReset();
+  mockRefreshToMyResumes.mockReset();
+  mockGetConnStatus.mockReset();
+  mockGetUser.mockReset();
+  mockUseLoggedOutUserMutation.mockReset();
+  mockUseLoginMutation.mockReset();
   jest.useFakeTimers();
 });
 
@@ -227,9 +243,8 @@ it("logs out user if logged in", () => {
   /**
    * Given that we are logged in
    */
-  const { ui, mockUpdateLocalUser } = makeComp({
-    props: { userLocal: { user: {} } as any },
-  });
+  mockGetUser.mockReturnValue({});
+  const { ui, mockUpdateLocalUser } = makeComp();
 
   /**
    * While using the component
@@ -251,9 +266,8 @@ it("does not log out user if user not logged in", async () => {
   /**
    * Given that we are not logged in
    */
-  const { ui, mockUpdateLocalUser } = makeComp({
-    props: { userLocal: { user: null } as any },
-  });
+  mockGetUser.mockReturnValue(null);
+  const { ui, mockUpdateLocalUser } = makeComp();
 
   /**
    * While using the component
@@ -335,6 +349,10 @@ it("renders error if server did not return a valid user", async () => {
   expect($error.textContent).toContain("prob");
 });
 
+////////////////////////// HELPER ////////////////////////////
+
+const LoginP = Login as React.FunctionComponent<Partial<Props>>;
+
 function fillForm() {
   fillField(
     document.getElementById(domEmailInputId) as HTMLElement,
@@ -351,24 +369,17 @@ function fillForm() {
 
 function makeComp({
   isConnected = true,
-  props = {},
 }: { isConnected?: boolean; props?: Partial<Props> } = {}) {
-  mockRefreshToMyResumes.mockReset();
-
-  mockGetConnStatus.mockReset();
   mockGetConnStatus.mockResolvedValue(isConnected);
 
   const mockLogin = jest.fn();
   const mockUpdateLocalUser = jest.fn();
+  mockUseLocalUserMutation.mockReturnValue([mockUpdateLocalUser]);
+  mockUseLoginMutation.mockReturnValue([mockLogin]);
+  mockUseLoggedOutUserMutation.mockReturnValue({});
 
   return {
-    ui: (
-      <LoginP
-        login={mockLogin}
-        updateLocalUser={mockUpdateLocalUser}
-        {...props}
-      />
-    ),
+    ui: <LoginP />,
 
     mockUpdateLocalUser,
     mockLogin,

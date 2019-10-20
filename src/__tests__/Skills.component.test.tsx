@@ -20,6 +20,14 @@ import {
   makeDescriptionInputId,
   makeAchievementId,
 } from "../components/Skills/skills.dom-selectors";
+import { useUpdateResumeMutation } from "../graphql/apollo/update-resume.mutation";
+
+jest.mock("../graphql/apollo/update-resume.mutation");
+const mockUseUpdateResumeMutation = useUpdateResumeMutation as jest.Mock;
+
+beforeEach(() => {
+  mockUseUpdateResumeMutation.mockReset();
+});
 
 afterEach(() => {
   cleanup();
@@ -34,13 +42,13 @@ const location = {
 
 it("updates server on input blur", async () => {
   const mockUpdateResume = jest.fn();
+  mockUseUpdateResumeMutation.mockReturnValue([mockUpdateResume]);
 
   const props = {
     getResume: {
       skills: [emptyVal],
     },
     location,
-    updateResume: mockUpdateResume as any,
   } as Partial<Props>;
 
   const Ui = withFormik(formikConfig)(p => (
@@ -100,15 +108,11 @@ it("updates server on input blur", async () => {
   /**
    * Then the correct data should be sent to the server
    */
-  await wait(
-    () => {
-      const skillsArg = (mockUpdateResume.mock.calls[1][0] as any).variables
-        .input.skills[0];
+  await wait(() => {
+    const skillsArg = (mockUpdateResume.mock.calls[1][0] as any).variables.input
+      .skills[0];
 
-      expect(skillsArg.description).toBe("desc");
-      expect(skillsArg.achievements[0]).toBe("a");
-    },
-    { interval: 1 },
-  );
+    expect(skillsArg.description).toBe("desc");
+    expect(skillsArg.achievements[0]).toBe("a");
+  });
 });
-

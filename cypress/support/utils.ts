@@ -3,7 +3,7 @@ import {
   UserRegMutation,
   UserRegMutationVariables,
 } from "../../src/graphql/apollo-types/UserRegMutation";
-import { userRegMutation } from "../../src/graphql/apollo/user-reg.mutation";
+import { USER_REGISTRATION_MUTATION } from "../../src/graphql/apollo/user-reg.mutation";
 import { USER_TOKEN_ENV_KEY } from "./constants";
 import {
   USER_LOCAL_MUTATION,
@@ -27,7 +27,7 @@ export const CREATE_RESUME_MINIMAL_DATA: CreateResumeInput = {
 export function createUser(input: RegistrationInput) {
   return cy
     .mutate<UserRegMutation, UserRegMutationVariables>({
-      mutation: userRegMutation,
+      mutation: USER_REGISTRATION_MUTATION,
       variables: {
         input,
       },

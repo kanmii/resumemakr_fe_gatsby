@@ -30,7 +30,7 @@ import { Mode as PreviewMode } from "../Preview/preview.utils";
 import { AutoTextarea } from "../AutoTextarea";
 import { AppModal } from "../AppModal";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";
-import { Header } from "../Header";
+import { Header } from "../Header/header.index";
 import { DeleteResumeMutationFn } from "../../graphql/apollo/delete-resume.mutation";
 import {
   triggerCreateNewResumeId,
