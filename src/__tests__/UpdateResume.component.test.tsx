@@ -61,7 +61,7 @@ import { prefix as experiencesId } from "../components/Experiences/experiences.d
 import { prefix as skillsId } from "../components/Skills/skills.dom-selectors";
 import { prefix as mockPreviewSectionId } from "../components/Preview/preview.dom-selectors";
 import { act } from "react-dom/test-utils";
-import {useUpdateResumeMutation} from '../graphql/apollo/update-resume.mutation';
+import { useUpdateResumeMutation } from "../graphql/apollo/update-resume.mutation";
 
 type P = React.ComponentType<Partial<Props>>;
 const ResumeFormP = UpdateResumeForm as P;
@@ -76,29 +76,31 @@ jest.mock("../components/Loading", () => ({
   Loading: () => <div id={mockLoadingId} />,
 }));
 
-jest.mock("../components/UpdateResumeForm/update-resume.injectables", () => ({
-  debounceTime: 0,
-}));
-
-jest.mock('../graphql/apollo/update-resume.mutation')
+jest.mock("../graphql/apollo/update-resume.mutation");
 const mockUseUpdateResumeMutation = useUpdateResumeMutation as jest.Mock;
+
+const mockLodashDebounceCancelFn = jest.fn();
+
+jest.mock("lodash/debounce", () => {
+  return function lodashDebounce(cb: any) {
+    cb.cancel = mockLodashDebounceCancelFn;
+    return cb;
+  };
+});
 
 describe("component", () => {
   beforeEach(() => {
     mockUseUpdateResumeMutation.mockReset();
+    mockLodashDebounceCancelFn.mockReset();
     jest.useFakeTimers();
   });
 
   afterEach(() => {
-    act(() => {
-      jest.runAllTimers();
-    });
-
     cleanup();
     jest.clearAllTimers();
   });
 
-  it("renders loading error", () => {
+  it.only("renders loading error", () => {
     /**
      * Given user is on update resume page
      */
@@ -121,6 +123,8 @@ describe("component", () => {
      */
 
     expect(document.getElementById(mockLoadingId)).toBeNull();
+    cleanup()
+    expect(mockLodashDebounceCancelFn).toHaveBeenCalled()
   });
 
   it("renders loading indicator", () => {
@@ -474,7 +478,7 @@ describe("component", () => {
     //jest.runAllTimers();
   });
 
-  it("shows loading takes too long", async () => {
+  it.only("shows loading takes too long", async () => {
     const { ui } = makeComp({
       loading: true,
     });
