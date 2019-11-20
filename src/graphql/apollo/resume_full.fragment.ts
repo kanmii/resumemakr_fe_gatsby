@@ -71,7 +71,7 @@ const resumeMiniFrag = gql`
   }
 `;
 
-export const resumeFullFrag = gql`
+export const RESUME_FULL_FRAGMENT = gql`
   fragment ResumeFullFrag on Resume {
     ...ResumeMiniFrag
 
@@ -108,4 +108,4 @@ export const resumeFullFrag = gql`
   ${resumeMiniFrag}
 `;
 
-export default resumeFullFrag;
+export default RESUME_FULL_FRAGMENT;
