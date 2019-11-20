@@ -96,6 +96,7 @@ describe("component", () => {
   });
 
   afterEach(() => {
+    jest.runAllTimers();
     cleanup();
     jest.clearAllTimers();
   });
@@ -123,8 +124,8 @@ describe("component", () => {
      */
 
     expect(document.getElementById(mockLoadingId)).toBeNull();
-    cleanup()
-    expect(mockLodashDebounceCancelFn).toHaveBeenCalled()
+    cleanup();
+    expect(mockLodashDebounceCancelFn).toHaveBeenCalled();
   });
 
   it("renders loading indicator", () => {
