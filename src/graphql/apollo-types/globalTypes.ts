@@ -110,6 +110,12 @@ export interface RegistrationInput {
   source: string;
 }
 
+export interface ResetPasswordInput {
+  password: string;
+  passwordConfirmation: string;
+  token: string;
+}
+
 export interface UpdateResumeInput {
   additionalSkills?: (RatedInput | null)[] | null;
   description?: string | null;
@@ -121,12 +127,6 @@ export interface UpdateResumeInput {
   personalInfo?: PersonalInfoInput | null;
   skills?: (CreateSkillInput | null)[] | null;
   title?: string | null;
-}
-
-export interface VeranderungPasswortZuruckSetzenInput {
-  password: string;
-  passwordConfirmation: string;
-  token: string;
 }
 
 //==============================================================
