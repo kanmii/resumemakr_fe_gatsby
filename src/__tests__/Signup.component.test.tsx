@@ -27,6 +27,7 @@ import {
 } from "../components/SignUp/signup.dom-selectors";
 import { useUserRegistrationMutation } from "../components/SignUp/signup.injectables";
 import { useUserLocalMutation } from "../state/user.local.mutation";
+import { PASSWORDS_DO_NOT_MATCH_ERROR_MESSAGE } from "../components/components.utils";
 
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
@@ -93,7 +94,7 @@ it("renders error if password and password confirm are not same", async () => {
     return document.getElementById(domErrorsId) as HTMLElement;
   });
 
-  expect($error.textContent).toContain("nicht");
+  expect($error.textContent).toContain(PASSWORDS_DO_NOT_MATCH_ERROR_MESSAGE);
 
   /**
    * And page should be automatically scrolled to the top

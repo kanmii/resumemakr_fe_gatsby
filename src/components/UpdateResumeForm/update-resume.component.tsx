@@ -45,7 +45,7 @@ import { ListStrings } from "../ListStrings/list-strings.component";
 import { NavBtn } from "../NavBtn";
 import { EpicBtnIcon } from "../EpicBtnIcon";
 import { ToolTip } from "../Tooltip";
-import { SetFieldValue } from "../utils";
+import { SetFieldValue } from "../components.utils";
 import {
   gqlErrorId,
   loadingTooLongId,

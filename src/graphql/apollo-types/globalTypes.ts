@@ -116,6 +116,12 @@ export interface ResetPasswordInput {
   token: string;
 }
 
+export interface ResetPasswordSimpleInput {
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
 export interface UpdateResumeInput {
   additionalSkills?: (RatedInput | null)[] | null;
   description?: string | null;

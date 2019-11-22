@@ -11,6 +11,11 @@ import {
   domEmailInputId,
   domSourceInputId,
 } from "./signup.dom-selectors";
+import {
+  PasswordConfirmationValidationSchema,
+  emailValidationSchema,
+  passwordValidationSchema,
+} from "../components.utils";
 
 export interface Props extends RouteComponentProps {
   mainRef: React.RefObject<HTMLDivElement>;
@@ -27,27 +32,14 @@ export const initialFormValues: RegistrationInput = {
   source: "password",
 };
 
-export const passworteNichtGleich = "Passworte nicht gleich";
-
-export const PasswortGleichPrüfer = Yup.string()
-  .required("is required")
-  .test("passwords-match", passworteNichtGleich, function(val) {
-    return this.parent.password === val;
-  });
-
-export const ValidationSchema = Yup.object<RegistrationInput>().shape({
+export const AuthFormValidationSchema = Yup.object<RegistrationInput>().shape({
   name: Yup.string()
     .min(2, "must be at least 2 characters")
     .max(50, "is too long!")
     .required("is required"),
-  email: Yup.string()
-    .email("is invalid")
-    .required("is required"),
-  password: Yup.string()
-    .min(4, "must be at least 4 characters")
-    .max(50, "is too Long!")
-    .required("is required"),
-  passwordConfirmation: PasswortGleichPrüfer,
+  email: emailValidationSchema,
+  password: passwordValidationSchema,
+  passwordConfirmation: PasswordConfirmationValidationSchema,
 
   source: Yup.string().default("password"),
 });

@@ -11,7 +11,7 @@ import loIsEmpty from "lodash/isEmpty";
 import { ApolloError } from "apollo-client";
 import {
   initialFormValues,
-  ValidationSchema,
+  AuthFormValidationSchema,
   FormValuesKey,
   FORM_RENDER_PROPS,
   uiTexts,
@@ -176,7 +176,7 @@ export function SignUp() {
         initialValues={initialFormValues}
         onSubmit={noOp}
         render={renderForm}
-        validationSchema={ValidationSchema}
+        validationSchema={AuthFormValidationSchema}
         validateOnChange={false}
       />
     </div>

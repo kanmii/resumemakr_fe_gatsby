@@ -75,6 +75,7 @@
     "apollo": "2.11.0",
     "babel-jest": "24.8.0",
     "babel-loader": "8.0.6",
+    "babel-plugin-const-enum": "^0.0.4",
     "babel-preset-gatsby": "0.1.11",
     "babel-preset-react-app": "9.0.0",
     "cypress": "3.4.1",

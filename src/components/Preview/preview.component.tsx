@@ -11,7 +11,7 @@ import {
 } from "../../graphql/apollo-types/GetResume";
 import { CreateExperienceInput } from "../../graphql/apollo-types/globalTypes";
 import { Props, Mode } from "./preview.utils";
-import { toServerUrl } from "../utils";
+import { toServerUrl } from "../components.utils";
 import { prefix as domId } from "./preview.dom-selectors";
 
 export function Preview(props: Props) {

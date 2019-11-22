@@ -30,7 +30,7 @@ import {
   additionalSkillDefaultVal,
 } from "../Rated/rated-utils";
 import { GetResumeProps } from "../../graphql/apollo/get-resume.query";
-import { stripTypeName, SetFieldValue } from "../utils";
+import { stripTypeName, SetFieldValue } from "../components.utils";
 import { ResumePathMatch } from "../../routing";
 import { noOp } from "../../constants";
 

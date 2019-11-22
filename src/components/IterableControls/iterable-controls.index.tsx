@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
 import { Card, Icon } from "semantic-ui-react";
 import "./styles.scss";
-import { SetFieldValue } from "../utils";
+import { SetFieldValue } from "../components.utils";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import { CircularLabel } from "../CircularLabel";
 import { ListDisplayCtrlNames, makeListDisplayCtrlTestId } from "../components";

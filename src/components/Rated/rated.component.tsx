@@ -9,7 +9,7 @@ import {
   CreateExperienceInput,
 } from "../../graphql/apollo-types/globalTypes";
 import { IterableControls } from "../IterableControls/iterable-controls.index";
-import { SetFieldValue } from "../utils";
+import { SetFieldValue } from "../components.utils";
 import { SubFieldLabel } from "../components";
 
 export function Rated(props: Props) {

@@ -1,4 +1,4 @@
-import { stripTypeName } from "../components/utils";
+import { stripTypeName } from "../components/components.utils";
 
 describe("stripTypeName", () => {
   it("does nothing if object is primitive type", () => {

@@ -15,7 +15,7 @@ export const REQUEST_PASSWORD_RESET_TOKEN_MUTATION = gql`
 `;
 
 
-export interface AnfordernPasswortZuruckSetzenMerkmale {
+export interface RequestPasswordRequestTokenProps {
   requestPasswordResetToken?: MutationFunction<
   RequestPasswordResetToken,
   RequestPasswordResetTokenVariables
