@@ -4,6 +4,7 @@ import Button from "semantic-ui-react/dist/commonjs/elements/Button";
 import Form from "semantic-ui-react/dist/commonjs/collections/Form";
 import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 import {
   domEmailInputId,
   domPasswordInputId,
@@ -141,6 +142,7 @@ export function ResetPassword(props: Props) {
               disabled={formState.validity.value === "invalid"}
             >
               Submit
+              <Icon name="checkmark" /> Submit
             </Button>
           </Modal.Actions>
         </Form>

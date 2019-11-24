@@ -12,6 +12,7 @@ interface Props<TFormValues> extends FieldProps<TFormValues> {
   pwdType?: PwdType;
   onToggle: (type: PwdType) => void;
   id?: string;
+  onPasswordResetClicked: () => void
 }
 
 export function PasswordInput<T>(props: Props<T>) {

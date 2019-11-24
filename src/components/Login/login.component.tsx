@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Input, Message, Icon, Form } from "semantic-ui-react";
+import { Card, Message } from "semantic-ui-react";
+import Button from "semantic-ui-react/dist/commonjs/elements/Button";
+import Input from "semantic-ui-react/dist/commonjs/elements/Input";
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
+import Form from "semantic-ui-react/dist/commonjs/collections/Form";
 import { ApolloError } from "apollo-client";
 import {
   Formik,
@@ -150,7 +154,6 @@ export function Login() {
 
             <Button
               id={domSubmitBtnId}
-              name="login-submit"
               color="green"
               inverted={true}
               disabled={!dirty || isSubmitting}
