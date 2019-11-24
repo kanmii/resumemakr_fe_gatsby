@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { FieldProps } from "formik";
 import { Form, Input, Icon } from "semantic-ui-react";
-import { Link } from "gatsby";
 import "./password-input.styles.scss";
-import { PASSWORD_RESET_PATH } from "../../routing";
-import { domShowIconId, domHideIconId } from "./password-input.dom-selectors";
+import {
+  domShowIconId,
+  domHideIconId,
+  domResetPasswordTriggerId,
+} from "./password-input.dom-selectors";
 
 type PwdType = "password" | "text";
 
@@ -12,7 +14,7 @@ interface Props<TFormValues> extends FieldProps<TFormValues> {
   pwdType?: PwdType;
   onToggle: (type: PwdType) => void;
   id?: string;
-  onPasswordResetClicked: () => void
+  onPasswordResetClicked: () => void;
 }
 
 export function PasswordInput<T>(props: Props<T>) {
@@ -26,15 +28,17 @@ export function PasswordInput<T>(props: Props<T>) {
       <label data-testid="pass-input-comp" htmlFor={id} className="input-label">
         <span>Password</span>
 
-        <Link
-          to={PASSWORD_RESET_PATH}
+        <span
           tabIndex={-1}
           style={{
             fontStyle: "italic",
+            color: "#4183C4",
           }}
+          onClick={props.onPasswordResetClicked}
+          id={domResetPasswordTriggerId}
         >
           Forgotten your password?
-        </Link>
+        </span>
       </label>
 
       <Input icon={true} placeholder="" data-testid={id}>

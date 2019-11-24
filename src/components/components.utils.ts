@@ -39,6 +39,8 @@ export function toServerUrl(url: string) {
 export type SetFieldValue<T> = (field: string, value: (T | null)[]) => void;
 
 export const PASSWORDS_DO_NOT_MATCH_ERROR_MESSAGE = "Passwords do not match";
+export const PASSWORD_TOO_SHORT_ERROR_MESSAGE = "must be at least 4 characters";
+export const IS_INVALID_ERROR_MESSAGE = "is invalid";
 
 export const PasswordConfirmationValidationSchema = Yup.string()
   .required("is required")
@@ -47,12 +49,10 @@ export const PasswordConfirmationValidationSchema = Yup.string()
   });
 
 export const emailValidationSchema = Yup.string()
-  .email("is invalid")
+  .email(IS_INVALID_ERROR_MESSAGE)
   .required("is required");
 
 export const passwordValidationSchema = Yup.string()
-  .min(4, "must be at least 4 characters")
+  .min(4, PASSWORD_TOO_SHORT_ERROR_MESSAGE)
   .max(50, "is too Long!")
   .required("is required");
-
-

@@ -10,10 +10,14 @@ import {
   domSubmitBtn,
   domSubmittingOverlay,
   domSubmitSuccess,
+  domFormId,
 } from "../components/ResetPassword/reset-password.dom-selectors";
 import { Props } from "../components/ResetPassword/reset-password.utils";
 import { fillField } from "./test_utils";
-import { ResetPasswordSimpleMutationFnOptions } from "../graphql/apollo/reset-password.mutation";
+import {
+  ResetPasswordSimpleMutationFnOptions,
+  UseResetPasswordSimpleMutation,
+} from "../graphql/apollo/reset-password.mutation";
 import { ResetPasswordSimpleVariables } from "../graphql/apollo-types/ResetPasswordSimple";
 import { act } from "react-dom/test-utils";
 
@@ -34,7 +38,7 @@ it("renders with default email and submits successfully", async () => {
    * Given that user email exists
    */
 
-  const { ui, mockResetPassword } = makeComp({
+  const { ui, mockResetPassword, mockOnClose } = makeComp({
     props: { email },
   });
 
@@ -56,6 +60,13 @@ it("renders with default email and submits successfully", async () => {
   expect(domSubmit.disabled).toBe(true);
 
   /**
+   * And form should not have success
+   */
+
+  const domForm = document.getElementById(domFormId) as HTMLFormElement;
+  expect(domForm.classList).not.toContain("success");
+
+  /**
    * When password is completed
    */
   const domPassword = document.getElementById(domPasswordInputId) as any;
@@ -75,6 +86,12 @@ it("renders with default email and submits successfully", async () => {
    * Then submit button should be enabled
    */
   expect(domSubmit.disabled).toBe(false);
+
+  /**
+   * And form should have success color
+   */
+
+  expect(domForm.classList).toContain("success");
 
   /**
    * And no overlay should be visible
@@ -132,6 +149,8 @@ it("renders with default email and submits successfully", async () => {
       domEmailInputId,
     ) as HTMLInputElement).toBeNull();
   });
+
+  expect(mockOnClose).toHaveBeenCalled();
 });
 
 ////////////////////////// HELPER FUNCTIONS ///////////////////////////
@@ -140,9 +159,19 @@ const ResetPasswordP = ResetPassword as ComponentType<Partial<Props>>;
 
 function makeComp({ props = {} }: { props?: Partial<Props> } = {}) {
   const mockResetPassword = jest.fn();
+  const mockOnClose = jest.fn();
 
   return {
-    ui: <ResetPasswordP resetPasswordSimple={mockResetPassword} {...props} />,
+    ui: (
+      <ResetPasswordP
+        useResetPasswordSimple={
+          ([mockResetPassword] as unknown) as UseResetPasswordSimpleMutation
+        }
+        onClose={mockOnClose}
+        {...props}
+      />
+    ),
     mockResetPassword,
+    mockOnClose,
   };
 }

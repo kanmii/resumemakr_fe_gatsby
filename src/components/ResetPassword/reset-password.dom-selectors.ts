@@ -5,3 +5,6 @@ export const domPasswordConfirmationInputId = `${prefix}-password-confirmation-i
 export const domSubmitBtn = `${prefix}-form-submit`;
 export const domSubmittingOverlay = `${prefix}-submitting-overlay`;
 export const domSubmitSuccess = `${prefix}-submit-success`;
+export const domModalClass = `${prefix}-modal`;
+export const domFormFieldSuccessClass = `${prefix}-form-field-success`
+export const domFormId = `${prefix}-form`;

@@ -12,6 +12,9 @@ import {
   domSubmitBtn,
   domSubmittingOverlay,
   domSubmitSuccess,
+  domModalClass,
+  domFormId,
+  domFormFieldSuccessClass,
 } from "./reset-password.dom-selectors";
 import {
   Props,
@@ -20,12 +23,15 @@ import {
   Editable,
   ActionTypes,
 } from "./reset-password.utils";
+import "./reset-password.styles.scss";
+import makeClassNames from "classnames";
 
 export function ResetPassword(props: Props) {
   const [stateMachine, dispatch] = useReducer(reducer, props, initiState);
   const formState = (stateMachine as Editable).editable.form;
   const formFields = formState.fields;
   const stateValue = stateMachine.value;
+  const [resetPassword] = props.useResetPasswordSimple;
 
   useEffect(() => {
     if (stateValue === "submitSuccess") {
@@ -35,35 +41,47 @@ export function ResetPassword(props: Props) {
         });
       }, 5000);
     }
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [stateValue]);
 
   return (
     <Modal
+      dimmer="inverted"
+      style={{
+        maxWidth: "400px",
+      }}
       open={stateValue !== "destroyed"}
       closeOnDimmerClick={false}
       closeIcon={true}
+      onClose={() => {
+        dispatch({
+          type: ActionTypes.DESTROY,
+        });
+      }}
+      onUnmount={props.onClose}
+      className={domModalClass}
     >
-      <Header icon="archive" content="Password Reset" />
+      <Header as="h3" content="Reset Password" />
 
       <Modal.Content>
         {stateValue === "submitting" && <div id={domSubmittingOverlay} />}
         {stateValue === "submitSuccess" && <div id={domSubmitSuccess} />}
 
-        <div>Reset Password</div>
-
         <Form
+          success={formState.validity.value === "valid"}
+          id={domFormId}
           onSubmit={async () => {
             dispatch({
               type: ActionTypes.SUBMITTING,
             });
 
-            await props.resetPasswordSimple({
+            await resetPassword({
               variables: {
                 input: {
-                  email: formFields.email.context.value,
-                  password: formFields.password.context.value,
+                  email: formFields.email.edit.context.value,
+                  password: formFields.password.edit.context.value,
                   passwordConfirmation:
-                    formFields.passwordConfirmation.context.value,
+                    formFields.passwordConfirmation.edit.context.value,
                 },
               },
             });
@@ -73,14 +91,22 @@ export function ResetPassword(props: Props) {
             });
           }}
         >
-          <Form.Field>
+          <Form.Field
+            className={makeClassNames({
+              [domFormFieldSuccessClass]:
+                formFields.email.validity.value === "valid",
+            })}
+            error={formFields.email.validity.value === "invalid"}
+          >
+            <label htmlFor={domEmailInputId}>Email</label>
+
             <Input
               id={domEmailInputId}
-              value={formFields.email.context.value}
-              onChange={(_, { data }) => {
+              value={formFields.email.edit.context.value}
+              onChange={(_, { value }) => {
                 dispatch({
                   type: ActionTypes.FORM_CHANGED,
-                  value: data,
+                  value,
                   fieldName: "email",
                 });
               }}
@@ -93,10 +119,18 @@ export function ResetPassword(props: Props) {
             />
           </Form.Field>
 
-          <Form.Field>
+          <Form.Field
+            className={makeClassNames({
+              [domFormFieldSuccessClass]:
+                formFields.password.validity.value === "valid",
+            })}
+            error={formFields.password.validity.value === "invalid"}
+          >
+            <label htmlFor={domPasswordInputId}>Password</label>
+
             <Input
               id={domPasswordInputId}
-              value={formFields.password.context.value}
+              value={formFields.password.edit.context.value}
               type="password"
               onChange={(_, { value }) => {
                 dispatch({
@@ -114,11 +148,21 @@ export function ResetPassword(props: Props) {
             />
           </Form.Field>
 
-          <Form.Field>
+          <Form.Field
+            className={makeClassNames({
+              [domFormFieldSuccessClass]:
+                formFields.passwordConfirmation.validity.value === "valid",
+            })}
+            error={formFields.passwordConfirmation.validity.value === "invalid"}
+          >
+            <label htmlFor={domPasswordConfirmationInputId}>
+              Password Confirmation
+            </label>
+
             <Input
               id={domPasswordConfirmationInputId}
               type="password"
-              value={formFields.passwordConfirmation.context.value}
+              value={formFields.passwordConfirmation.edit.context.value}
               onChange={(_, { value }) => {
                 dispatch({
                   type: ActionTypes.FORM_CHANGED,
@@ -135,16 +179,22 @@ export function ResetPassword(props: Props) {
             />
           </Form.Field>
 
-          <Modal.Actions>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row-reverse",
+            }}
+          >
             <Button
               id={domSubmitBtn}
               type="submit"
               disabled={formState.validity.value === "invalid"}
+              color="green"
+              inverted={true}
             >
-              Submit
               <Icon name="checkmark" /> Submit
             </Button>
-          </Modal.Actions>
+          </div>
         </Form>
       </Modal.Content>
     </Modal>

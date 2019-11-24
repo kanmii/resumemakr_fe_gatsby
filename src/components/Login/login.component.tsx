@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { Card, Message } from "semantic-ui-react";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input";
@@ -13,7 +13,13 @@ import {
   Field,
   FormikErrors,
 } from "formik";
-import { ValidationSchema } from "./login.utils";
+import {
+  ValidationSchema,
+  reducer,
+  initiState,
+  ActionTypes,
+  Props,
+} from "./login.utils";
 import { LoginInput } from "../../graphql/apollo-types/globalTypes";
 import { PasswordInput } from "../PasswordInput/password-input.index";
 import { AuthCard } from "../AuthCard";
@@ -33,10 +39,10 @@ import {
 } from "./login.dom-selectors";
 import { useLoggedOutUserMutation } from "../../state/logged-out-user.local.query";
 import { useLoginMutation } from "../../graphql/apollo/login.mutation";
+import { ResetPassword } from "../ResetPassword/reset-password.component";
 
 const Errors = React.memo(ErrorsComp, ErrorsDiff);
-
-export function Login() {
+export function Login(props: Props) {
   const [login] = useLoginMutation();
   const [updateLocalUser] = useUserLocalMutation();
   const { data } = useLoggedOutUserMutation();
@@ -52,6 +58,9 @@ export function Login() {
   const [formErrors, setFormErrors] = useState<
     undefined | FormikErrors<LoginInput>
   >(undefined);
+
+  const [stateMachine, dispatch] = useReducer(reducer, undefined, initiState);
+  const stateValue = stateMachine.value;
 
   useEffect(
     function logoutUser() {
@@ -150,6 +159,11 @@ export function Login() {
               id={domPasswordInputId}
               name="password"
               component={PasswordInput}
+              onPasswordResetClicked={() => {
+                dispatch({
+                  type: ActionTypes.TRIGGER_PASSWORD_RESET_UI,
+                });
+              }}
             />
 
             <Button
@@ -177,17 +191,28 @@ export function Login() {
     );
   }
 
+  const defaultEmail =
+    (user && user.email) || (loggedOutUser && loggedOutUser.email) || "";
+
   return (
     <>
+      {stateValue === "resetpassword" && (
+        <ResetPassword
+          email={defaultEmail}
+          useResetPasswordSimple={props.useResetPasswordSimple}
+          onClose={() => {
+            dispatch({
+              type: ActionTypes.PASSWORD_RESET_UI_CLOSED,
+            });
+          }}
+        />
+      )}
       <Header />
 
       <div className="auth-main-app">
         <Formik
           initialValues={{
-            email:
-              (user && user.email) ||
-              (loggedOutUser && loggedOutUser.email) ||
-              "",
+            email: defaultEmail,
             password: "",
           }}
           onSubmit={noOp}

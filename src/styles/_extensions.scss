@@ -76,3 +76,19 @@
   justify-content: space-between;
   align-items: center;
 }
+
+%success-field {
+  .input {
+    color: $success-color !important;
+  }
+
+  input {
+    border-color: $success-border-color !important;
+    background: $success-bg-color !important;
+    color: $success-color !important;
+  }
+
+  & > label {
+    color: $success-color !important;
+  }
+}

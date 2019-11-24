@@ -35,17 +35,12 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
               const { fieldName, value } = payload as FormFieldChangedPayload;
               const formFields = (proxy as Editable).editable.form.fields;
 
-              const formField = formFields[
+              const formField = (formFields[
                 fieldName as KeyOfFormState
-              ] as FormFieldState;
+              ] as FormFieldState).edit;
 
               formField.context.value = value;
-              formField.value = "edit";
-              const formFieldEdit = formField as FormFieldEdit;
-
-              formFieldEdit.edit = formFieldEdit.edit || {
-                value: "changing",
-              };
+              formField.value = "changing";
             }
 
             break;
@@ -60,19 +55,22 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
                 fieldName as KeyOfFormState
               ] as FormFieldState;
 
-              if (fieldState.value === "edit") {
-                const value = fieldState.context.value;
+              const editingState = fieldState.edit as FormFieldEditChanging;
+
+              if (editingState.value === "changing") {
+                const value = fieldState.edit.context.value;
+                const validity = fieldState.validity;
                 let formValid: boolean | null = null;
 
                 try {
                   validationSchema[fieldName].validateSync(value);
-                  fieldState.edit.value = "valid";
+                  fieldState.edit.value = "changed";
+                  validity.value = "valid";
                 } catch (error) {
                   formValid = false;
-                  formState.validity.value = "invalid";
-                  const formFieldInvalid = fieldState.edit as FormFieldEditInvalid;
-                  formFieldInvalid.value = "invalid";
-                  formFieldInvalid.invalid = {
+                  validity.value = "invalid";
+                  const invalidState = validity as FormFieldInvalid;
+                  invalidState.invalid = {
                     context: {
                       error: error.message,
                     },
@@ -85,12 +83,12 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
                     const state = value as FormFieldState;
 
                     if (
-                      state.value === "edit" &&
-                      state.edit.value === "valid"
+                      state.edit.value === "changed" &&
+                      state.validity.value === "valid"
                     ) {
                       ++validCount;
                     } else {
-                      // if a field has not been edited, there is no point checking other fields
+                      // if a field has not been changed, there is no point checking other fields
                       break;
                     }
                   }
@@ -139,15 +137,25 @@ export function initiState(props: Props): IStateMachine {
         fields: {
           email: makeInitialEmailState(email),
           password: {
-            value: "idle",
-            context: {
-              value: "",
+            edit: {
+              value: "unchanged",
+              context: {
+                value: "",
+              },
+            },
+            validity: {
+              value: "unvalidated",
             },
           },
           passwordConfirmation: {
-            value: "idle",
-            context: {
-              value: "",
+            edit: {
+              value: "unchanged",
+              context: {
+                value: "",
+              },
+            },
+            validity: {
+              value: "unvalidated",
             },
           },
         },
@@ -160,24 +168,26 @@ export function initiState(props: Props): IStateMachine {
 }
 
 function makeInitialEmailState(value: string): FormFieldState {
-  const formState = {
-    value: "idle",
-    context: {
-      value,
+  const formState: FormFieldState = {
+    edit: {
+      value: "unchanged",
+      context: {
+        value,
+      },
     },
-  } as FormFieldState;
+    validity: {
+      value: "unvalidated",
+    },
+  };
 
   if (value) {
-    const emailEdit = formState as FormFieldEdit;
-    emailEdit.value = "edit";
-    emailEdit.edit = {
-      value: "valid",
-    };
+    formState.edit.value = "changed";
 
     try {
       validationSchema.email.validateSync(value);
+      formState.validity.value = "valid";
     } catch (error) {
-      emailEdit.edit = {
+      formState.validity = {
         value: "invalid",
         invalid: {
           context: {
@@ -221,30 +231,40 @@ interface FormState {
   passwordConfirmation: FormFieldState;
 }
 
-type FormFieldState = {
+interface FormFieldState {
+  edit: FormFieldEdit;
+  validity: FormFieldValidity;
+}
+
+type FormFieldValidity =
+  | {
+      value: "unvalidated";
+    }
+  | {
+      value: "valid";
+    }
+  | FormFieldInvalid;
+
+type FormFieldEdit = {
   context: {
     value: string;
   };
 } & (
   | {
-      value: "idle";
+      value: "unchanged";
     }
-  | FormFieldEdit
-  | FormConrolServerError);
+  | FormFieldEditChanged
+  | FormFieldEditChanging);
 
-interface FormFieldEdit {
-  value: "edit";
-  edit:
-    | {
-        value: "changing";
-      }
-    | {
-        value: "valid";
-      }
-    | FormFieldEditInvalid;
+interface FormFieldEditChanged {
+  value: "changed";
 }
 
-interface FormFieldEditInvalid {
+interface FormFieldEditChanging {
+  value: "changing";
+}
+
+interface FormFieldInvalid {
   value: "invalid";
   invalid: {
     context: {
@@ -253,15 +273,9 @@ interface FormFieldEditInvalid {
   };
 }
 
-interface FormConrolServerError {
-  value: "serverError";
-  context: {
-    error: string;
-  };
-}
-
 export interface Props extends ResetPasswordSimpleGraphqlProps {
   email: string;
+  onClose: () => void;
 }
 
 type KeyOfFormState = keyof FormState;

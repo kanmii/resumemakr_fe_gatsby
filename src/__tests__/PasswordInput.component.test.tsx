@@ -5,6 +5,7 @@ import { PasswordInput } from "../components/PasswordInput/password-input.index"
 import {
   domHideIconId,
   domShowIconId,
+  domResetPasswordTriggerId,
 } from "../components/PasswordInput/password-input.dom-selectors";
 import { fillField } from "./test_utils";
 
@@ -15,6 +16,7 @@ afterEach(() => {
 it("renders correctly", () => {
   const name = "pwd";
   const id = "id";
+  const mockOnPasswordResetClickedFn = jest.fn();
 
   const Ui = function App() {
     return (
@@ -22,7 +24,14 @@ it("renders correctly", () => {
         onSubmit={() => null}
         initialValues={{ [name]: "" }}
         validateOnChange={false}
-        render={() => <Field id={id} name={name} component={PasswordInput} />}
+        render={() => (
+          <Field
+            id={id}
+            name={name}
+            onPasswordResetClicked={mockOnPasswordResetClickedFn}
+            component={PasswordInput}
+          />
+        )}
       />
     );
   };
@@ -89,6 +98,16 @@ it("renders correctly", () => {
    * And icon to reveal password should appear
    */
   expect(document.getElementById(domShowIconId)).not.toBeNull();
+
+  /**
+   * When reset password UI trigger is clicked
+   */
+  (document.getElementById(domResetPasswordTriggerId) as HTMLElement).click();
+
+  /**
+   * Then reset password UI should be visible
+   */
+  expect(mockOnPasswordResetClickedFn).toHaveBeenCalled();
 
   cleanup();
 });

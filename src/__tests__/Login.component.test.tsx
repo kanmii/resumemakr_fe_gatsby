@@ -19,6 +19,11 @@ import { useUserLocalMutation } from "../state/user.local.mutation";
 import { getUser } from "../state/tokens";
 import { useLoggedOutUserMutation } from "../state/logged-out-user.local.query";
 import { useLoginMutation } from "../graphql/apollo/login.mutation";
+import { domResetPasswordTriggerId } from "../components/PasswordInput/password-input.dom-selectors";
+import {
+  PASSWORD_TOO_SHORT_ERROR_MESSAGE,
+  IS_INVALID_ERROR_MESSAGE,
+} from "../components/components.utils";
 
 jest.mock("../utils/refresh-to-my-resumes");
 jest.mock("../state/get-conn-status");
@@ -29,6 +34,14 @@ jest.mock("../state/user.local.mutation");
 jest.mock("../state/tokens");
 jest.mock("../state/logged-out-user.local.query");
 jest.mock("../graphql/apollo/login.mutation");
+
+const mockResetPasswordId = "mock-reset-password";
+
+jest.mock("../components/ResetPassword/reset-password.component", () => ({
+  ResetPassword: (props: any) => (
+    <div id={mockResetPasswordId} onClick={props.onClose} />
+  ),
+}));
 
 const mockRefreshToMyResumes = refreshToMyResumes as jest.Mock;
 const mockGetConnStatus = isConnected as jest.Mock;
@@ -149,7 +162,7 @@ it("renders error if email is invalid", async () => {
     return document.getElementById(domFormErrorId) as HTMLElement;
   });
 
-  expect($error.textContent).toContain("email");
+  expect($error.textContent).toContain(IS_INVALID_ERROR_MESSAGE);
 
   /**
    * And we should not be redirected
@@ -189,7 +202,7 @@ it("renders error if password is invalid", async () => {
     return document.getElementById(domFormErrorId) as HTMLElement;
   });
 
-  expect($error.textContent).toContain("short");
+  expect($error.textContent).toContain(PASSWORD_TOO_SHORT_ERROR_MESSAGE);
 
   /**
    * And we should not be redirected
@@ -347,6 +360,44 @@ it("renders error if server did not return a valid user", async () => {
   });
 
   expect($error.textContent).toContain("prob");
+});
+
+it("opens and closes resetpassword UI", () => {
+  const { ui } = makeComp();
+
+  /**
+   * Given we are interracting with the component
+   */
+  render(ui);
+
+  /**
+   * Then we should not see UI to reset password
+   */
+  expect(document.getElementById(mockResetPasswordId)).toBeNull();
+
+  /**
+   * When UI to trigger password reset Ui is clicked
+   */
+  (document.getElementById(domResetPasswordTriggerId) as HTMLElement).click();
+
+  /**
+   * Then we should see UI to reset password
+   */
+  const resetPasswordUI = document.getElementById(
+    mockResetPasswordId,
+  ) as HTMLElement;
+  expect(resetPasswordUI).not.toBeNull();
+
+  /**
+   * When password reset ui is closed
+   */
+
+  resetPasswordUI.click();
+
+  /**
+   * Then it should no longer be visible
+   */
+  expect(document.getElementById(mockResetPasswordId)).toBeNull();
 });
 
 ////////////////////////// HELPER ////////////////////////////

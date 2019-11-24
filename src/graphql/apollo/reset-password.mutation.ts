@@ -1,6 +1,10 @@
 import gql from "graphql-tag";
-import { MutationFunction, MutationFunctionOptions } from "react-apollo";
-
+import {
+  MutationFunction,
+  MutationFunctionOptions,
+  useMutation,
+  MutationResult,
+} from "react-apollo";
 import userFragment from "./user.fragment";
 import {
   ResetPassword,
@@ -10,6 +14,7 @@ import {
   ResetPasswordSimple,
   ResetPasswordSimpleVariables,
 } from "../apollo-types/ResetPasswordSimple";
+import { ExecutionResult } from "graphql";
 
 export const RESET_PASSWORD_MUTATION = gql`
   mutation ResetPassword($input: ResetPasswordInput!) {
@@ -49,10 +54,12 @@ export const RESET_PASSWORD_SIMPLE_MUTATION = gql`
   ${userFragment}
 `;
 
-export type ResetPasswordSimpleMutationFn = MutationFunction<
-  ResetPasswordSimple,
-  ResetPasswordSimpleVariables
->;
+export type ResetPasswordSimpleMutationFn = (
+  options: MutationFunctionOptions<
+    ResetPasswordSimple,
+    ResetPasswordSimpleVariables
+  >,
+) => Promise<ExecutionResult<ResetPasswordSimple>>;
 
 export type ResetPasswordSimpleMutationFnOptions = MutationFunctionOptions<
   ResetPasswordSimple,
@@ -60,5 +67,16 @@ export type ResetPasswordSimpleMutationFnOptions = MutationFunctionOptions<
 >;
 
 export interface ResetPasswordSimpleGraphqlProps {
-  resetPasswordSimple: ResetPasswordSimpleMutationFn;
+  useResetPasswordSimple: UseResetPasswordSimpleMutation;
+}
+
+export type UseResetPasswordSimpleMutation = [
+  ResetPasswordSimpleMutationFn,
+  MutationResult<ResetPasswordSimple>,
+];
+
+export function useResetPasswordSimpleMutationFn(): UseResetPasswordSimpleMutation {
+  return useMutation<ResetPasswordSimple, ResetPasswordSimpleVariables>(
+    RESET_PASSWORD_SIMPLE_MUTATION,
+  );
 }
