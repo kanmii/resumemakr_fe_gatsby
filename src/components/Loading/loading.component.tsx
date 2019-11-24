@@ -1,6 +1,5 @@
 import React, { PropsWithChildren } from "react";
-
-import "./styles.scss";
+import "./loading.styles.scss";
 import { addClassNames } from "../components";
 
 export const Loading = ({

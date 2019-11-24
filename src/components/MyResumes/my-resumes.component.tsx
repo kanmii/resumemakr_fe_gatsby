@@ -23,7 +23,7 @@ import {
   emptyVal,
   uiTexts,
 } from "./my-resumes.utils";
-import { Loading } from "../Loading";
+import { Loading } from "../Loading/loading.component";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../UpdateResumeForm/update-resume.utils";
 import { Mode as PreviewMode } from "../Preview/preview.utils";

@@ -72,7 +72,7 @@ jest.mock("../components/Preview", () => ({
 
 const mockLoadingId = "lolo";
 
-jest.mock("../components/Loading", () => ({
+jest.mock("../components/Loading/loading.component", () => ({
   Loading: () => <div id={mockLoadingId} />,
 }));
 

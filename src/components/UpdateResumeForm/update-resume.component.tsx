@@ -32,7 +32,7 @@ import { PersonalInfo } from "../PersonalInfo/personal-info.component";
 import { Experiences } from "../Experiences";
 import { Education } from "../Education/education.component";
 import { Skills } from "../Skills/skills.component";
-import { Loading } from "../Loading";
+import { Loading } from "../Loading/loading.component";
 import { ALREADY_UPLOADED } from "../../constants";
 import {
   UpdateResumeInput,
