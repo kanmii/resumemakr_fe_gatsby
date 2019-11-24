@@ -22,6 +22,7 @@
     "cy-open": "env-cmd -e e2e cypress open",
     "cy-run-dev": "cypress run --config baseUrl=http://localhost:3023/",
     "type-check": "tsc --noEmit",
+    "type-check-cypress": "yarn tsc --noEmit --project ./cypress",
     "gen-apollo-types": "rimraf src/graphql/apollo-types && apollo codegen:generate --endpoint=http://localhost:4025/api --tagName=gql --target=typescript --includes=src/graphql/apollo/*.ts --outputFlat=src/graphql/apollo-types",
     "gen-gatsby-types": "rm -rf src/graphql/gatsby-types && apollo codegen:generate --endpoint=http://localhost:3023/___graphql --tagName=graphql --target=typescript --includes=src/**/*.ts* --outputFlat=src/graphql/gatsby-types",
     "build-deploy": "yarn build:production && yarn deploy",
