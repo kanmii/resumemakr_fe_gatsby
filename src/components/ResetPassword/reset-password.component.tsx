@@ -65,6 +65,7 @@ export function ResetPassword(props: Props) {
 
   return (
     <Modal
+      id={domPrefix}
       dimmer="inverted"
       open={stateValue !== "destroyed"}
       closeOnDimmerClick={false}

@@ -91,3 +91,15 @@ export interface WithData<TData> {
 export const jpegMime = "image/jpeg";
 
 export const jpegBase64StringPrefix = "data:image/jpeg;base64,";
+
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any*/
+export function closeMessage($element: any) {
+  const domIcon =
+    $element && $element.querySelector && $element.querySelector(`.close.icon`);
+
+  if (!domIcon) {
+    return;
+  }
+
+  domIcon.click();
+}
