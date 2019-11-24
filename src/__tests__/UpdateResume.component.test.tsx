@@ -96,12 +96,12 @@ describe("component", () => {
   });
 
   afterEach(() => {
-    jest.runAllTimers();
     cleanup();
+    jest.runAllTimers();
     jest.clearAllTimers();
   });
 
-  it.only("renders loading error", () => {
+  it("renders loading error", () => {
     /**
      * Given user is on update resume page
      */
@@ -479,7 +479,7 @@ describe("component", () => {
     //jest.runAllTimers();
   });
 
-  it.only("shows loading takes too long", async () => {
+  it("shows loading takes too long", async () => {
     const { ui } = makeComp({
       loading: true,
     });
