@@ -62,6 +62,9 @@ export function Login(props: Props) {
   const [stateMachine, dispatch] = useReducer(reducer, undefined, initiState);
   const stateValue = stateMachine.value;
 
+  const defaultEmail =
+    (user && user.email) || (loggedOutUser && loggedOutUser.email) || "";
+
   useEffect(
     function logoutUser() {
       if (!user) {
@@ -137,11 +140,25 @@ export function Login(props: Props) {
     setGraphQlErrors(undefined);
   }
 
-  function renderForm(props: FormikProps<LoginInput>) {
-    const { dirty, isSubmitting } = props;
+  function renderForm(formProps: FormikProps<LoginInput>) {
+    const { dirty, isSubmitting } = formProps;
 
     return (
       <AuthCard>
+        {stateValue === "resetpassword" && (
+          <ResetPassword
+            email={defaultEmail}
+            useResetPasswordSimple={props.useResetPasswordSimple}
+            onClose={() => {
+              formProps.setFieldValue("password", "");
+
+              dispatch({
+                type: ActionTypes.PASSWORD_RESET_UI_CLOSED,
+              });
+            }}
+          />
+        )}
+
         <Errors
           errors={{ graphQlErrors, otherErrors, formErrors }}
           handleErrorsDismissed={handleErrorsDismissed}
@@ -152,7 +169,7 @@ export function Login(props: Props) {
         </Card.Content>
 
         <Card.Content>
-          <Form onSubmit={onSubmit(props)}>
+          <Form onSubmit={onSubmit(formProps)}>
             <FastField name="email" component={EmailInput} />
 
             <Field
@@ -191,22 +208,8 @@ export function Login(props: Props) {
     );
   }
 
-  const defaultEmail =
-    (user && user.email) || (loggedOutUser && loggedOutUser.email) || "";
-
   return (
     <>
-      {stateValue === "resetpassword" && (
-        <ResetPassword
-          email={defaultEmail}
-          useResetPasswordSimple={props.useResetPasswordSimple}
-          onClose={() => {
-            dispatch({
-              type: ActionTypes.PASSWORD_RESET_UI_CLOSED,
-            });
-          }}
-        />
-      )}
       <Header />
 
       <div className="auth-main-app">

@@ -10,7 +10,6 @@ import {
   domSubmitBtn,
   domSubmittingOverlay,
   domSubmitSuccess,
-  domFormId,
 } from "../components/ResetPassword/reset-password.dom-selectors";
 import { Props } from "../components/ResetPassword/reset-password.utils";
 import { fillField } from "./test_utils";

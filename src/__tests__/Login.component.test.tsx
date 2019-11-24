@@ -376,6 +376,22 @@ it("opens and closes resetpassword UI", () => {
   expect(document.getElementById(mockResetPasswordId)).toBeNull();
 
   /**
+   * When password field is completed
+   */
+  const domPassword = document.getElementById(
+    domPasswordInputId,
+  ) as HTMLInputElement;
+
+  const password = "123456";
+  fillField(domPassword, password);
+
+  /**
+   * Then masked password should be visible
+   */
+
+  expect(domPassword.value).toBe(password);
+
+  /**
    * When UI to trigger password reset Ui is clicked
    */
   (document.getElementById(domResetPasswordTriggerId) as HTMLElement).click();
@@ -395,9 +411,15 @@ it("opens and closes resetpassword UI", () => {
   resetPasswordUI.click();
 
   /**
-   * Then it should no longer be visible
+   * Then password reset UI should no longer be visible
    */
   expect(document.getElementById(mockResetPasswordId)).toBeNull();
+
+  /**
+   * Then masked password should no longer be visible
+   */
+
+  expect(domPassword.value).toBe("");
 });
 
 ////////////////////////// HELPER ////////////////////////////
