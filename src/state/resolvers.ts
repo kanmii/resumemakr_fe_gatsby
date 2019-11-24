@@ -7,19 +7,19 @@ import {
   clearToken,
   storeToken,
   storeUser,
-  clearUser
+  clearUser,
 } from "./tokens";
 
 type ClientStateFn<TVariables> = (
   fieldName: string,
   variables: TVariables,
-  context: { cache: InMemoryCache }
+  context: { cache: InMemoryCache },
 ) => void;
 
 const userMutation: ClientStateFn<UserMutationVar> = async (
   _,
   { user },
-  { cache }
+  { cache },
 ) => {
   if (user) {
     /**
@@ -39,13 +39,13 @@ const userMutation: ClientStateFn<UserMutationVar> = async (
 
   const { user: loggedOutUser } = {
     ...(cache.readQuery<UserLocalGqlData>({ query: USER_QUERY }) || {
-      user: null
-    })
+      user: null,
+    }),
   };
 
   const data = {
     user: null,
-    staleToken: null
+    staleToken: null,
   } as {
     loggedOutUser?: UserFragment | null;
   };
@@ -56,11 +56,12 @@ const userMutation: ClientStateFn<UserMutationVar> = async (
 
   clearUser();
 
-  await cache.writeData({
-    data
+  cache.writeData({
+    data,
   });
 
   clearToken();
+  await window.____resumemakr.persistor.persist();
 
   return loggedOutUser;
 };
@@ -75,14 +76,14 @@ export function initState() {
   return {
     resolvers: {
       Mutation: {
-        user: userMutation
-      }
+        user: userMutation,
+      },
     },
 
     defaultState: {
       staleToken: getToken(),
       user: null,
-      loggedOutUser: null
-    }
+      loggedOutUser: null,
+    },
   };
 }

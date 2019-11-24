@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect } from "react";
+import React, { useReducer, useEffect, useRef } from "react";
 import Input from "semantic-ui-react/dist/commonjs/elements/Input";
 import Button from "semantic-ui-react/dist/commonjs/elements/Button";
 import Form from "semantic-ui-react/dist/commonjs/collections/Form";
 import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
 import Header from "semantic-ui-react/dist/commonjs/elements/Header";
 import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
+import Message from "semantic-ui-react/dist/commonjs/collections/Message";
 import {
   domEmailInputId,
   domPasswordInputId,
@@ -12,9 +13,10 @@ import {
   domSubmitBtn,
   domSubmittingOverlay,
   domSubmitSuccess,
-  domModalClass,
   domFormId,
   domFormFieldSuccessClass,
+  domPrefix,
+  domPrefixSubmittingClass,
 } from "./reset-password.dom-selectors";
 import {
   Props,
@@ -26,20 +28,30 @@ import {
 import "./reset-password.styles.scss";
 import makeClassNames from "classnames";
 
+const CLOSE_TIMEOUT_MS = 50000;
+
 export function ResetPassword(props: Props) {
   const [stateMachine, dispatch] = useReducer(reducer, props, initiState);
   const formState = (stateMachine as Editable).editable.form;
   const formFields = formState.fields;
   const stateValue = stateMachine.value;
   const [resetPassword] = props.useResetPasswordSimple;
+  const closeTimeoutRef = useRef<null | NodeJS.Timeout>(null);
+
+  function onClose() {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
+    props.onClose();
+  }
 
   useEffect(() => {
     if (stateValue === "submitSuccess") {
-      setTimeout(() => {
+      closeTimeoutRef.current = setTimeout(() => {
         dispatch({
-          type: ActionTypes.DESTROY,
+          type: ActionTypes.CLOSE,
         });
-      }, 5000);
+      }, CLOSE_TIMEOUT_MS);
     }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [stateValue]);
@@ -47,26 +59,26 @@ export function ResetPassword(props: Props) {
   return (
     <Modal
       dimmer="inverted"
-      style={{
-        maxWidth: "400px",
-      }}
       open={stateValue !== "destroyed"}
       closeOnDimmerClick={false}
       closeIcon={true}
       onClose={() => {
         dispatch({
-          type: ActionTypes.DESTROY,
+          type: ActionTypes.CLOSE,
         });
       }}
-      onUnmount={props.onClose}
-      className={domModalClass}
+      onUnmount={onClose}
+      className={makeClassNames(domPrefix, {
+        [domPrefixSubmittingClass]: stateValue === "submitting" || true,
+      })}
     >
+      {(stateValue === "submitting" || true) && (
+        <div id={domSubmittingOverlay} className={domSubmittingOverlay} />
+      )}
+
       <Header as="h3" content="Reset Password" />
 
       <Modal.Content>
-        {stateValue === "submitting" && <div id={domSubmittingOverlay} />}
-        {stateValue === "submitSuccess" && <div id={domSubmitSuccess} />}
-
         <Form
           success={formState.validity.value === "valid"}
           id={domFormId}
@@ -91,6 +103,29 @@ export function ResetPassword(props: Props) {
             });
           }}
         >
+          {stateValue === "submitSuccess" && (
+            <Message success={true} id={domSubmitSuccess}>
+              <Message.Header>Password changed successfully</Message.Header>
+
+              <Message.Content
+                style={{
+                  fontSize: "0.95rem",
+                }}
+              >
+                <div
+                  style={{
+                    marginBottom: "10px",
+                  }}
+                >
+                  You will be directed to login in {CLOSE_TIMEOUT_MS / 1000}{" "}
+                  secs.
+                </div>
+
+                <div>Or you may use the close button to return to login.</div>
+              </Message.Content>
+            </Message>
+          )}
+
           <Form.Field
             className={makeClassNames({
               [domFormFieldSuccessClass]:
@@ -188,7 +223,10 @@ export function ResetPassword(props: Props) {
             <Button
               id={domSubmitBtn}
               type="submit"
-              disabled={formState.validity.value === "invalid"}
+              disabled={
+                formState.validity.value === "invalid" ||
+                stateValue === "submitSuccess"
+              }
               color="green"
               inverted={true}
             >

@@ -140,6 +140,11 @@ it("renders with default email and submits successfully", async () => {
   expect(document.getElementById(domSubmitSuccess)).not.toBeNull();
 
   /**
+   * And submit button should be disabled
+   */
+  expect(domSubmit.disabled).toBe(true);
+
+  /**
    * After a while, component should not be visible on the page
    */
   act(() => {

@@ -7,7 +7,7 @@ interface LoggedOutUserData {
   loggedOutUser?: UserFragment;
 }
 
-const LOGGED_OUT_USER_MUTATION = gql`
+const LOGGED_OUT_USER_QUERY = gql`
   query LoggedOutUser {
     loggedOutUser @client {
       ...UserFragment
@@ -18,5 +18,5 @@ const LOGGED_OUT_USER_MUTATION = gql`
 `;
 
 export function useLoggedOutUserMutation() {
-  return useQuery<LoggedOutUserData>(LOGGED_OUT_USER_MUTATION);
+  return useQuery<LoggedOutUserData>(LOGGED_OUT_USER_QUERY);
 }

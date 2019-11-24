@@ -14,7 +14,7 @@ export enum ActionTypes {
   SUBMIT = "@reset-password/submit",
   SUBMITTING = "@reset-password/submitting",
   SUBMIT_SUCCESS = "@reset-password/submit-success",
-  DESTROY = "@reset-password/destroy",
+  CLOSE = "@reset-password/close",
 }
 
 export const validationSchema: { [k in KeyOfFormState]: StringSchema } = {
@@ -115,7 +115,7 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
 
             break;
 
-          case ActionTypes.DESTROY:
+          case ActionTypes.CLOSE:
             {
               proxy.value = "destroyed";
             }
@@ -306,5 +306,5 @@ export type Action =
       type: ActionTypes.SUBMIT_SUCCESS;
     }
   | {
-      type: ActionTypes.DESTROY;
+      type: ActionTypes.CLOSE;
     };
