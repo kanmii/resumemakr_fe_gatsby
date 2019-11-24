@@ -42,12 +42,6 @@ export const PASSWORDS_DO_NOT_MATCH_ERROR_MESSAGE = "Passwords do not match";
 export const PASSWORD_TOO_SHORT_ERROR_MESSAGE = "must be at least 4 characters";
 export const IS_INVALID_ERROR_MESSAGE = "is invalid";
 
-export const PasswordConfirmationValidationSchema = Yup.string()
-  .required("is required")
-  .test("passwords-match", PASSWORDS_DO_NOT_MATCH_ERROR_MESSAGE, function(val) {
-    return this.parent.password === val;
-  });
-
 export const emailValidationSchema = Yup.string()
   .email(IS_INVALID_ERROR_MESSAGE)
   .required("is required");
@@ -56,3 +50,11 @@ export const passwordValidationSchema = Yup.string()
   .min(4, PASSWORD_TOO_SHORT_ERROR_MESSAGE)
   .max(50, "is too Long!")
   .required("is required");
+
+export const PasswordConfirmationValidationSchema = passwordValidationSchema.test(
+  "passwords-match",
+  PASSWORDS_DO_NOT_MATCH_ERROR_MESSAGE,
+  function(val) {
+    return this.parent.password === val;
+  },
+);

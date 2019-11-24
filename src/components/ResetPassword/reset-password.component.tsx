@@ -10,14 +10,18 @@ import {
   domEmailInputId,
   domPasswordInputId,
   domPasswordConfirmationInputId,
-  domSubmitBtn,
-  domSubmittingOverlay,
-  domSubmitSuccess,
+  domSubmitBtnId,
+  domSubmittingOverlayId,
+  domSubmitSuccessId,
   domFormId,
   domFormFieldSuccessClass,
   domPrefix,
   domPrefixSubmittingClass,
   domPrefixSuccessClass,
+  domEmailErrorId,
+  domPasswordErrorId,
+  domPasswordConfirmationErrorId,
+  domSubmitServerErrorsId,
 } from "./reset-password.dom-selectors";
 import {
   Props,
@@ -29,6 +33,7 @@ import {
 import "./reset-password.styles.scss";
 import makeClassNames from "classnames";
 import { Loading } from "../Loading/loading.component";
+import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
 
 const CLOSE_TIMEOUT_MS = 50000;
 
@@ -76,7 +81,7 @@ export function ResetPassword(props: Props) {
       })}
     >
       {stateValue === "submitting" && (
-        <div id={domSubmittingOverlay} className={domSubmittingOverlay}>
+        <div id={domSubmittingOverlayId} className={domSubmittingOverlayId}>
           <Loading />
         </div>
       )}
@@ -85,7 +90,7 @@ export function ResetPassword(props: Props) {
 
       <Modal.Content>
         {stateValue === "submitSuccess" && (
-          <Message success={true} id={domSubmitSuccess}>
+          <Message success={true} id={domSubmitSuccessId}>
             <Message.Header>Password changed successfully</Message.Header>
 
             <Message.Content
@@ -106,6 +111,16 @@ export function ResetPassword(props: Props) {
           </Message>
         )}
 
+        {stateMachine.value === "serverErrors" && (
+          <Message error={true} id={domSubmitServerErrorsId}>
+            <Message.Header>Errors occurred</Message.Header>
+
+            <Message.Content>
+              {stateMachine.serverErrors.context.errors}
+            </Message.Content>
+          </Message>
+        )}
+
         <Form
           id={domFormId}
           onSubmit={async () => {
@@ -117,20 +132,22 @@ export function ResetPassword(props: Props) {
               type: ActionTypes.SUBMITTING,
             });
 
-            await resetPassword({
-              variables: {
-                input: {
-                  email: formFields.email.edit.context.value,
-                  password: formFields.password.edit.context.value,
-                  passwordConfirmation:
-                    formFields.passwordConfirmation.edit.context.value,
+            try {
+              await resetPassword({
+                variables: {
+                  input: formState.context,
                 },
-              },
-            });
+              });
 
-            dispatch({
-              type: ActionTypes.SUBMIT_SUCCESS,
-            });
+              dispatch({
+                type: ActionTypes.SUBMIT_SUCCESS,
+              });
+            } catch (error) {
+              dispatch({
+                type: ActionTypes.SERVER_ERRORS,
+                error,
+              });
+            }
           }}
         >
           <Form.Field
@@ -144,7 +161,7 @@ export function ResetPassword(props: Props) {
 
             <Input
               id={domEmailInputId}
-              value={formFields.email.edit.context.value}
+              value={formState.context.email}
               onChange={(_, { value }) => {
                 dispatch({
                   type: ActionTypes.FORM_CHANGED,
@@ -159,6 +176,12 @@ export function ResetPassword(props: Props) {
                 });
               }}
             />
+
+            {formFields.email.validity.value === "invalid" && (
+              <FormCtrlError id={domEmailErrorId}>
+                {formFields.email.validity.invalid.context.error}
+              </FormCtrlError>
+            )}
           </Form.Field>
 
           <Form.Field
@@ -172,7 +195,7 @@ export function ResetPassword(props: Props) {
 
             <Input
               id={domPasswordInputId}
-              value={formFields.password.edit.context.value}
+              value={formState.context.password}
               type="password"
               onChange={(_, { value }) => {
                 dispatch({
@@ -188,6 +211,12 @@ export function ResetPassword(props: Props) {
                 });
               }}
             />
+
+            {formFields.password.validity.value === "invalid" && (
+              <FormCtrlError id={domPasswordErrorId}>
+                {formFields.password.validity.invalid.context.error}
+              </FormCtrlError>
+            )}
           </Form.Field>
 
           <Form.Field
@@ -204,7 +233,7 @@ export function ResetPassword(props: Props) {
             <Input
               id={domPasswordConfirmationInputId}
               type="password"
-              value={formFields.passwordConfirmation.edit.context.value}
+              value={formState.context.passwordConfirmation}
               onChange={(_, { value }) => {
                 dispatch({
                   type: ActionTypes.FORM_CHANGED,
@@ -219,6 +248,12 @@ export function ResetPassword(props: Props) {
                 });
               }}
             />
+
+            {formFields.passwordConfirmation.validity.value === "invalid" && (
+              <FormCtrlError id={domPasswordConfirmationErrorId}>
+                {formFields.passwordConfirmation.validity.invalid.context.error}
+              </FormCtrlError>
+            )}
           </Form.Field>
 
           <div
@@ -228,9 +263,14 @@ export function ResetPassword(props: Props) {
             }}
           >
             <Button
-              id={domSubmitBtn}
+              id={domSubmitBtnId}
               type="submit"
-              disabled={formState.validity.value !== "valid"}
+              disabled={
+                !(
+                  stateMachine.value === "editable" &&
+                  stateMachine.editable.form.validity.value === "valid"
+                )
+              }
               color="green"
               inverted={true}
             >

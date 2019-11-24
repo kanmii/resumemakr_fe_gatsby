@@ -1,15 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import React, { ComponentType } from "react";
-import { render, cleanup, fireEvent, wait } from "@testing-library/react";
+import {
+  render,
+  cleanup,
+  fireEvent,
+  waitForElement,
+} from "@testing-library/react";
 import { ResetPassword } from "../components/ResetPassword/reset-password.component";
 import {
   domEmailInputId,
   domPasswordInputId,
   domPasswordConfirmationInputId,
-  domSubmitBtn,
-  domSubmittingOverlay,
-  domSubmitSuccess,
+  domSubmitBtnId,
+  domSubmittingOverlayId,
+  domSubmitSuccessId,
+  domEmailErrorId,
+  domPasswordConfirmationErrorId,
+  domPasswordErrorId,
+  domSubmitServerErrorsId,
 } from "../components/ResetPassword/reset-password.dom-selectors";
 import { Props } from "../components/ResetPassword/reset-password.utils";
 import { fillField } from "./test_utils";
@@ -19,6 +28,8 @@ import {
 } from "../graphql/apollo/reset-password.mutation";
 import { ResetPasswordSimpleVariables } from "../graphql/apollo-types/ResetPasswordSimple";
 import { act } from "react-dom/test-utils";
+import { ApolloError } from "apollo-client";
+import { GraphQLError } from "graphql";
 
 const mockLoadingComponentId = "mock-loading";
 jest.mock("../components/Loading/loading.component", () => ({
@@ -60,7 +71,9 @@ it("renders with default email and submits successfully", async () => {
   /**
    * And submit button should be disabled
    */
-  const domSubmit = document.getElementById(domSubmitBtn) as HTMLButtonElement;
+  const domSubmit = document.getElementById(
+    domSubmitBtnId,
+  ) as HTMLButtonElement;
   expect(domSubmit.disabled).toBe(true);
 
   /**
@@ -87,7 +100,7 @@ it("renders with default email and submits successfully", async () => {
   /**
    * And no overlay should be visible
    */
-  expect(document.getElementById(domSubmittingOverlay)).toBeNull();
+  expect(document.getElementById(domSubmittingOverlayId)).toBeNull();
 
   /**
    * And loading UI should not be visible
@@ -103,12 +116,12 @@ it("renders with default email and submits successfully", async () => {
   /**
    * Then an overlay should be visible
    */
-  expect(document.getElementById(domSubmittingOverlay)).not.toBeNull();
+  expect(document.getElementById(domSubmittingOverlayId)).not.toBeNull();
 
   /**
    * And no success UI should be visible
    */
-  expect(document.getElementById(domSubmitSuccess)).toBeNull();
+  expect(document.getElementById(domSubmitSuccessId)).toBeNull();
 
   /**
    * And loading UI should be visible
@@ -116,7 +129,14 @@ it("renders with default email and submits successfully", async () => {
 
   expect(document.getElementById(mockLoadingComponentId)).not.toBeNull();
 
-  await wait(() => true);
+  /**
+   * And success UI should be visible
+   */
+  const domSuccessUi = await waitForElement(() =>
+    document.getElementById(domSubmitSuccessId),
+  );
+
+  expect(domSuccessUi).not.toBeNull();
 
   /**
    * And correct data should be submitted
@@ -133,14 +153,9 @@ it("renders with default email and submits successfully", async () => {
   });
 
   /**
-   * And overlay should become invisible
+   * And overlay should not be visible
    */
-  expect(document.getElementById(domSubmittingOverlay)).toBeNull();
-
-  /**
-   * And success UI should be visible
-   */
-  expect(document.getElementById(domSubmitSuccess)).not.toBeNull();
+  expect(document.getElementById(domSubmittingOverlayId)).toBeNull();
 
   /**
    * And submit button should be disabled
@@ -159,6 +174,117 @@ it("renders with default email and submits successfully", async () => {
   });
 
   expect(mockOnClose).toHaveBeenCalled();
+});
+
+it.only("renders form and server errors", async () => {
+  /**
+   * Given that server will reject request
+   */
+  const { ui, mockResetPassword } = makeComp();
+
+  mockResetPassword.mockRejectedValue(
+    new ApolloError({
+      graphQLErrors: [new GraphQLError("error")],
+    }),
+  );
+
+  /**
+   * When we use component
+   */
+  render(ui);
+  const domEmail = document.getElementById(domEmailInputId) as HTMLInputElement;
+  const domPassword = document.getElementById(
+    domPasswordInputId,
+  ) as HTMLInputElement;
+  const domPasswordConfirmation = document.getElementById(
+    domPasswordConfirmationInputId,
+  ) as HTMLInputElement;
+
+  /**
+   * Then we should not see form field errors
+   */
+  expect(document.getElementById(domEmailErrorId)).toBeNull();
+  expect(document.getElementById(domPasswordErrorId)).toBeNull();
+  expect(document.getElementById(domPasswordConfirmationErrorId)).toBeNull();
+
+  /**
+   * And we complete form fields with invalid data
+   */
+  fillField(domEmail, "aa");
+  fireEvent.blur(domEmail);
+
+  fillField(domPassword, "aa");
+  fireEvent.blur(domPassword);
+
+  fillField(domPasswordConfirmation, "aa");
+  fireEvent.blur(domPasswordConfirmation);
+
+  /**
+   * Then we should see form fields error messages
+   */
+  expect(document.getElementById(domEmailErrorId)).not.toBeNull();
+  expect(document.getElementById(domPasswordErrorId)).not.toBeNull();
+  expect(
+    document.getElementById(domPasswordConfirmationErrorId),
+  ).not.toBeNull();
+
+  /**
+   * When form fields are filled with valid data
+   */
+
+  fillField(domEmail, "a@b.com");
+  fireEvent.blur(domEmail);
+
+  fillField(domPassword, "12345");
+  fireEvent.blur(domPassword);
+
+  fillField(domPasswordConfirmation, "12345");
+  fireEvent.blur(domPasswordConfirmation);
+
+  /**
+   * Then form field errors should not be visible
+   */
+  expect(document.getElementById(domEmailErrorId)).toBeNull();
+  expect(document.getElementById(domPasswordErrorId)).toBeNull();
+  expect(document.getElementById(domPasswordConfirmationErrorId)).toBeNull();
+
+  /**
+   * However when password confirmation field is completed with data that differs
+   * from password field
+   */
+  fillField(domPasswordConfirmation, "12346");
+  fireEvent.blur(domPasswordConfirmation);
+
+  /**
+   * Then password confirmation error should be visible
+   */
+  expect(
+    document.getElementById(domPasswordConfirmationErrorId),
+  ).not.toBeNull();
+
+  /**
+   * When all fields have been correctly completed
+   */
+  fillField(domPasswordConfirmation, "12345");
+  fireEvent.blur(domPasswordConfirmation);
+
+  /**
+   * Then we should not see submission error UI
+   */
+  expect(document.getElementById(domSubmitServerErrorsId)).toBeNull();
+
+  /**
+   * When form is submitted
+   */
+  (document.getElementById(domSubmitBtnId) as HTMLElement).click();
+
+  /**
+   * Then submission error UI should be visible
+   */
+  const domErrorUi = await waitForElement(() =>
+    document.getElementById(domSubmitServerErrorsId),
+  );
+  expect(domErrorUi).not.toBeNull();
 });
 
 ////////////////////////// HELPER FUNCTIONS ///////////////////////////

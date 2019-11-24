@@ -4,9 +4,11 @@ import immer from "immer";
 import {
   emailValidationSchema,
   passwordValidationSchema,
+  PasswordConfirmationValidationSchema,
 } from "../components.utils";
-import { StringSchema } from "yup";
 import { ResetPasswordSimpleGraphqlProps } from "../../graphql/apollo/reset-password.mutation";
+import * as Yup from "yup";
+import { ApolloError } from "apollo-client";
 
 export enum ActionTypes {
   FORM_CHANGED = "@reset-password/form-field-changed",
@@ -15,13 +17,16 @@ export enum ActionTypes {
   SUBMITTING = "@reset-password/submitting",
   SUBMIT_SUCCESS = "@reset-password/submit-success",
   CLOSE = "@reset-password/close",
+  SERVER_ERRORS = "@reset-password/server-errors",
 }
 
-export const validationSchema: { [k in KeyOfFormState]: StringSchema } = {
+type ValidationSchemaShape = Editable["editable"]["form"]["context"];
+
+export const validationSchema = Yup.object<ValidationSchemaShape>().shape({
   email: emailValidationSchema,
   password: passwordValidationSchema,
-  passwordConfirmation: passwordValidationSchema,
-};
+  passwordConfirmation: PasswordConfirmationValidationSchema,
+});
 
 export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
   wrapReducer(
@@ -33,13 +38,14 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
           case ActionTypes.FORM_CHANGED:
             {
               const { fieldName, value } = payload as FormFieldChangedPayload;
+              const form = (proxy as Editable).editable.form;
               const formFields = (proxy as Editable).editable.form.fields;
 
               const formField = (formFields[
                 fieldName as KeyOfFormState
               ] as FormFieldState).edit;
 
-              formField.context.value = value;
+              form.context[fieldName] = value;
               formField.value = "changing";
             }
 
@@ -58,12 +64,12 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
               const editingState = fieldState.edit as FormFieldEditChanging;
 
               if (editingState.value === "changing") {
-                const value = fieldState.edit.context.value;
                 const validity = fieldState.validity;
                 let formValid: boolean | null = null;
 
                 try {
-                  validationSchema[fieldName].validateSync(value);
+                  validationSchema.validateSyncAt(fieldName, formState.context);
+
                   fieldState.edit.value = "changed";
                   validity.value = "valid";
                 } catch (error) {
@@ -111,8 +117,6 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
           case ActionTypes.SUBMIT_SUCCESS:
             {
               proxy.value = "submitSuccess";
-              const editableState = proxy as Editable;
-              editableState.editable.form.validity.value = "success";
             }
 
             break;
@@ -123,6 +127,31 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
             }
 
             break;
+
+          case ActionTypes.SERVER_ERRORS:
+            {
+              const {
+                error: { graphQLErrors, networkError },
+              } = payload as ServerErrorsPayload;
+
+              const serverErrorsState = proxy as ServerErrors;
+              serverErrorsState.value = "serverErrors";
+              serverErrorsState.serverErrors = {
+                context: {
+                  errors: "",
+                },
+              };
+
+              if (graphQLErrors) {
+                serverErrorsState.serverErrors.context.errors =
+                  graphQLErrors[0].message;
+              } else if (networkError) {
+                serverErrorsState.serverErrors.context.errors =
+                  networkError.message;
+              }
+            }
+
+            break;
         }
       });
     },
@@ -130,20 +159,22 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
   );
 
 export function initiState(props: Props): IStateMachine {
-  const { email } = props;
+  const { email = "" } = props;
 
   return {
     value: "editable",
     editable: {
       form: {
+        context: {
+          email,
+          password: "",
+          passwordConfirmation: "",
+        },
         fields: {
           email: makeInitialEmailState(email),
           password: {
             edit: {
               value: "unchanged",
-              context: {
-                value: "",
-              },
             },
             validity: {
               value: "unvalidated",
@@ -152,9 +183,6 @@ export function initiState(props: Props): IStateMachine {
           passwordConfirmation: {
             edit: {
               value: "unchanged",
-              context: {
-                value: "",
-              },
             },
             validity: {
               value: "unvalidated",
@@ -173,9 +201,6 @@ function makeInitialEmailState(value: string): FormFieldState {
   const formState: FormFieldState = {
     edit: {
       value: "unchanged",
-      context: {
-        value,
-      },
     },
     validity: {
       value: "unvalidated",
@@ -186,7 +211,10 @@ function makeInitialEmailState(value: string): FormFieldState {
     formState.edit.value = "changed";
 
     try {
-      validationSchema.email.validateSync(value);
+      validationSchema.validateSyncAt("email", { email: value } as Yup.Shape<
+        ValidationSchemaShape,
+        ValidationSchemaShape
+      >);
       formState.validity.value = "valid";
     } catch (error) {
       formState.validity = {
@@ -203,6 +231,15 @@ function makeInitialEmailState(value: string): FormFieldState {
   return formState;
 }
 
+interface ServerErrors {
+  value: "serverErrors";
+  serverErrors: {
+    context: {
+      errors: string;
+    };
+  };
+}
+
 type IStateMachine =
   | {
       value: "submitting";
@@ -213,15 +250,21 @@ type IStateMachine =
   | {
       value: "destroyed";
     }
-  | Editable;
+  | Editable
+  | ServerErrors;
 
 export interface Editable {
   value: "editable";
   editable: {
     form: {
+      context: {
+        email: string;
+        password: string;
+        passwordConfirmation: string;
+      };
       fields: FormState;
       validity: {
-        value: "valid" | "invalid" | "success";
+        value: "valid" | "invalid"
       };
     };
   };
@@ -247,16 +290,12 @@ type FormFieldValidity =
     }
   | FormFieldInvalid;
 
-type FormFieldEdit = {
-  context: {
-    value: string;
-  };
-} & (
+type FormFieldEdit =
   | {
       value: "unchanged";
     }
   | FormFieldEditChanged
-  | FormFieldEditChanging);
+  | FormFieldEditChanging;
 
 interface FormFieldEditChanged {
   value: "changed";
@@ -291,6 +330,10 @@ interface FormFieldBlurredPayload {
   fieldName: KeyOfFormState;
 }
 
+interface ServerErrorsPayload {
+  error: ApolloError;
+}
+
 export type Action =
   | ({
       type: ActionTypes.FORM_CHANGED;
@@ -309,4 +352,7 @@ export type Action =
     }
   | {
       type: ActionTypes.CLOSE;
-    };
+    }
+  | ({
+      type: ActionTypes.SERVER_ERRORS;
+    } & ServerErrorsPayload);
