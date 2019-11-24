@@ -125,6 +125,7 @@ export function ResetPassword(props: Props) {
         <Form
           id={domFormId}
           onSubmit={async () => {
+            // istanbul ignore next: needs some hacking to simulate in test
             if (formState.validity.value !== "valid") {
               return;
             }

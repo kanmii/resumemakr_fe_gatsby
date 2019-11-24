@@ -21,7 +21,13 @@ import {
   domSubmitServerErrorsId,
   domPrefix,
 } from "../components/ResetPassword/reset-password.dom-selectors";
-import { Props } from "../components/ResetPassword/reset-password.utils";
+import {
+  Props,
+  initiState,
+  StateMachine,
+  reducer,
+  ActionTypes,
+} from "../components/ResetPassword/reset-password.utils";
 import { fillField, closeMessage } from "./test_utils";
 import {
   ResetPasswordSimpleMutationFnOptions,
@@ -31,6 +37,7 @@ import { ResetPasswordSimpleVariables } from "../graphql/apollo-types/ResetPassw
 import { act } from "react-dom/test-utils";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
+import { IS_INVALID_ERROR_MESSAGE } from "../components/components.utils";
 
 const mockLoadingComponentId = "mock-loading";
 jest.mock("../components/Loading/loading.component", () => ({
@@ -374,6 +381,75 @@ describe("ui", () => {
      */
     expect(document.getElementById(domPrefix)).toBeNull();
     expect(mockOnClose).toHaveBeenCalled();
+  });
+});
+
+describe("reducer", () => {
+  test("init with invalid email returns invalid state", () => {
+    const state = initiState({ email: "a" } as Props);
+
+    const expected: StateMachine = {
+      value: "editable",
+      editable: {
+        form: {
+          context: {
+            email: "a",
+            password: "",
+            passwordConfirmation: "",
+          },
+
+          fields: {
+            email: {
+              edit: {
+                value: "changed",
+              },
+              validity: {
+                value: "invalid",
+                invalid: {
+                  context: {
+                    error: IS_INVALID_ERROR_MESSAGE,
+                  },
+                },
+              },
+            },
+
+            password: {
+              edit: {
+                value: "unchanged",
+              },
+              validity: {
+                value: "unvalidated",
+              },
+            },
+
+            passwordConfirmation: {
+              edit: {
+                value: "unchanged",
+              },
+              validity: {
+                value: "unvalidated",
+              },
+            },
+          },
+
+          validity: {
+            value: "invalid",
+          },
+        },
+      },
+    };
+
+    expect(state).toEqual(expected);
+  });
+
+  test("blur event is void if form field is not changing", () => {
+    const state = initiState({ email: "a@n.com" } as Props);
+    const nextState = reducer(state, {
+      type: ActionTypes.FORM_FIELD_BLURRED,
+      fieldName: "password",
+    });
+
+    expect(state).toEqual(nextState);
   });
 });
 

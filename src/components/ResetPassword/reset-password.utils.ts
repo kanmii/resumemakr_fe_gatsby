@@ -28,7 +28,7 @@ export const validationSchema = Yup.object<ValidationSchemaShape>().shape({
   passwordConfirmation: PasswordConfirmationValidationSchema,
 });
 
-export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
+export const reducer: Reducer<StateMachine, Action> = (state, action) =>
   wrapReducer(
     state,
     action,
@@ -145,10 +145,11 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
               if (networkError) {
                 serverErrorsState.serverErrors.context.errors =
                   networkError.message;
-              } else if (graphQLErrors) {
-                serverErrorsState.serverErrors.context.errors =
-                  graphQLErrors[0].message;
+                return;
               }
+
+              serverErrorsState.serverErrors.context.errors =
+                graphQLErrors[0].message;
             }
 
             break;
@@ -158,7 +159,7 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
     //  true,
   );
 
-export function initiState(props: Props): IStateMachine {
+export function initiState(props: Props): StateMachine {
   const { email = "" } = props;
 
   return {
@@ -240,7 +241,7 @@ interface ServerErrors {
   };
 }
 
-type IStateMachine =
+export type StateMachine =
   | {
       value: "submitting";
     }
