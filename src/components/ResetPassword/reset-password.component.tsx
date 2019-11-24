@@ -35,7 +35,7 @@ import makeClassNames from "classnames";
 import { Loading } from "../Loading/loading.component";
 import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
 
-const CLOSE_TIMEOUT_MS = 50000;
+const CLOSE_TIMEOUT_MS = 5000;
 
 export function ResetPassword(props: Props) {
   const [stateMachine, dispatch] = useReducer(reducer, props, initiState);
