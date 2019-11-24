@@ -7,7 +7,6 @@ import {
 } from "../components.utils";
 import { StringSchema } from "yup";
 import { ResetPasswordSimpleGraphqlProps } from "../../graphql/apollo/reset-password.mutation";
-import { RouteComponentProps } from "@reach/router";
 
 export enum ActionTypes {
   FORM_CHANGED = "@reset-password/form-field-changed",
@@ -261,9 +260,7 @@ interface FormConrolServerError {
   };
 }
 
-export interface Props
-  extends ResetPasswordSimpleGraphqlProps,
-    RouteComponentProps {
+export interface Props extends ResetPasswordSimpleGraphqlProps {
   email: string;
 }
 
