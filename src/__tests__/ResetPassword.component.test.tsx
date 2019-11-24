@@ -176,7 +176,7 @@ it("renders with default email and submits successfully", async () => {
   expect(mockOnClose).toHaveBeenCalled();
 });
 
-it.only("renders form and server errors", async () => {
+it("renders form and graphQLErrors errors", async () => {
   /**
    * Given that server will reject request
    */
@@ -265,6 +265,61 @@ it.only("renders form and server errors", async () => {
   /**
    * When all fields have been correctly completed
    */
+  fillField(domPasswordConfirmation, "12345");
+  fireEvent.blur(domPasswordConfirmation);
+
+  /**
+   * Then we should not see submission error UI
+   */
+  expect(document.getElementById(domSubmitServerErrorsId)).toBeNull();
+
+  /**
+   * When form is submitted
+   */
+  (document.getElementById(domSubmitBtnId) as HTMLElement).click();
+
+  /**
+   * Then submission error UI should be visible
+   */
+  const domErrorUi = await waitForElement(() =>
+    document.getElementById(domSubmitServerErrorsId),
+  );
+  expect(domErrorUi).not.toBeNull();
+});
+
+it("renders network error", async () => {
+  /**
+   * Given that server will reject request
+   */
+  const { ui, mockResetPassword } = makeComp();
+
+  mockResetPassword.mockRejectedValue(
+    new ApolloError({
+      networkError: new Error("error"),
+    }),
+  );
+
+  /**
+   * When we use component
+   */
+  render(ui);
+  const domEmail = document.getElementById(domEmailInputId) as HTMLInputElement;
+  const domPassword = document.getElementById(
+    domPasswordInputId,
+  ) as HTMLInputElement;
+  const domPasswordConfirmation = document.getElementById(
+    domPasswordConfirmationInputId,
+  ) as HTMLInputElement;
+
+  /**
+   * When all fields have been correctly completed
+   */
+  fillField(domEmail, "a@b.com");
+  fireEvent.blur(domEmail);
+
+  fillField(domPassword, "12345");
+  fireEvent.blur(domPassword);
+
   fillField(domPasswordConfirmation, "12345");
   fireEvent.blur(domPasswordConfirmation);
 

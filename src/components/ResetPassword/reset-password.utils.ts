@@ -142,12 +142,12 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
                 },
               };
 
-              if (graphQLErrors) {
-                serverErrorsState.serverErrors.context.errors =
-                  graphQLErrors[0].message;
-              } else if (networkError) {
+              if (networkError) {
                 serverErrorsState.serverErrors.context.errors =
                   networkError.message;
+              } else if (graphQLErrors) {
+                serverErrorsState.serverErrors.context.errors =
+                  graphQLErrors[0].message;
               }
             }
 
@@ -264,7 +264,7 @@ export interface Editable {
       };
       fields: FormState;
       validity: {
-        value: "valid" | "invalid"
+        value: "valid" | "invalid";
       };
     };
   };
