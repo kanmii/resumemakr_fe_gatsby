@@ -8,3 +8,4 @@ export const domSubmitSuccess = `${domPrefix}-submit-success`;
 export const domFormFieldSuccessClass = `${domPrefix}-form-field-success`
 export const domFormId = `${domPrefix}-form`;
 export const domPrefixSubmittingClass = `${domPrefix}--submitting`
+export const domPrefixSuccessClass = `${domPrefix}--success`

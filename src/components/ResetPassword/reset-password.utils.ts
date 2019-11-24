@@ -111,6 +111,8 @@ export const reducer: Reducer<IStateMachine, Action> = (state, action) =>
           case ActionTypes.SUBMIT_SUCCESS:
             {
               proxy.value = "submitSuccess";
+              const editableState = proxy as Editable;
+              editableState.editable.form.validity.value = "success";
             }
 
             break;
@@ -219,7 +221,7 @@ export interface Editable {
     form: {
       fields: FormState;
       validity: {
-        value: "valid" | "invalid";
+        value: "valid" | "invalid" | "success";
       };
     };
   };

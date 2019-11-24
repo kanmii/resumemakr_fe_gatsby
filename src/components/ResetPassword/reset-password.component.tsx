@@ -17,6 +17,7 @@ import {
   domFormFieldSuccessClass,
   domPrefix,
   domPrefixSubmittingClass,
+  domPrefixSuccessClass,
 } from "./reset-password.dom-selectors";
 import {
   Props,
@@ -27,6 +28,7 @@ import {
 } from "./reset-password.utils";
 import "./reset-password.styles.scss";
 import makeClassNames from "classnames";
+import { Loading } from "../Loading/loading.component";
 
 const CLOSE_TIMEOUT_MS = 50000;
 
@@ -69,20 +71,48 @@ export function ResetPassword(props: Props) {
       }}
       onUnmount={onClose}
       className={makeClassNames(domPrefix, {
-        [domPrefixSubmittingClass]: stateValue === "submitting" || true,
+        [domPrefixSubmittingClass]: stateValue === "submitting",
+        [domPrefixSuccessClass]: stateValue === "submitSuccess",
       })}
     >
-      {(stateValue === "submitting" || true) && (
-        <div id={domSubmittingOverlay} className={domSubmittingOverlay} />
+      {stateValue === "submitting" && (
+        <div id={domSubmittingOverlay} className={domSubmittingOverlay}>
+          <Loading />
+        </div>
       )}
 
       <Header as="h3" content="Reset Password" />
 
       <Modal.Content>
+        {stateValue === "submitSuccess" && (
+          <Message success={true} id={domSubmitSuccess}>
+            <Message.Header>Password changed successfully</Message.Header>
+
+            <Message.Content
+              style={{
+                fontSize: "0.95rem",
+              }}
+            >
+              <div
+                style={{
+                  marginBottom: "10px",
+                }}
+              >
+                You will be directed to login in {CLOSE_TIMEOUT_MS / 1000} secs.
+              </div>
+
+              <div>Or you may use the close button to return to login.</div>
+            </Message.Content>
+          </Message>
+        )}
+
         <Form
-          success={formState.validity.value === "valid"}
           id={domFormId}
           onSubmit={async () => {
+            if (formState.validity.value !== "valid") {
+              return;
+            }
+
             dispatch({
               type: ActionTypes.SUBMITTING,
             });
@@ -103,29 +133,6 @@ export function ResetPassword(props: Props) {
             });
           }}
         >
-          {stateValue === "submitSuccess" && (
-            <Message success={true} id={domSubmitSuccess}>
-              <Message.Header>Password changed successfully</Message.Header>
-
-              <Message.Content
-                style={{
-                  fontSize: "0.95rem",
-                }}
-              >
-                <div
-                  style={{
-                    marginBottom: "10px",
-                  }}
-                >
-                  You will be directed to login in {CLOSE_TIMEOUT_MS / 1000}{" "}
-                  secs.
-                </div>
-
-                <div>Or you may use the close button to return to login.</div>
-              </Message.Content>
-            </Message>
-          )}
-
           <Form.Field
             className={makeClassNames({
               [domFormFieldSuccessClass]:
@@ -223,10 +230,7 @@ export function ResetPassword(props: Props) {
             <Button
               id={domSubmitBtn}
               type="submit"
-              disabled={
-                formState.validity.value === "invalid" ||
-                stateValue === "submitSuccess"
-              }
+              disabled={formState.validity.value !== "valid"}
               color="green"
               inverted={true}
             >

@@ -21,6 +21,11 @@ import {
 import { ResetPasswordSimpleVariables } from "../graphql/apollo-types/ResetPasswordSimple";
 import { act } from "react-dom/test-utils";
 
+const mockLoadingComponentId = "mock-loading";
+jest.mock("../components/Loading/loading.component", () => ({
+  Loading: () => <div id={mockLoadingComponentId} />,
+}));
+
 beforeEach(() => {
   jest.useFakeTimers();
 });
@@ -60,13 +65,6 @@ it("renders with default email and submits successfully", async () => {
   expect(domSubmit.disabled).toBe(true);
 
   /**
-   * And form should not have success
-   */
-
-  const domForm = document.getElementById(domFormId) as HTMLFormElement;
-  expect(domForm.classList).not.toContain("success");
-
-  /**
    * When password is completed
    */
   const domPassword = document.getElementById(domPasswordInputId) as any;
@@ -88,15 +86,15 @@ it("renders with default email and submits successfully", async () => {
   expect(domSubmit.disabled).toBe(false);
 
   /**
-   * And form should have success color
-   */
-
-  expect(domForm.classList).toContain("success");
-
-  /**
    * And no overlay should be visible
    */
   expect(document.getElementById(domSubmittingOverlay)).toBeNull();
+
+  /**
+   * And loading UI should not be visible
+   */
+
+  expect(document.getElementById(mockLoadingComponentId)).toBeNull();
 
   /**
    * When form is submitted
@@ -112,6 +110,12 @@ it("renders with default email and submits successfully", async () => {
    * And no success UI should be visible
    */
   expect(document.getElementById(domSubmitSuccess)).toBeNull();
+
+  /**
+   * And loading UI should be visible
+   */
+
+  expect(document.getElementById(mockLoadingComponentId)).not.toBeNull();
 
   await wait(() => true);
 
