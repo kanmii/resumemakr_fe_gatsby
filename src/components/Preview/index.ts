@@ -7,7 +7,7 @@ import {
 import { Preview as App } from "./preview.component";
 import { OwnProps, Mode, MatchProps, Props } from "./preview.utils";
 import {
-  getResumeQuery,
+  GET_RESUME_QUERY,
   GetResumeProps,
 } from "../../graphql/apollo/get-resume.query";
 import { withMatchHOC } from "../with-match-hoc";
@@ -21,7 +21,7 @@ const getResumeGql = graphql<
   GetResume,
   GetResumeVariables,
   GetResumeProps | void
->(getResumeQuery, {
+>(GET_RESUME_QUERY, {
   props: ({ data }) => data,
 
   skip: ({ mode }) => mode === Mode.preview,

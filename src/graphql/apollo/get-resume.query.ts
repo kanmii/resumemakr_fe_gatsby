@@ -3,7 +3,7 @@ import { DataValue } from "react-apollo";
 import { resumeFullFrag } from "./resume_full.fragment";
 import { GetResume, GetResumeVariables } from "../apollo-types/GetResume";
 
-export const getResumeQuery = gql`
+export const GET_RESUME_QUERY = gql`
   query GetResume($input: GetResumeInput!) {
     getResume(input: $input) {
       ...ResumeFullFrag

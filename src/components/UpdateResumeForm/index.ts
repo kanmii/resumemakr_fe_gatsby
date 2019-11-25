@@ -13,7 +13,7 @@ import {
   getInitialValues,
 } from "./update-resume.utils";
 import {
-  getResumeQuery,
+  GET_RESUME_QUERY,
   GetResumeProps,
 } from "../../graphql/apollo/get-resume.query";
 import { withMatchHOC } from "../with-match-hoc";
@@ -24,7 +24,7 @@ const getResumeGql = graphql<
   GetResume,
   GetResumeVariables,
   GetResumeProps | void
->(getResumeQuery, {
+>(GET_RESUME_QUERY, {
   props: ({ data }) => {
     if (!data) {
       return data;

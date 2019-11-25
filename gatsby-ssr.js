@@ -3,6 +3,9 @@ import { ApolloProvider } from "react-apollo";
 import { HelmetProvider } from "react-helmet-async";
 import { ResumemakrProvider } from "./src/utils/context";
 import { RootHelmet } from "./src/components/root-helmet";
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { HttpLink } from 'apollo-link-http';
+import { ApolloClient } from 'apollo-client';
 
 const helmetContext = {};
 
@@ -11,19 +14,19 @@ export const wrapRootElement = ({ element }) => {
 
   const link = new HttpLink({
     uri: "/",
-    fetch: () => null
+    fetch: () => null,
   });
 
   const client = new ApolloClient({
     cache,
-    link
+    link,
   });
 
   return (
     <ApolloProvider client={client}>
       <ResumemakrProvider
         value={{
-          client
+          client,
         }}
       >
         <HelmetProvider context={helmetContext}>
@@ -43,7 +46,7 @@ export const onRenderBody = args => {
 function setupHelmet({
   setHeadComponents,
   setHtmlAttributes,
-  setBodyAttributes
+  setBodyAttributes,
 }) {
   const { helmet } = helmetContext;
 
@@ -59,7 +62,7 @@ function setupHelmet({
     helmet.link.toComponent(),
     helmet.style.toComponent(),
     helmet.script.toComponent(),
-    helmet.noscript.toComponent()
+    helmet.noscript.toComponent(),
   ]);
 
   setHtmlAttributes(helmet.htmlAttributes.toComponent());

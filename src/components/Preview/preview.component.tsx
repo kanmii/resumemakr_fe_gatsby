@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-member-accessibility */
-import React, { useLayoutEffect, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Icon } from "semantic-ui-react";
 import "./preview.styles.scss";
 import {
@@ -14,16 +14,14 @@ import { Props, Mode } from "./preview.utils";
 import { toServerUrl } from "../components.utils";
 import { prefix as domId } from "./preview.dom-selectors";
 
+const maxHeights = {
+  [Mode.download]: 850,
+  [Mode.preview]: 1000,
+};
+
 export function Preview(props: Props) {
   const { mode, getResume, loading, error } = props;
   const containerRef = React.createRef<HTMLDivElement>();
-
-  useLayoutEffect(function requireGlobalOverrides() {
-    if (mode === Mode.download) {
-      require("./override-globals.scss");
-    }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
-  }, []);
 
   useEffect(
     function setDimensions() {
@@ -35,10 +33,6 @@ export function Preview(props: Props) {
 
       let sumHeight = 0;
       let totalHeight = 0;
-      const maxHeights = {
-        [Mode.download]: 850,
-        [Mode.preview]: 1000,
-      };
 
       [].forEach.call(els, (el: HTMLElement, index: number) => {
         const h = getHeight(el);
@@ -49,16 +43,16 @@ export function Preview(props: Props) {
           const id = "page-break" + index;
 
           if (!document.getElementById(id)) {
-            const pageBreak = document.createElement("div");
-            pageBreak.id = id;
+            const domPageBreak = document.createElement("div");
+            domPageBreak.id = id;
 
             const classNames = ["html2pdf__page-break"];
             if (mode === Mode.preview) {
               classNames.push("preview");
             }
 
-            pageBreak.classList.add(...classNames);
-            el.before(pageBreak);
+            domPageBreak.classList.add(...classNames);
+            el.before(domPageBreak);
           }
 
           sumHeight = 0;
