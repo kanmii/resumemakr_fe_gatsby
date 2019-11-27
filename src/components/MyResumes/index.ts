@@ -53,7 +53,7 @@ const resumeTitlesGql = graphql<
 
   options: () => ({
     variables: {
-      howMany: 10
+      howMany: 10000
     },
 
     fetchPolicy: "cache-and-network"
