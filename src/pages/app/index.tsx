@@ -1,6 +1,6 @@
 import React from "react";
 import { Router } from "@reach/router";
-import { AuthRequired } from "../../components/AuthRequired";
+import { AuthRequired } from "../../components/AuthRequired/auth-required.component";
 import { MyResumes } from "../../components/MyResumes";
 import { Resume } from "../../components/Resume/resume-component";
 import { RESUMES_HOME_PATH, RESUME_PATH } from "../../routing";
