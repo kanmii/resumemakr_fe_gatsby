@@ -90,6 +90,9 @@ export interface CloneResume_cloneResume {
 }
 
 export interface CloneResume {
+  /**
+   * Create a resume by copying data from an existing resume
+   */
   cloneResume: CloneResume_cloneResume | null;
 }
 

@@ -23,6 +23,9 @@ export interface DeleteResume_deleteResume {
 }
 
 export interface DeleteResume {
+  /**
+   * Delete a resume
+   */
   deleteResume: DeleteResume_deleteResume | null;
 }
 

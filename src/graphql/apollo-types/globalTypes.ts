@@ -135,6 +135,15 @@ export interface UpdateResumeInput {
   title?: string | null;
 }
 
+/**
+ * variables for updating minimal attributes of resume.
+ */
+export interface UpdateResumeMinimalInput {
+  description?: string | null;
+  id: string;
+  title?: string | null;
+}
+
 //==============================================================
 // END Enums and Input Objects
 //==============================================================
