@@ -14,7 +14,6 @@ import {
   ResetPasswordSimple,
   ResetPasswordSimpleVariables,
 } from "../apollo-types/ResetPasswordSimple";
-import { ExecutionResult } from "graphql";
 
 export const RESET_PASSWORD_MUTATION = gql`
   mutation ResetPassword($input: ResetPasswordInput!) {
@@ -58,13 +57,12 @@ export function useResetPasswordSimpleMutationFn(): UseResetPasswordSimpleMutati
   return useMutation(RESET_PASSWORD_SIMPLE_MUTATION);
 }
 
-export type ResetPasswordSimpleMutationFn = (
-  options: MutationFunctionOptions<
-    ResetPasswordSimple,
-    ResetPasswordSimpleVariables
-  >,
-) => Promise<ExecutionResult<ResetPasswordSimple>>;
+export type ResetPasswordSimpleMutationFn = MutationFunction<
+  ResetPasswordSimple,
+  ResetPasswordSimpleVariables
+>;
 
+// used to type check test mock calls
 export type ResetPasswordSimpleMutationFnOptions = MutationFunctionOptions<
   ResetPasswordSimple,
   ResetPasswordSimpleVariables
@@ -78,4 +76,3 @@ export type UseResetPasswordSimpleMutation = [
   ResetPasswordSimpleMutationFn,
   MutationResult<ResetPasswordSimple>,
 ];
-
