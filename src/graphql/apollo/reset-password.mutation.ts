@@ -54,6 +54,10 @@ export const RESET_PASSWORD_SIMPLE_MUTATION = gql`
   ${userFragment}
 `;
 
+export function useResetPasswordSimpleMutationFn(): UseResetPasswordSimpleMutation {
+  return useMutation(RESET_PASSWORD_SIMPLE_MUTATION);
+}
+
 export type ResetPasswordSimpleMutationFn = (
   options: MutationFunctionOptions<
     ResetPasswordSimple,
@@ -75,8 +79,3 @@ export type UseResetPasswordSimpleMutation = [
   MutationResult<ResetPasswordSimple>,
 ];
 
-export function useResetPasswordSimpleMutationFn(): UseResetPasswordSimpleMutation {
-  return useMutation<ResetPasswordSimple, ResetPasswordSimpleVariables>(
-    RESET_PASSWORD_SIMPLE_MUTATION,
-  );
-}
