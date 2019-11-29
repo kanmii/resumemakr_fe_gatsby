@@ -1,44 +1,23 @@
-import { graphql,  } from "react-apollo";
-import compose from 'lodash/flowRight'
+import React from "react";
+import { graphql } from "react-apollo";
+import compose from "lodash/flowRight";
 import { MyResumes as App } from "./my-resumes.component";
-import CREATE_RESUME_TITLE, {
-  CreateResumeProps
-} from "../../graphql/apollo/create-resume.mutation";
 import CLONE_RESUME, {
-  CloneResumeProps
+  CloneResumeProps,
 } from "../../graphql/apollo/clone-resume.mutation";
 import {
-  CreateResume,
-  CreateResumeVariables
-} from "../../graphql/apollo-types/CreateResume";
-import {
   ResumeTitles,
-  ResumeTitlesVariables
+  ResumeTitlesVariables,
 } from "../../graphql/apollo-types/ResumeTitles";
 import {
   CloneResume,
-  CloneResumeVariables
+  CloneResumeVariables,
 } from "../../graphql/apollo-types/CloneResume";
 import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { deleteResumeGql } from "../../graphql/apollo/delete-resume.mutation";
 import { ResumeTitlesProps } from "./my-resumes.utils";
-
-const createResumeGql = graphql<
-  {},
-  CreateResume,
-  CreateResumeVariables,
-  CreateResumeProps | void
->(CREATE_RESUME_TITLE, {
-  props: ({ mutate }) => {
-    if (!mutate) {
-      return undefined;
-    }
-
-    return {
-      createResume: mutate
-    };
-  }
-});
+import { Props } from "./my-resumes.utils";
+import { useCreateResumeMutation } from "../../graphql/apollo/create-resume.mutation";
 
 const resumeTitlesGql = graphql<
   {},
@@ -48,16 +27,16 @@ const resumeTitlesGql = graphql<
 >(RESUME_TITLES_QUERY, {
   props: ({ data }) =>
     data && {
-      resumeTitlesGql: data
+      resumeTitlesGql: data,
     },
 
   options: () => ({
     variables: {
-      howMany: 10000
+      howMany: 10000,
     },
 
-    fetchPolicy: "cache-and-network"
-  })
+    fetchPolicy: "cache-and-network",
+  }),
 });
 
 const cloneResumeGql = graphql<
@@ -68,14 +47,15 @@ const cloneResumeGql = graphql<
 >(CLONE_RESUME, {
   props: ({ mutate }) => {
     return {
-      cloneResume: mutate
+      cloneResume: mutate,
     };
-  }
+  },
 });
 
-export const MyResumes = compose(
+export default compose(
   resumeTitlesGql,
-  createResumeGql,
   deleteResumeGql,
-  cloneResumeGql
-)(App);
+  cloneResumeGql,
+)((props: Props) => {
+  return <App {...props} useCreateResume={useCreateResumeMutation()} />;
+});

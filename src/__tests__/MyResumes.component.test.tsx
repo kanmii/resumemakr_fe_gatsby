@@ -38,6 +38,8 @@ import {
   createClonedResumeId,
   makeTriggerCloneId,
 } from "../components/MyResumes/my-resumes.dom-selectors";
+import { UseCreateResumeMutation } from "../graphql/apollo/create-resume.mutation";
+// import { useCreateResumeMutation } from "../graphql/apollo/create-resume.mutation";
 
 jest.mock("../components/Header/header.index", () => ({
   Header: jest.fn(() => null),
@@ -47,6 +49,8 @@ const mockLoadingId = "lolo";
 jest.mock("../components/Loading/loading.component", () => ({
   Loading: () => <div id={mockLoadingId} />,
 }));
+
+jest.mock("../graphql/apollo/create-resume.mutation");
 
 afterEach(() => {
   cleanup();
@@ -431,7 +435,9 @@ function setUp(props: Partial<Props> = {}) {
   const mockCreateResume = jest.fn();
   const mockDeleteResume = jest.fn();
   const mockCloneResume = jest.fn();
-  props.createResume = mockCreateResume;
+  props.useCreateResume = ([
+    mockCreateResume,
+  ] as unknown) as UseCreateResumeMutation;
   props.deleteResume = mockDeleteResume;
   props.cloneResume = mockCloneResume;
 

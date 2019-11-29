@@ -8,7 +8,7 @@ import Loadable  from "react-loadable";
 import { LoadableLoading } from "../../components/Loading/loading.component";
 
 const MyResumes = Loadable({
-  loader: () => import("../../components/MyResumes"),
+  loader: () => import("../../components/MyResumes/my-resumes.index"),
   loading: LoadableLoading,
 });
 

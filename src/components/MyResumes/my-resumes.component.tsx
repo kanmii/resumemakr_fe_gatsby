@@ -56,14 +56,15 @@ let action = Action.createResume;
 let idToClone = "0";
 let titleToClone = "";
 
-export function MyResumes(merkmale: Props) {
+export function MyResumes(props: Props) {
   const {
     navigate,
     deleteResume,
     resumeTitlesGql: { loading, error, listResumes },
-    createResume,
+    useCreateResume,
     cloneResume,
-  } = merkmale;
+  } = props;
+  const [createResume] = useCreateResume
   const edges = listResumes && listResumes.edges;
 
   const [offnenModal, einstellenOffnenModal] = useState(false);
