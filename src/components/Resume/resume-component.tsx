@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { WindowLocation, RouteComponentProps } from "@reach/router";
+import { WindowLocation} from "@reach/router";
 import "./resume.styles.scss";
 import { UpdateResumeForm } from "../UpdateResumeForm";
 import { Preview } from "../Preview";
@@ -7,6 +7,7 @@ import { Mode as PreviewMode } from "../Preview/preview.utils";
 import { ResumePathHash } from "../../routing";
 import { makeSiteTitle, setDocumentTitle } from "../../constants";
 import { ResumeHeader } from "./header";
+import {Props} from './resume-component.types'
 
 export function Resume(props: Props) {
   const { title } = props;
@@ -44,6 +45,5 @@ export function Resume(props: Props) {
   );
 }
 
-interface Props extends RouteComponentProps<{ title: string }> {
-  header: JSX.Element;
-}
+export default Resume
+

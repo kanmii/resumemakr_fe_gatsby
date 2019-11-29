@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any*/
 import React, { useLayoutEffect, ComponentType } from "react";
 import { useUser } from "../use-user";
-import { RouteComponentProps } from "@reach/router";
 import {redirectToLogin} from './auth-required.injectables'
 
-export function AuthRequired(props: Props) {
+export function AuthRequired<P>(props: Props<P>) {
   const { component, ...rest } = props;
   const user = useUser();
 
@@ -19,6 +19,6 @@ export function AuthRequired(props: Props) {
   return user ? <AuthComponent {...rest} /> : null;
 }
 
-export type Props = RouteComponentProps & {
-  component: ComponentType<RouteComponentProps>;
+export type Props<P> = P & any & {
+  component: ComponentType<any>;
 };
