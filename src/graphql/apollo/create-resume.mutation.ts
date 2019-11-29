@@ -12,7 +12,7 @@ import {
   CreateResumeVariables,
 } from "../apollo-types/CreateResume";
 
-export const createResume = gql`
+export const CREATE_RESUME_MUTATION = gql`
   mutation CreateResume($input: CreateResumeInput!) {
     createResume(input: $input) {
       resume {
@@ -24,7 +24,6 @@ export const createResume = gql`
   ${resumeFullFrag}
 `;
 
-export default createResume;
 
 export type ErstellenLebenslaufFnArgs = MutationOptions<
   CreateResume,
@@ -37,11 +36,11 @@ export type CreateResumeFn = MutationFunction<
 >;
 
 export interface CreateResumeProps {
-  useCreateResume: UseCreateResumeMutation;
+  createResume: CreateResumeMutationFn
 }
 
 export function useCreateResumeMutation(): UseCreateResumeMutation {
-  return useMutation(createResume);
+  return useMutation(CREATE_RESUME_MUTATION);
 }
 
 export type CreateResumeMutationFn = MutationFunction<

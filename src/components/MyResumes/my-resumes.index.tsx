@@ -57,5 +57,5 @@ export default compose(
   deleteResumeGql,
   cloneResumeGql,
 )((props: Props) => {
-  return <App {...props} useCreateResume={useCreateResumeMutation()} />;
+  return <App {...props} createResume={useCreateResumeMutation()[0]} />;
 });
