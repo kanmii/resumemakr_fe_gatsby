@@ -9,7 +9,6 @@ import {
   USER_LOCAL_MUTATION,
   Variable as UserLocalMutation,
 } from "../../src/state/user.local.mutation";
-import { CreateResumeInput } from "../../src/graphql/apollo-types/globalTypes";
 
 export const TEST_USER: RegistrationInput = {
   email: "a@b.com",
@@ -19,12 +18,8 @@ export const TEST_USER: RegistrationInput = {
   name: "John Doe",
 };
 
-export const CREATE_RESUME_MINIMAL_DATA: CreateResumeInput = {
-  title: "Resume 1",
-  description: "Resume 1 description",
-};
 
-export function createUser(input: RegistrationInput) {
+export function createUser(input: RegistrationInput = TEST_USER) {
   return cy
     .mutate<UserRegMutation, UserRegMutationVariables>({
       mutation: USER_REGISTRATION_MUTATION,
@@ -45,7 +40,7 @@ export function createUser(input: RegistrationInput) {
     });
 }
 
-export function createUserAndLogin(input: RegistrationInput) {
+export function createUserAndLogin(input: RegistrationInput = TEST_USER) {
   createUser(input).then(user => {
     return cy.mutate<UserLocalMutation, UserLocalMutation>({
       mutation: USER_LOCAL_MUTATION,

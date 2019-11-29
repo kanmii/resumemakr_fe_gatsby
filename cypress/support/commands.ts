@@ -9,6 +9,7 @@ import {
   CYPRESS_APOLLO_KEY,
 } from "../../src/state/apollo-setup";
 import ApolloClient from "apollo-client";
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars*/
 import { FetchResult } from "apollo-link";
 
 const serverUrl = getBackendUrls(Cypress.env("API_URL"));

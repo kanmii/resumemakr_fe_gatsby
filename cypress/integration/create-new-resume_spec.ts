@@ -1,8 +1,4 @@
-import {
-  TEST_USER,
-  createUserAndLogin,
-  CREATE_RESUME_MINIMAL_DATA,
-} from "../support/utils";
+import { TEST_USER, createUserAndLogin } from "../support/utils";
 import { RESUMES_HOME_PATH } from "../../src/routing";
 import {
   noResumesMsgId,
@@ -22,6 +18,7 @@ import {
 } from "../../src/components/PersonalInfo/personal-info.dom-selectors";
 import { fileChooserId } from "../../src/components/PhotoField/photo-field.dom-selectors";
 import { prefix as experiencesDomId } from "../../src/components/Experiences/experiences.dom-selectors";
+import { CREATE_RESUME_MINIMAL_DATA } from "../support/create-resume";
 
 describe("create new resume page", function() {
   beforeEach(() => {
