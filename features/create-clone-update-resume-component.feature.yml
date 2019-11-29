@@ -1,0 +1,48 @@
+id: updateResumeMinimal
+context:
+  mode:
+initial: editable
+states:
+  editable:
+    parallel: true
+    states:
+      form:
+        context:
+          title:
+          description:
+        parallel: true
+        states:
+          mode:
+            update:
+              context:
+                resume:
+            clone:
+              context:
+                resume:
+            create:
+          fields:
+            title: formCtrl
+            description: formCtrl
+          validity:
+            initial: invalid
+            states:
+              valid:
+              invalid:
+      serverErrors:
+        on:
+          DISMISS_SERVER_ERRORS:
+            target:
+              - serverErrors.inactive
+              - formCtrl.edit
+        initial: inactive
+        states:
+          inactive:
+          active:
+            context:
+              title:
+              error:
+            enter:
+              - show errors summarries
+      serverSuccess:
+        enter: _
+  submitting: _
