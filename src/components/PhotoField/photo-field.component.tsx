@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useEffect, memo, useReducer } from "react";
 import { Icon, Modal, Button } from "semantic-ui-react";
 import "./styles.scss";
-import { AppModal } from "../AppModal";
+import { AppModal } from "../AppModal/app-modal.component";
 import { FormContext } from "../UpdateResumeForm/update-resume.utils";
 import {
   Props,
