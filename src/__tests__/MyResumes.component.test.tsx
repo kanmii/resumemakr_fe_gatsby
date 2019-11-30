@@ -10,10 +10,7 @@ import {
   renderWithRouter,
 } from "./test_utils";
 import { makeResumeRoute } from "../routing";
-import {
-  Props,
-  ResumeTitlesProps,
-} from "../components/MyResumes/my-resumes.utils";
+import { Props } from "../components/MyResumes/my-resumes.utils";
 import { CreateResume } from "../graphql/apollo-types/CreateResume";
 import { CloneResume } from "../graphql/apollo-types/CloneResume";
 import {
@@ -21,7 +18,7 @@ import {
   ResumeTitles_listResumes_edges,
 } from "../graphql/apollo-types/ResumeTitles";
 import { DeleteResume } from "../graphql/apollo-types/DeleteResume";
-import { ResumeTitlesProps as RTP } from "../graphql/apollo/resume-titles.query";
+import { ListResumesProps } from "../graphql/apollo/resume-titles.query";
 import {
   triggerCreateNewResumeId,
   dataLoadingErrorId,
@@ -114,7 +111,13 @@ it("renders message if user has not created resume", () => {
   /**
    * When she navigates to the home page
    */
-  const { ui } = setUp({ ...resumeTitlesGql({ listResumes: resumes }) });
+  const { ui } = setUp({
+    ...resumeTitlesGql({
+      data: {
+        listResumes: resumes,
+      },
+    }),
+  });
 
   render(ui);
 
@@ -156,7 +159,11 @@ it("renders resume titles", () => {
    */
 
   const { ui, mockNavigate } = setUp({
-    ...resumeTitlesGql({ listResumes: resumes }),
+    ...resumeTitlesGql({
+      data: {
+        listResumes: resumes,
+      },
+    }),
   });
 
   render(ui);
@@ -187,9 +194,11 @@ it("creates resume", async () => {
 
   const { ui, mockNavigate, mockCreateResume } = setUp({
     ...resumeTitlesGql({
-      listResumes: {
-        edges: [] as ResumeTitles_listResumes_edges[],
-      } as ResumeTitles_listResumes,
+      data: {
+        listResumes: {
+          edges: [] as ResumeTitles_listResumes_edges[],
+        } as ResumeTitles_listResumes,
+      },
     }),
   });
 
@@ -275,7 +284,11 @@ it("deletes resume", async () => {
   } as WithData<DeleteResume>;
 
   const { ui, mockDeleteResume } = setUp({
-    ...resumeTitlesGql({ listResumes: resumes }),
+    ...resumeTitlesGql({
+      data: {
+        listResumes: resumes,
+      },
+    }),
   });
 
   mockDeleteResume.mockResolvedValue(result);
@@ -375,7 +388,11 @@ it("clones resume", async () => {
    */
 
   const { ui, mockNavigate, mockCloneResume } = setUp({
-    ...resumeTitlesGql({ listResumes: resumes }),
+    ...resumeTitlesGql({
+      data: {
+        listResumes: resumes,
+      },
+    }),
   });
 
   mockCloneResume.mockResolvedValue(result);
@@ -433,7 +450,7 @@ function setUp(props: Partial<Props> = {}) {
   const mockCreateResume = jest.fn();
   const mockDeleteResume = jest.fn();
   const mockCloneResume = jest.fn();
-  props.createResume = mockCreateResume
+  props.createResume = mockCreateResume;
   props.deleteResume = mockDeleteResume;
   props.cloneResume = mockCloneResume;
 
@@ -450,8 +467,10 @@ function setUp(props: Partial<Props> = {}) {
   };
 }
 
-function resumeTitlesGql(params: Partial<RTP>): ResumeTitlesProps {
+function resumeTitlesGql(
+  params: Partial<ListResumesProps["resumeTitlesGql"]>,
+): ListResumesProps {
   return {
-    resumeTitlesGql: params as RTP,
+    resumeTitlesGql: params as ListResumesProps["resumeTitlesGql"],
   };
 }

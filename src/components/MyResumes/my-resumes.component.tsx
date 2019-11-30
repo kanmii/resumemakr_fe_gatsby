@@ -60,11 +60,11 @@ export function MyResumes(props: Props) {
   const {
     navigate,
     deleteResume,
-    resumeTitlesGql: { loading, error, listResumes },
+    resumeTitlesGql: { loading, error, data },
     createResume,
     cloneResume,
   } = props;
-  const edges = listResumes && listResumes.edges;
+  const edges = data && data.listResumes && data.listResumes.edges;
 
   const [offnenModal, einstellenOffnenModal] = useState(false);
 

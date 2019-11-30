@@ -1,8 +1,11 @@
 import gql from "graphql-tag";
-import { DataValue } from "react-apollo";
-import { ResumeTitles, ResumeTitlesVariables } from "../apollo-types/ResumeTitles";
+import { useQuery, QueryResult } from "react-apollo";
+import {
+  ResumeTitles,
+  ResumeTitlesVariables,
+} from "../apollo-types/ResumeTitles";
 
-const resumeTitlesFrag = gql`
+const RESUME_CONNECTION_FRAGMENT = gql`
   fragment ResumeTitlesFrag on ResumeConnection {
     edges {
       node {
@@ -10,23 +13,36 @@ const resumeTitlesFrag = gql`
         title
         description
         updatedAt
-        __typename
       }
     }
   }
 `;
 
-export const resumeTitlesQuery = gql`
+export const LIST_RESUMES_QUERY = gql`
   query ResumeTitles($howMany: Int!) {
     listResumes(first: $howMany) {
       ...ResumeTitlesFrag
-      __typename
     }
   }
 
-  ${resumeTitlesFrag}
+  ${RESUME_CONNECTION_FRAGMENT}
 `;
 
-export default resumeTitlesQuery;
+export const useListResumesQuery: UseListResumesQuery = () => {
+  return useQuery<ResumeTitles, ResumeTitlesVariables>(LIST_RESUMES_QUERY, {
+    variables: {
+      howMany: 10000,
+    },
 
-export type ResumeTitlesProps = DataValue<ResumeTitles, ResumeTitlesVariables>;
+    fetchPolicy: "cache-and-network",
+  });
+};
+
+export interface ListResumesProps {
+  resumeTitlesGql: ReturnType<typeof useListResumesQuery>;
+}
+
+type UseListResumesQuery = () => QueryResult<
+  ResumeTitles,
+  ResumeTitlesVariables
+>;

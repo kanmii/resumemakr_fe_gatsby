@@ -1,8 +1,16 @@
 import gql from "graphql-tag";
-import { MutationFunction, graphql } from "react-apollo";
-import { DeleteResume, DeleteResumeVariables } from "../apollo-types/DeleteResume";
+import {
+  MutationFunction,
+  useMutation,
+  MutationFunctionOptions,
+  MutationResult,
+} from "react-apollo";
+import {
+  DeleteResume,
+  DeleteResumeVariables,
+} from "../apollo-types/DeleteResume";
 
-export const deleteResumeMutation = gql`
+const DELETE_RESUME_MUTATION = gql`
   mutation DeleteResume($input: DeleteResumeInput!) {
     deleteResume(input: $input) {
       resume {
@@ -13,30 +21,27 @@ export const deleteResumeMutation = gql`
   }
 `;
 
-export default deleteResumeMutation;
+export function useDeleteResumeMutation(): UseDeleteResumeMutation {
+  return useMutation(DELETE_RESUME_MUTATION);
+}
 
 export type DeleteResumeMutationFn = MutationFunction<
   DeleteResume,
   DeleteResumeVariables
 >;
 
-export interface DeleteResumeProps {
-  deleteResume?: DeleteResumeMutationFn;
-}
-
-export const deleteResumeGql = graphql<
-  {},
+// used to type check test mock calls
+export type DeleteResumeMutationFnOptions = MutationFunctionOptions<
   DeleteResume,
-  DeleteResumeVariables,
-  DeleteResumeProps | void
->(deleteResumeMutation, {
-  props: ({ mutate }) => {
-    if (!mutate) {
-      return undefined;
-    }
+  DeleteResumeVariables
+>;
 
-    return {
-      deleteResume: mutate,
-    };
-  },
-});
+export type UseDeleteResumeMutation = [
+  DeleteResumeMutationFn,
+  MutationResult<DeleteResume>,
+];
+
+// component's props should extend this
+export interface DeleteResumeProps {
+  deleteResume: DeleteResumeMutationFn;
+}
