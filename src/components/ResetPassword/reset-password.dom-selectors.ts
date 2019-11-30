@@ -9,7 +9,6 @@ export const domSubmitBtnId = `${domPrefix}-form-submit`;
 export const domSubmittingOverlayId = `${domPrefix}-submitting-overlay`;
 export const domSubmitSuccessId = `${domPrefix}-submit-success`;
 export const domSubmitServerErrorsId = `${domPrefix}-submit-server-errors`;
-export const domFormFieldSuccessClass = `${domPrefix}-form-field-success`;
 export const domFormId = `${domPrefix}-form`;
 export const domPrefixSubmittingClass = `${domPrefix}--submitting`;
 export const domPrefixSuccessClass = `${domPrefix}--success`;

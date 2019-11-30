@@ -1,0 +1,9 @@
+@import "../../styles/extensions";
+
+.submitting-overlay {
+  @extend %overlay;
+}
+
+.el--submitting {
+  @extend %overlay-parent;
+}

@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Modal, Button, Label, Icon, Popup } from "semantic-ui-react";
+import React, { useState, useRef, useEffect, useReducer } from "react";
+import { Button, Label, Icon, Popup } from "semantic-ui-react";
+import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
 import { MutationUpdaterFn, ApolloError } from "apollo-client";
 import dateFormat from "date-fns/format";
 import { Formik, FastField, FormikProps, FormikErrors } from "formik";
@@ -19,12 +20,13 @@ import { makeResumeRoute } from "../../routing";
 import {
   Props,
   validationSchema,
-  Action,
+  ActionType,
   emptyVal,
   uiTexts,
+  reducer,
+  initState,
 } from "./my-resumes.utils";
 import { Loading } from "../Loading/loading.component";
-import RESUME_TITLES_QUERY from "../../graphql/apollo/resume-titles.query";
 import { initialFormValues } from "../UpdateResumeForm/update-resume.utils";
 import { Mode as PreviewMode } from "../Preview/preview.utils";
 import { AutoTextarea } from "../AutoTextarea";
@@ -49,10 +51,17 @@ import {
   createClonedResumeId,
   makeTriggerCloneId,
   descriptionInputId,
+  makeShowUpdateResumeUITriggerBtnId,
+  makeResumeRowTitleId,
+  domUpdateUITriggerClassname,
+  domRowTitleClass,
 } from "./my-resumes.dom-selectors";
+import { RESUME_QUERY_APOLLO_CACHE_FN_ARGS } from "../../graphql/apollo/resume-titles.query";
+import CreateUpdateCloneResume from "../CreateUpdateCloneResume/create-update-clone-resume.index";
+import { Mode } from "../CreateUpdateCloneResume/create-update-clone-resume.utils";
 
 let initialValues = emptyVal;
-let action = Action.createResume;
+let action = ActionType.createResume;
 let idToClone = "0";
 let titleToClone = "";
 
@@ -65,6 +74,8 @@ export function MyResumes(props: Props) {
     cloneResume,
   } = props;
   const edges = data && data.listResumes && data.listResumes.edges;
+  const [stateMachine, dispatch] = useReducer(reducer, props, initState);
+  const createUpdateCloneState = stateMachine.createUpdateClone;
 
   const [offnenModal, einstellenOffnenModal] = useState(false);
 
@@ -121,7 +132,7 @@ export function MyResumes(props: Props) {
 
   function openModalForCreate() {
     initialValues = emptyVal;
-    action = Action.createResume;
+    action = ActionType.createResume;
     openModal();
   }
 
@@ -152,7 +163,7 @@ export function MyResumes(props: Props) {
       let fun: any;
       let path;
 
-      if (action === Action.createResume) {
+      if (action === ActionType.createResume) {
         input = { ...initialFormValues, ...values };
 
         fun = createResume;
@@ -235,13 +246,9 @@ export function MyResumes(props: Props) {
 
     const { deleteResume: resumeToBeRemoved } = newData;
 
-    const readData = cache.readQuery<ResumeTitles, ResumeTitlesVariables>({
-      query: RESUME_TITLES_QUERY,
-
-      variables: {
-        howMany: 10,
-      },
-    });
+    const readData = cache.readQuery<ResumeTitles, ResumeTitlesVariables>(
+      RESUME_QUERY_APOLLO_CACHE_FN_ARGS,
+    );
 
     const neueEdges =
       readData && readData.listResumes && readData.listResumes.edges;
@@ -253,12 +260,7 @@ export function MyResumes(props: Props) {
       "";
 
     cache.writeQuery<ResumeTitles, ResumeTitlesVariables>({
-      query: RESUME_TITLES_QUERY,
-
-      variables: {
-        howMany: 10,
-      },
-
+      ...RESUME_QUERY_APOLLO_CACHE_FN_ARGS,
       data: {
         listResumes: {
           edges: (neueEdges || []).filter(e => {
@@ -302,7 +304,7 @@ export function MyResumes(props: Props) {
     return (
       <AppModal
         id={
-          action === Action.createResume
+          action === ActionType.createResume
             ? createNewResumeId
             : createClonedResumeId
         }
@@ -310,7 +312,7 @@ export function MyResumes(props: Props) {
         onClose={() => einstellenOffnenModal(false)}
       >
         <Modal.Header>
-          {action === Action.createResume
+          {action === ActionType.createResume
             ? "Create new resume"
             : `${uiTexts.cloneFromTitle} "${titleToClone}"?`}
         </Modal.Header>
@@ -400,11 +402,7 @@ export function MyResumes(props: Props) {
   }
 
   function renderTitles() {
-    if (!edges) {
-      return null;
-    }
-
-    if (!edges.length) {
+    if (!(edges && edges.length)) {
       return (
         <a
           id={noResumesMsgId}
@@ -421,6 +419,17 @@ export function MyResumes(props: Props) {
 
     return (
       <div className="titles">
+        {createUpdateCloneState.value === "opened" && (
+          <CreateUpdateCloneResume
+            mode={createUpdateCloneState.opened.context.mode}
+            onClose={() => {
+              dispatch({
+                type: ActionType.CREATE_UPDATE_CLONE_UI_CLOSED,
+              });
+            }}
+          />
+        )}
+
         <div className="header">
           <div>My resumes</div>
 
@@ -444,12 +453,7 @@ export function MyResumes(props: Props) {
             const { id, title, updatedAt, description } = node;
 
             return (
-              <div
-                id={makeResumeRowId(id)}
-                className="row"
-                key={id}
-                data-testid={`${title} row`}
-              >
+              <div id={makeResumeRowId(id)} className="row" key={id}>
                 {lebenslaufGeloscht === id && (
                   <Loading data-testid={`deleting ${title}`} />
                 )}
@@ -465,7 +469,7 @@ export function MyResumes(props: Props) {
 
                       idToClone = id;
                       titleToClone = title;
-                      action = Action.cloneResume;
+                      action = ActionType.cloneResume;
                       openModal();
                     }}
                   >
@@ -517,10 +521,40 @@ export function MyResumes(props: Props) {
                 </div>
 
                 <div
-                  className="clickable title"
+                  id={makeResumeRowTitleId(id)}
+                  className={`clickable ${domRowTitleClass}`}
                   onClick={() => goToResume(title)}
+                  onMouseEnter={() => {
+                    dispatch({
+                      type: ActionType.TRIGGER_SHOW_UPDATE_RESUME_UI,
+                      id,
+                    });
+                  }}
+                  onMouseLeave={() => {
+                    dispatch({
+                      type: ActionType.DISMISS_SHOW_UPDATE_RESUME_UI_TRIGGER,
+                    });
+                  }}
                 >
                   {title}
+
+                  {stateMachine.updateUITrigger.value === "active" &&
+                    stateMachine.updateUITrigger.active.context.id === id && (
+                      <Button
+                        type="button"
+                        className={domUpdateUITriggerClassname}
+                        id={makeShowUpdateResumeUITriggerBtnId(id)}
+                        onClick={() => {
+                          dispatch({
+                            type: ActionType.SHOW_UPDATE_RESUME_UI,
+                            mode: Mode.update,
+                          });
+                        }}
+                        color="blue"
+                      >
+                        Edit
+                      </Button>
+                    )}
                 </div>
 
                 <div

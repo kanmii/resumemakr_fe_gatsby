@@ -125,3 +125,8 @@ li {
   overflow-x: hidden;
   overflow-y: auto;
 }
+
+
+.form-field-success {
+  @extend %success-field;
+}

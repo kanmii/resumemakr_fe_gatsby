@@ -1,6 +1,4 @@
-@import "../../styles/variables";
-
-.reset-password {
+.create-update-clone-resume {
   max-width: 400px;
 
   .icon.close {
@@ -10,6 +8,6 @@
   }
 }
 
-.reset-password--success {
+.create-update-clone-resume--success {
   color: $success-color !important;
 }

@@ -3,7 +3,7 @@
 
 $bg-color: lighten(
   $color: $app-bg-color,
-  $amount: 0.26
+  $amount: 0.26,
 );
 
 $new-btn-width: 45px;
@@ -85,11 +85,6 @@ $new-btn-bottom: 20px;
         display: none;
       }
 
-      .controls,
-      .title {
-        margin-bottom: 15px;
-      }
-
       @media (min-width: 550px) {
         display: flex;
         justify-content: space-between;
@@ -103,17 +98,6 @@ $new-btn-bottom: 20px;
             position: relative;
             left: -45px;
           }
-        }
-
-        .controls,
-        .title {
-          margin-bottom: 0;
-        }
-
-        .title {
-          order: 0;
-          width: 40%;
-          padding-left: 10px;
         }
 
         .controls {
@@ -157,6 +141,23 @@ $new-btn-bottom: 20px;
   }
 }
 
+.controls,
+.my-resumes-title {
+  margin-bottom: 15px;
+}
+
+.controls,
+.my-resumes-title {
+  margin-bottom: 0;
+}
+
+.my-resumes-title {
+  order: 0;
+  width: 40%;
+  padding-left: 10px;
+  position: relative;
+}
+
 .home-form-field {
   &.error {
     color: red;
@@ -170,4 +171,10 @@ $new-btn-bottom: 20px;
     padding: 0.7em 0.5em 0.3em 0.5em;
     margin: 5px 0 5px 0;
   }
+}
+
+.my-resumes-update-ui-trigger {
+  position: absolute;
+  right: 0;
+  bottom: 0;
 }

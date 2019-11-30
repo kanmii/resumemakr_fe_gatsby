@@ -1,0 +1,11 @@
+export const domPrefix = "create-update-clone-resume";
+export const domTitleInputId = `${domPrefix}-title-input`;
+export const domDescriptionInputId = `${domPrefix}-description-input`;
+export const domSubmitBtnId = `${domPrefix}-submit-btn`;
+export const domFormId = `${domPrefix}-form`;
+export const domSubmittingOverlayId = `${domPrefix}-submitting-overlay`;
+export const domSubmitSuccessId = `${domPrefix}-submit-success`;
+export const domTitleErrorId = `${domPrefix}-title-error`;
+export const domDescriptionErrorId = `${domPrefix}-description-error`;
+export const domPrefixSubmittingClass = `${domPrefix}--submitting`;
+export const domPrefixSuccessClass = `${domPrefix}--success`;

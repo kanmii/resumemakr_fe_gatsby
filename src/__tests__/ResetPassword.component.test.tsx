@@ -26,7 +26,7 @@ import {
   initiState,
   StateMachine,
   reducer,
-  ActionTypes,
+  ActionType,
 } from "../components/ResetPassword/reset-password.utils";
 import { fillField, closeMessage } from "./test_utils";
 import {
@@ -445,7 +445,7 @@ describe("reducer", () => {
   test("blur event is void if form field is not changing", () => {
     const state = initiState({ email: "a@n.com" } as Props);
     const nextState = reducer(state, {
-      type: ActionTypes.FORM_FIELD_BLURRED,
+      type: ActionType.FORM_FIELD_BLURRED,
       fieldName: "password",
     });
 

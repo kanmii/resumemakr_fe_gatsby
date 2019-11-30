@@ -15,7 +15,7 @@ import {
   FormFieldInvalid,
 } from "../components.types";
 
-export enum ActionTypes {
+export enum ActionType {
   FORM_CHANGED = "@reset-password/form-field-changed",
   FORM_FIELD_BLURRED = "@reset-password/form-field-blurred",
   SUBMIT = "@reset-password/submit",
@@ -40,7 +40,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
     (prevState, { type, ...payload }) => {
       return immer(prevState, proxy => {
         switch (type) {
-          case ActionTypes.FORM_CHANGED:
+          case ActionType.FORM_CHANGED:
             {
               const { fieldName, value } = payload as FormFieldChangedPayload;
               const form = (proxy as Editable).editable.form;
@@ -56,7 +56,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
             break;
 
-          case ActionTypes.FORM_FIELD_BLURRED:
+          case ActionType.FORM_FIELD_BLURRED:
             {
               const { fieldName } = payload as FormFieldBlurredPayload;
               const formState = (proxy as Editable).editable.form;
@@ -112,28 +112,28 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
             break;
 
-          case ActionTypes.SUBMITTING:
+          case ActionType.SUBMITTING:
             {
               proxy.value = "submitting";
             }
 
             break;
 
-          case ActionTypes.SUBMIT_SUCCESS:
+          case ActionType.SUBMIT_SUCCESS:
             {
               proxy.value = "submitSuccess";
             }
 
             break;
 
-          case ActionTypes.CLOSE:
+          case ActionType.CLOSE:
             {
               proxy.value = "closed";
             }
 
             break;
 
-          case ActionTypes.SERVER_ERRORS:
+          case ActionType.SERVER_ERRORS:
             {
               const {
                 error: { graphQLErrors, networkError },
@@ -304,23 +304,23 @@ interface ServerErrorsPayload {
 
 export type Action =
   | ({
-      type: ActionTypes.FORM_CHANGED;
+      type: ActionType.FORM_CHANGED;
     } & FormFieldChangedPayload)
   | {
-      type: ActionTypes.SUBMIT;
+      type: ActionType.SUBMIT;
     }
   | ({
-      type: ActionTypes.FORM_FIELD_BLURRED;
+      type: ActionType.FORM_FIELD_BLURRED;
     } & FormFieldBlurredPayload)
   | {
-      type: ActionTypes.SUBMITTING;
+      type: ActionType.SUBMITTING;
     }
   | {
-      type: ActionTypes.SUBMIT_SUCCESS;
+      type: ActionType.SUBMIT_SUCCESS;
     }
   | {
-      type: ActionTypes.CLOSE;
+      type: ActionType.CLOSE;
     }
   | ({
-      type: ActionTypes.SERVER_ERRORS;
+      type: ActionType.SERVER_ERRORS;
     } & ServerErrorsPayload);

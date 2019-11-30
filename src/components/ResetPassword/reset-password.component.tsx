@@ -14,7 +14,6 @@ import {
   domSubmittingOverlayId,
   domSubmitSuccessId,
   domFormId,
-  domFormFieldSuccessClass,
   domPrefix,
   domPrefixSubmittingClass,
   domPrefixSuccessClass,
@@ -28,12 +27,12 @@ import {
   initiState,
   reducer,
   Editable,
-  ActionTypes,
+  ActionType,
 } from "./reset-password.utils";
 import "./reset-password.styles.scss";
 import makeClassNames from "classnames";
-import { Loading } from "../Loading/loading.component";
 import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
+import { SubmittingOverlay } from "../SubmittingOverlay/submitting-overlay.component";
 
 const CLOSE_TIMEOUT_MS = 5000;
 
@@ -56,7 +55,7 @@ export function ResetPassword(props: Props) {
     if (stateValue === "submitSuccess") {
       closeTimeoutRef.current = setTimeout(() => {
         dispatch({
-          type: ActionTypes.CLOSE,
+          type: ActionType.CLOSE,
         });
       }, CLOSE_TIMEOUT_MS);
     }
@@ -72,7 +71,7 @@ export function ResetPassword(props: Props) {
       closeIcon={true}
       onClose={() => {
         dispatch({
-          type: ActionTypes.CLOSE,
+          type: ActionType.CLOSE,
         });
       }}
       onUnmount={onClose}
@@ -82,9 +81,7 @@ export function ResetPassword(props: Props) {
       })}
     >
       {stateValue === "submitting" && (
-        <div id={domSubmittingOverlayId} className={domSubmittingOverlayId}>
-          <Loading />
-        </div>
+        <SubmittingOverlay id={domSubmittingOverlayId} parentId={domPrefix} />
       )}
 
       <Header as="h3" content="Reset Password" />
@@ -131,7 +128,7 @@ export function ResetPassword(props: Props) {
             }
 
             dispatch({
-              type: ActionTypes.SUBMITTING,
+              type: ActionType.SUBMITTING,
             });
 
             try {
@@ -142,11 +139,11 @@ export function ResetPassword(props: Props) {
               });
 
               dispatch({
-                type: ActionTypes.SUBMIT_SUCCESS,
+                type: ActionType.SUBMIT_SUCCESS,
               });
             } catch (error) {
               dispatch({
-                type: ActionTypes.SERVER_ERRORS,
+                type: ActionType.SERVER_ERRORS,
                 error,
               });
             }
@@ -154,8 +151,7 @@ export function ResetPassword(props: Props) {
         >
           <Form.Field
             className={makeClassNames({
-              [domFormFieldSuccessClass]:
-                formFields.email.validity.value === "valid",
+              "form-field-success": formFields.email.validity.value === "valid",
             })}
             error={formFields.email.validity.value === "invalid"}
           >
@@ -166,14 +162,14 @@ export function ResetPassword(props: Props) {
               value={formState.context.email}
               onChange={(_, { value }) => {
                 dispatch({
-                  type: ActionTypes.FORM_CHANGED,
+                  type: ActionType.FORM_CHANGED,
                   value,
                   fieldName: "email",
                 });
               }}
               onBlur={() => {
                 dispatch({
-                  type: ActionTypes.FORM_FIELD_BLURRED,
+                  type: ActionType.FORM_FIELD_BLURRED,
                   fieldName: "email",
                 });
               }}
@@ -188,7 +184,7 @@ export function ResetPassword(props: Props) {
 
           <Form.Field
             className={makeClassNames({
-              [domFormFieldSuccessClass]:
+              "form-field-success":
                 formFields.password.validity.value === "valid",
             })}
             error={formFields.password.validity.value === "invalid"}
@@ -201,14 +197,14 @@ export function ResetPassword(props: Props) {
               type="password"
               onChange={(_, { value }) => {
                 dispatch({
-                  type: ActionTypes.FORM_CHANGED,
+                  type: ActionType.FORM_CHANGED,
                   value,
                   fieldName: "password",
                 });
               }}
               onBlur={() => {
                 dispatch({
-                  type: ActionTypes.FORM_FIELD_BLURRED,
+                  type: ActionType.FORM_FIELD_BLURRED,
                   fieldName: "password",
                 });
               }}
@@ -223,7 +219,7 @@ export function ResetPassword(props: Props) {
 
           <Form.Field
             className={makeClassNames({
-              [domFormFieldSuccessClass]:
+              "form-field-success":
                 formFields.passwordConfirmation.validity.value === "valid",
             })}
             error={formFields.passwordConfirmation.validity.value === "invalid"}
@@ -238,14 +234,14 @@ export function ResetPassword(props: Props) {
               value={formState.context.passwordConfirmation}
               onChange={(_, { value }) => {
                 dispatch({
-                  type: ActionTypes.FORM_CHANGED,
+                  type: ActionType.FORM_CHANGED,
                   value,
                   fieldName: "passwordConfirmation",
                 });
               }}
               onBlur={() => {
                 dispatch({
-                  type: ActionTypes.FORM_FIELD_BLURRED,
+                  type: ActionType.FORM_FIELD_BLURRED,
                   fieldName: "passwordConfirmation",
                 });
               }}

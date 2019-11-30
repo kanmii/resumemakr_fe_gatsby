@@ -1,36 +1,25 @@
 import * as Yup from "yup";
-import { ApolloError } from "apollo-client";
-import { FormikErrors } from "formik";
 import { RouteComponentProps } from "@reach/router";
 import { CreateResumeProps } from "../../graphql/apollo/create-resume.mutation";
 import { ListResumesProps } from "../../graphql/apollo/resume-titles.query";
 import { DeleteResumeProps } from "../../graphql/apollo/delete-resume.mutation";
 import { CloneResumeProps } from "../../graphql/apollo/clone-resume.mutation";
 import { CreateResumeInput } from "../../graphql/apollo-types/globalTypes";
+import { Mode } from "../CreateUpdateCloneResume/create-update-clone-resume.utils";
+import { Reducer } from "react";
+import { wrapReducer } from "../../logger";
+import immer from "immer";
 
-export interface OwnProps extends RouteComponentProps<{}> {
-  header?: JSX.Element;
-  className?: string;
-}
-
-export interface Props
-  extends CreateResumeProps,
-    OwnProps,
-    ListResumesProps,
-    DeleteResumeProps,
-    CloneResumeProps {}
-
-export interface State {
-  openModal?: boolean;
-  graphQlError?: ApolloError;
-  deleteError?: {
-    id: string;
-    errors: string[];
+/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+export function initState(props: Props): StateMachine {
+  return {
+    createUpdateClone: {
+      value: "closed",
+    },
+    updateUITrigger: {
+      value: "inactive",
+    },
   };
-  deletedResume?: string;
-  deletingResume?: string;
-  confirmDeleteId?: string;
-  formErrors?: FormikErrors<CreateResumeInput>;
 }
 
 export const validationSchema = Yup.object<CreateResumeInput>().shape({
@@ -40,10 +29,69 @@ export const validationSchema = Yup.object<CreateResumeInput>().shape({
   description: Yup.string(),
 });
 
-export enum Action {
+export enum ActionType {
   createResume = "CreateResume",
   cloneResume = "CloneResume",
+  SHOW_UPDATE_RESUME_UI = "@my-resumes/show-update-resume-ui",
+  TRIGGER_SHOW_UPDATE_RESUME_UI = "@my-resumes/trigger-show-update-resume-ui",
+  DISMISS_SHOW_UPDATE_RESUME_UI_TRIGGER = "@my-resumes/dismiss-show-update-resume-ui-trigger",
+  CREATE_UPDATE_CLONE_UI_CLOSED = "@my-resumes/create-update-clone-resume-ui-closed",
 }
+
+export const reducer: Reducer<StateMachine, Action> = (state, action) =>
+  wrapReducer(
+    state,
+    action,
+    (prevState, { type, ...payload }) => {
+      return immer(prevState, proxy => {
+        switch (type) {
+          case ActionType.SHOW_UPDATE_RESUME_UI:
+            {
+              proxy.createUpdateClone = {
+                value: "opened",
+                opened: {
+                  context: {
+                    mode: (payload as CreateUpdateClonePayload).mode,
+                  },
+                },
+              };
+
+              proxy.updateUITrigger.value = "inactive";
+            }
+
+            break;
+
+          case ActionType.CREATE_UPDATE_CLONE_UI_CLOSED:
+            {
+              proxy.createUpdateClone.value = "closed";
+            }
+
+            break;
+
+          case ActionType.TRIGGER_SHOW_UPDATE_RESUME_UI:
+            {
+              proxy.updateUITrigger = {
+                value: "active",
+                active: {
+                  context: {
+                    id: (payload as TriggerShowUpdateResumeUIPayload).id,
+                  },
+                },
+              };
+            }
+
+            break;
+
+          case ActionType.DISMISS_SHOW_UPDATE_RESUME_UI_TRIGGER:
+            {
+              proxy.updateUITrigger.value = "inactive";
+            }
+            break;
+        }
+      });
+    },
+    //  true,
+  );
 
 export const emptyVal = { title: "", description: "" };
 
@@ -62,3 +110,64 @@ export const uiTexts = {
     closeModalBtnText: "No",
   },
 };
+
+export interface OwnProps extends RouteComponentProps<{}> {
+  header?: JSX.Element;
+  className?: string;
+}
+
+export interface Props
+  extends CreateResumeProps,
+    OwnProps,
+    ListResumesProps,
+    DeleteResumeProps,
+    CloneResumeProps {}
+
+interface StateMachine {
+  createUpdateClone: CreateUpdateCloneState;
+  updateUITrigger:
+    | { value: "inactive" }
+    | {
+        value: "active";
+        active: {
+          context: {
+            id: string;
+          };
+        };
+      };
+}
+
+type CreateUpdateCloneState =
+  | {
+      value: "closed";
+    }
+  | {
+      value: "opened";
+      opened: {
+        context: {
+          mode: Mode;
+        };
+      };
+    };
+
+interface CreateUpdateClonePayload {
+  mode: Mode;
+}
+
+interface TriggerShowUpdateResumeUIPayload {
+  id: string;
+}
+
+type Action =
+  | ({
+      type: ActionType.SHOW_UPDATE_RESUME_UI;
+    } & CreateUpdateClonePayload)
+  | {
+      type: ActionType.CREATE_UPDATE_CLONE_UI_CLOSED;
+    }
+  | ({
+      type: ActionType.TRIGGER_SHOW_UPDATE_RESUME_UI;
+    } & TriggerShowUpdateResumeUIPayload)
+  | {
+      type: ActionType.DISMISS_SHOW_UPDATE_RESUME_UI_TRIGGER;
+    };

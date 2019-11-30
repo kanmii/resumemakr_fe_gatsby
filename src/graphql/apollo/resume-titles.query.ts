@@ -46,3 +46,10 @@ type UseListResumesQuery = () => QueryResult<
   ResumeTitles,
   ResumeTitlesVariables
 >;
+
+export const RESUME_QUERY_APOLLO_CACHE_FN_ARGS = {
+  query: LIST_RESUMES_QUERY,
+  variables: {
+    howMany: 10000,
+  },
+};

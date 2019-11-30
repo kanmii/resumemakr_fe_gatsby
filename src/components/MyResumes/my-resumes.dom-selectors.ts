@@ -1,4 +1,4 @@
-const prefix = "components-my-resumes";
+const prefix = "my-resumes";
 export const triggerCreateNewResumeId = `${prefix}-new-resume`;
 export const dataLoadingErrorId = `${prefix}-data-loading-error`;
 export const noResumesMsgId = `${prefix}-no-resumes`;
@@ -8,7 +8,9 @@ export const titleInputId = `${prefix}-title-input`;
 export const createNewResumeSubmitBtnId = `${prefix}-create-new-resume-submit`;
 export const deleteSuccessMsgId = `${prefix}-delete-success`;
 export const confirmDeleteMsgId = `${prefix}-confirm-delete`;
-export const descriptionInputId = `${prefix}-description-input`
+export const descriptionInputId = `${prefix}-description-input`;
+export const domRowTitleClass = `${prefix}-title`
+export const domUpdateUITriggerClassname = `${prefix}-update-ui-trigger`
 
 export function makeResumeRowId(id: Id) {
   return `${prefix}-${id}`;
@@ -32,6 +34,14 @@ export function makeNoConfirmDeleteId(id: Id) {
 
 export function makeTriggerCloneId(id: Id) {
   return `${prefix}-trigger-clone-${id}`;
+}
+
+export function makeShowUpdateResumeUITriggerBtnId(id: Id) {
+  return `${prefix}-update-trigger-btn-${id}`;
+}
+
+export function makeResumeRowTitleId(id: Id) {
+  return `${prefix}-row-title-${id}`;
 }
 
 type Id = string | number;
