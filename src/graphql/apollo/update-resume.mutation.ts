@@ -103,3 +103,7 @@ export type UseUpdateResumeMinimalMutation = [
   UpdateResumeMinimalMutationFn,
   MutationResult<UpdateResumeMinimal>,
 ];
+
+export interface UpdateResumeMinimalProps {
+  updateResume: UpdateResumeMinimalMutationFn
+}
