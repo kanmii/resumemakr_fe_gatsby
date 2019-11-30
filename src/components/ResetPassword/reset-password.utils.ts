@@ -9,6 +9,11 @@ import {
 import { ResetPasswordSimpleGraphqlProps } from "../../graphql/apollo/reset-password.mutation";
 import * as Yup from "yup";
 import { ApolloError } from "apollo-client";
+import {
+  FormFieldState,
+  FormFieldEditChanging,
+  FormFieldInvalid,
+} from "../components.types";
 
 export enum ActionTypes {
   FORM_CHANGED = "@reset-password/form-field-changed",
@@ -123,7 +128,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
           case ActionTypes.CLOSE:
             {
-              proxy.value = "destroyed";
+              proxy.value = "closed";
             }
 
             break;
@@ -249,7 +254,7 @@ export type StateMachine =
       value: "submitSuccess";
     }
   | {
-      value: "destroyed";
+      value: "closed";
     }
   | Editable
   | ServerErrors;
@@ -275,44 +280,6 @@ interface FormState {
   email: FormFieldState;
   password: FormFieldState;
   passwordConfirmation: FormFieldState;
-}
-
-interface FormFieldState {
-  edit: FormFieldEdit;
-  validity: FormFieldValidity;
-}
-
-type FormFieldValidity =
-  | {
-      value: "unvalidated";
-    }
-  | {
-      value: "valid";
-    }
-  | FormFieldInvalid;
-
-type FormFieldEdit =
-  | {
-      value: "unchanged";
-    }
-  | FormFieldEditChanged
-  | FormFieldEditChanging;
-
-interface FormFieldEditChanged {
-  value: "changed";
-}
-
-interface FormFieldEditChanging {
-  value: "changing";
-}
-
-interface FormFieldInvalid {
-  value: "invalid";
-  invalid: {
-    context: {
-      error: string;
-    };
-  };
 }
 
 export interface Props extends ResetPasswordSimpleGraphqlProps {
