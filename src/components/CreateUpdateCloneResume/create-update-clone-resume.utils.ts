@@ -55,7 +55,7 @@ export function initState(props: Props): StateMachine {
         },
 
         validity: {
-          value: "invalid",
+          value: "unvalidated",
         },
 
         mode: {
@@ -275,16 +275,14 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
                 return;
               }
 
-              if (errors instanceof Error) {
-                stateMachine.serverErrors = {
-                  value: "nonFieldError",
-                  nonFieldError: {
-                    context: {
-                      error: errors.message,
-                    },
+              stateMachine.serverErrors = {
+                value: "nonFieldError",
+                nonFieldError: {
+                  context: {
+                    error: (errors as Error).message,
                   },
-                };
-              }
+                },
+              };
             }
 
             break;
@@ -408,7 +406,7 @@ interface EditableFormState {
   };
   fields: FormState;
   validity: {
-    value: "valid" | "invalid";
+    value: "valid" | "invalid" | "unvalidated";
   };
   mode: ModeState;
 }

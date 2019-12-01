@@ -12,6 +12,10 @@ import { CreateUpdateCloneResume } from "../components/CreateUpdateCloneResume/c
 import {
   Props,
   Mode,
+  reducer,
+  initState,
+  ActionType,
+  Editable,
 } from "../components/CreateUpdateCloneResume/create-update-clone-resume.utils";
 import {
   domTitleInputId,
@@ -581,6 +585,38 @@ describe("component", () => {
      * Then component should no longer be visible
      */
     expect(document.getElementById(domDescriptionInputId)).toBeNull();
+  });
+});
+
+describe("reducer", () => {
+  test('FORM_FIELD_BLURRED event only effective if editingState.value === "changing"', () => {
+    const state = initState({} as Props);
+
+    const nextState = reducer(state, {
+      type: ActionType.FORM_FIELD_BLURRED,
+      fieldName: "title",
+    });
+
+    expect(state).toEqual(nextState);
+  });
+
+  test("field is invalid during FORM_FIELD_BLURRED event", () => {
+    const state = initState({} as Props) as Editable;
+    const form = state.editable.form;
+    const titleField = form.fields.title;
+    form.context.title = "a"; // invalid - should be at least 2 chars long
+    titleField.edit.value = "changing";
+
+    expect(titleField.validity.value).toBe("unvalidated");
+    expect(form.validity.value).toBe("unvalidated");
+
+    const nextState = reducer(state, {
+      type: ActionType.FORM_FIELD_BLURRED,
+      fieldName: "title",
+    }) as Editable;
+
+    expect(nextState.editable.form.fields.title.validity.value).toBe("invalid");
+    expect(nextState.editable.form.validity.value).toBe("invalid");
   });
 });
 
