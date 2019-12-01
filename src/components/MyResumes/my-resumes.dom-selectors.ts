@@ -9,8 +9,8 @@ export const createNewResumeSubmitBtnId = `${prefix}-create-new-resume-submit`;
 export const deleteSuccessMsgId = `${prefix}-delete-success`;
 export const confirmDeleteMsgId = `${prefix}-confirm-delete`;
 export const descriptionInputId = `${prefix}-description-input`;
-export const domRowTitleClass = `${prefix}-title`
-export const domUpdateUITriggerClassname = `${prefix}-update-ui-trigger`
+export const domRowTitleClass = `${prefix}-title`;
+export const domUpdateUITriggerClassname = `${prefix}-update-ui-trigger`;
 
 export function makeResumeRowId(id: Id) {
   return `${prefix}-${id}`;
@@ -38,6 +38,10 @@ export function makeTriggerCloneId(id: Id) {
 
 export function makeShowUpdateResumeUITriggerBtnId(id: Id) {
   return `${prefix}-update-trigger-btn-${id}`;
+}
+
+export function makeResumeRowTitleContainerId(id: Id) {
+  return `${prefix}-row-title-container-${id}`;
 }
 
 export function makeResumeRowTitleId(id: Id) {

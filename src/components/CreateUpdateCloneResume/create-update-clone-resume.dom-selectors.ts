@@ -9,3 +9,4 @@ export const domTitleErrorId = `${domPrefix}-title-error`;
 export const domDescriptionErrorId = `${domPrefix}-description-error`;
 export const domPrefixSubmittingClass = `${domPrefix}--submitting`;
 export const domPrefixSuccessClass = `${domPrefix}--success`;
+export const domCloseModalBtnId = `${domPrefix}-close-modal-btn`;

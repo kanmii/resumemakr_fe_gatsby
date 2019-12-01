@@ -52,9 +52,10 @@ import {
   makeTriggerCloneId,
   descriptionInputId,
   makeShowUpdateResumeUITriggerBtnId,
-  makeResumeRowTitleId,
+  makeResumeRowTitleContainerId,
   domUpdateUITriggerClassname,
   domRowTitleClass,
+  makeResumeRowTitleId,
 } from "./my-resumes.dom-selectors";
 import { RESUME_QUERY_APOLLO_CACHE_FN_ARGS } from "../../graphql/apollo/resume-titles.query";
 import CreateUpdateCloneResume from "../CreateUpdateCloneResume/create-update-clone-resume.index";
@@ -522,7 +523,7 @@ export function MyResumes(props: Props) {
                 </div>
 
                 <div
-                  id={makeResumeRowTitleId(id)}
+                  id={makeResumeRowTitleContainerId(id)}
                   className={`clickable ${domRowTitleClass}`}
                   onClick={() => {
                     dispatch({
@@ -542,7 +543,7 @@ export function MyResumes(props: Props) {
                     });
                   }}
                 >
-                  {title}
+                  <span id={makeResumeRowTitleId(id)}>{title}</span>
 
                   {stateMachine.updateUITrigger.value === "active" &&
                     stateMachine.updateUITrigger.active.context.resume.id ===

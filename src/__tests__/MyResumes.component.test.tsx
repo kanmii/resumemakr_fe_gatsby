@@ -41,7 +41,7 @@ import {
   createClonedResumeId,
   makeTriggerCloneId,
   makeShowUpdateResumeUITriggerBtnId,
-  makeResumeRowTitleId,
+  makeResumeRowTitleContainerId,
 } from "../components/MyResumes/my-resumes.dom-selectors";
 import {
   Mode,
@@ -501,10 +501,10 @@ describe("component", () => {
      * Then we should see the 2 resumes
      */
 
-    expect(document.getElementById(makeResumeRowTitleId("b"))).not.toBeNull();
+    expect(document.getElementById(makeResumeRowTitleContainerId("b"))).not.toBeNull();
 
     const domResumeRowTitle = document.getElementById(
-      makeResumeRowTitleId("a"),
+      makeResumeRowTitleContainerId("a"),
     ) as HTMLElement;
 
     /**

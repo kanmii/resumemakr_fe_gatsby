@@ -25,6 +25,7 @@ import {
   domDescriptionErrorId,
   domPrefixSubmittingClass,
   domPrefixSuccessClass,
+  domCloseModalBtnId,
 } from "./create-update-clone-resume.dom-selectors";
 import makeClassNames from "classnames";
 import { SubmittingOverlay } from "../SubmittingOverlay/submitting-overlay.component";
@@ -184,6 +185,7 @@ export function CreateUpdateCloneResume(props: Props) {
       <Modal.Actions>
         <Button
           type="button"
+          id={domCloseModalBtnId}
           negative={true}
           icon="remove"
           labelPosition="right"
@@ -223,7 +225,6 @@ export function CreateUpdateCloneResume(props: Props) {
             });
           }}
         />
-        )
       </Modal.Actions>
     </AppModal>
   );
