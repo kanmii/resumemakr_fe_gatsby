@@ -11,7 +11,6 @@ import {
   domSubmitBtnId,
   domSubmitSuccessId,
   domCloseModalBtnId,
-  domDescriptionInputId,
 } from "../../src/components/CreateUpdateCloneResume/create-update-clone-resume.dom-selectors";
 
 beforeEach(() => {
@@ -27,7 +26,6 @@ it("clones from existing resume", () => {
   createResume().then(resume => {
     const resumeId = resume.id;
     const oldResumeTitle = resume.title;
-    const newResumeTitle = oldResumeTitle + "1";
     const domTriggerId = CSS.escape(
       makeShowUpdateResumeUITriggerBtnId(resumeId),
     );
@@ -64,14 +62,7 @@ it("clones from existing resume", () => {
     /**
      * And complete form fields with new data
      */
-    cy.get("#" + domTitleInputId)
-      .clear()
-      .type(newResumeTitle);
-
-    cy.get("#" + domDescriptionInputId)
-      .clear()
-      .type("d")
-      .blur();
+    cy.get("#" + domTitleInputId).type("1");
 
     /**
      * Then we should not see submit success UI
@@ -101,6 +92,6 @@ it("clones from existing resume", () => {
     /**
      * And resume should now have new title (now updated)
      */
-    cy.get("#" + domRowTitle).should("have.text", newResumeTitle);
+    cy.get("#" + domRowTitle).should("have.text", oldResumeTitle + "1");
   });
 });

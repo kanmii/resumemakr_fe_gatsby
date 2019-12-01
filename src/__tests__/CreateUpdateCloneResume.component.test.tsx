@@ -18,6 +18,8 @@ import {
   domSubmitBtnId,
   domSubmittingOverlayId,
   domSubmitSuccessId,
+  domTitleErrorId,
+  domDescriptionErrorId,
 } from "../components/CreateUpdateCloneResume/create-update-clone-resume.dom-selectors";
 import { fillField } from "./test_utils";
 import { UpdateResumeMinimalMutationFnOptions } from "../graphql/apollo/update-resume.mutation";
@@ -66,22 +68,20 @@ describe("component", () => {
 
     expect(domDescriptionField.value).toBe("da");
 
+    /**
+     * And we should not see field errors
+     */
+    expect(document.getElementById(domTitleErrorId)).toBeNull();
+    expect(document.getElementById(domDescriptionErrorId)).toBeNull();
+
+    /**
+     * When we submit the form
+     */
     const domSubmitEl = document.getElementById(
       domSubmitBtnId,
     ) as HTMLButtonElement;
 
-    /**
-     * And submit button should be disabled
-     */
-    expect(domSubmitEl.disabled).toBe(true);
-
-    /**
-     * When we complete the fields with new data
-     */
-    fillField(domTitleField, "tb");
-    fireEvent.blur(domTitleField);
-    fillField(domDescriptionField, "db");
-    fireEvent.blur(domDescriptionField);
+    domSubmitEl.click();
 
     /**
      * Then we should not see submitting overlay UI
@@ -89,9 +89,28 @@ describe("component", () => {
     expect(document.getElementById(domSubmittingOverlayId)).toBeNull();
 
     /**
-     * And submit button should be not disabled
+     * And no data should be sent to server
      */
-    expect(domSubmitEl.disabled).toBe(false);
+    expect(mockUpdateResume).not.toHaveBeenCalled();
+
+    /**
+     * And we should see field errors
+     */
+    expect(document.getElementById(domTitleErrorId)).not.toBeNull();
+    expect(document.getElementById(domDescriptionErrorId)).not.toBeNull();
+
+    /**
+     * When we complete the fields with new data
+     */
+    fillField(domTitleField, "tb");
+    // fireEvent.blur(domTitleField);
+    // fillField(domDescriptionField, "db");
+    // fireEvent.blur(domDescriptionField);
+
+    /**
+     * Then we should not see submitting overlay UI
+     */
+    expect(document.getElementById(domSubmittingOverlayId)).toBeNull();
 
     /**
      * When we submit the form
@@ -125,7 +144,6 @@ describe("component", () => {
     const expectedCallArgs: UpdateResumeMinimalVariables["input"] = {
       id: "a",
       title: "tb",
-      description: "db",
     };
 
     expect((callArgs.variables as UpdateResumeMinimalVariables).input).toEqual(

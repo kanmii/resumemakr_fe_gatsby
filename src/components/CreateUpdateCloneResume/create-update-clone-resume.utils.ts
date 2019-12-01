@@ -10,6 +10,14 @@ import { wrapReducer } from "../../logger";
 import immer from "immer";
 import { ApolloError } from "apollo-client";
 import * as Yup from "yup";
+import { ValidationError } from "yup";
+import { UpdateResumeMinimalVariables } from "../../graphql/apollo-types/UpdateResumeMinimal";
+
+export enum Mode {
+  create = "@mode/create",
+  update = "@mode/update",
+  clone = "@mode/clone",
+}
 
 export function initState(props: Props): StateMachine {
   const resume = (props.resume || {
@@ -50,7 +58,7 @@ export function initState(props: Props): StateMachine {
         },
 
         mode: {
-          value: "update",
+          value: Mode.update,
           update: {
             context: {
               resume,
@@ -75,8 +83,50 @@ export enum ActionType {
 const validationSchema = Yup.object<ValidationSchemaShape>().shape({
   title: Yup.string()
     .required()
-    .min(2),
-  description: Yup.string(),
+    .min(2)
+    .when("$mode", (mode: ModeState, schema: Yup.StringSchema) => {
+      if (mode.value === Mode.update) {
+        return schema.test(
+          "title-unchanged",
+          "${path} has not been modified",
+          function(formTitle) {
+            const resume = mode.update.context.resume;
+
+            // title has not been changed - then description must be changed
+            if (formTitle === resume.title) {
+              return this.parent.description !== resume.description;
+            }
+
+            return true;
+          },
+        );
+      }
+
+      return schema;
+    }),
+  description: Yup.string().when(
+    "$mode",
+    (mode: ModeState, schema: Yup.StringSchema) => {
+      if (mode.value === Mode.update) {
+        return schema.test(
+          "description-unchanged",
+          "${path} has not been modified",
+          function(formDescription: string) {
+            const resume = mode.update.context.resume;
+
+            // if description not changed, then title must be changed
+            if (formDescription === resume.description) {
+              return this.parent.title !== resume.title;
+            }
+
+            return true;
+          },
+        );
+      }
+
+      return schema;
+    },
+  ),
 });
 
 export const reducer: Reducer<StateMachine, Action> = (state, action) =>
@@ -122,43 +172,38 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
               const editingState = fieldState.edit as FormFieldEditChanging;
 
               if (editingState.value === "changing") {
-                const validity = fieldState.validity;
-                let formValid: boolean | null = null;
+                const fieldValidity = fieldState.validity;
 
                 try {
-                  validationSchema.validateSyncAt(fieldName, formState.context);
+                  validationSchema.validateSyncAt(
+                    fieldName,
+                    formState.context,
+                    {
+                      context: {
+                        mode: {
+                          value: "",
+                        },
+                      },
+                    },
+                  );
 
                   fieldState.edit.value = "changed";
-                  validity.value = "valid";
+                  fieldValidity.value = "valid";
                 } catch (error) {
-                  formValid = false;
-                  validity.value = "invalid";
-                  const invalidState = validity as FormFieldInvalid;
+                  console.log(
+                    `\n\t\tLogging start\n\n\n\n label\n`,
+                    error,
+                    `\n\n\n\n\t\tLogging ends\n`,
+                  );
+                  fieldValidity.value = "invalid";
+                  const invalidState = fieldValidity as FormFieldInvalid;
                   invalidState.invalid = {
                     context: {
                       error: error.message,
                     },
                   };
-                }
 
-                if (formValid === null) {
-                  let validCount = 0;
-                  for (const value of Object.values(fieldStates)) {
-                    const state = value as FormFieldState;
-
-                    if (
-                      state.edit.value === "changed" &&
-                      state.validity.value === "valid"
-                    ) {
-                      ++validCount;
-                    } else {
-                      // if a field has not been changed, there is no point checking other fields
-                      break;
-                    }
-                  }
-
-                  formState.validity.value =
-                    validCount === 2 ? "valid" : "invalid";
+                  formState.validity.value = "invalid";
                 }
               }
             }
@@ -167,7 +212,13 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
           case ActionType.SUBMITTING:
             {
-              proxy.value = "submitting";
+              const { formState, formIsValid } = payload as SubmittingPayload;
+
+              if (formIsValid) {
+                proxy.value = "submitting";
+              }
+
+              (proxy as Editable).editable.form = formState;
             }
 
             break;
@@ -184,6 +235,68 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
     // true,
   );
 
+export function validateForm(formState: EditableFormState) {
+  let formIsValid = false;
+
+  const newFormState = immer(formState, proxy => {
+    const formFields = proxy.fields;
+
+    try {
+      validationSchema.validateSync(proxy.context, {
+        abortEarly: false,
+        context: {
+          mode: proxy.mode,
+        },
+      });
+      proxy.validity.value = "valid";
+      formFields.title.validity.value = "valid";
+      formFields.description.validity.value = "valid";
+
+      formIsValid = true;
+    } catch (error) {
+      const errors = error as ValidationError;
+      proxy.validity.value = "invalid";
+
+      errors.inner.forEach(fieldError => {
+        const fieldInvalid = formFields[fieldError.path] as FormFieldState;
+        fieldInvalid.validity = {
+          value: "invalid",
+          invalid: {
+            context: {
+              error: fieldError.message,
+            },
+          },
+        };
+      });
+    }
+  });
+
+  return {
+    newFormState,
+    formIsValid,
+  };
+}
+
+export function computeFormSubmissionData(formState: EditableFormState) {
+  const result = {} as UpdateResumeMinimalVariables["input"];
+  const { context } = formState;
+
+  if (formState.mode.value === Mode.update) {
+    const resume = formState.mode.update.context.resume;
+    result.id = resume.id;
+
+    if (resume.title !== context.title) {
+      result.title = context.title;
+    }
+
+    if (resume.description !== context.description) {
+      result.description = context.description;
+    }
+  }
+
+  return result;
+}
+
 export const uiTexts = {
   cloneFromTitle: "Clone from:",
   updateResume: "Update: ",
@@ -195,12 +308,6 @@ export const uiTexts = {
     closeModalBtnText: "Close",
   },
 };
-
-export enum Mode {
-  create = "@mode/create",
-  update = "@mode/update",
-  clone = "@mode/clone",
-}
 
 export type StateMachine =
   | {
@@ -218,18 +325,20 @@ export type StateMachine =
 export interface Editable {
   value: "editable";
   editable: {
-    form: {
-      context: {
-        title: string;
-        description: string;
-      };
-      fields: FormState;
-      validity: {
-        value: "valid" | "invalid";
-      };
-      mode: ModeState;
-    };
+    form: EditableFormState;
   };
+}
+
+interface EditableFormState {
+  context: {
+    title: string;
+    description: string;
+  };
+  fields: FormState;
+  validity: {
+    value: "valid" | "invalid";
+  };
+  mode: ModeState;
 }
 
 interface ModeContext {
@@ -241,17 +350,17 @@ interface ModeContext {
 type ModeState =
   | UpdateMode
   | {
-      value: "create";
+      value: Mode.create;
     }
   | CloneMode;
 
 interface UpdateMode {
-  value: "update";
+  value: Mode.update;
   update: ModeContext;
 }
 
 interface CloneMode {
-  value: "clone";
+  value: Mode.clone;
   clone: ModeContext;
 }
 
@@ -291,6 +400,11 @@ interface ServerErrorsPayload {
   error: ApolloError;
 }
 
+interface SubmittingPayload {
+  formState: EditableFormState;
+  formIsValid: boolean;
+}
+
 export type Action =
   | ({
       type: ActionType.FORM_CHANGED;
@@ -301,9 +415,9 @@ export type Action =
   | ({
       type: ActionType.FORM_FIELD_BLURRED;
     } & FormFieldBlurredPayload)
-  | {
+  | (SubmittingPayload & {
       type: ActionType.SUBMITTING;
-    }
+    })
   | {
       type: ActionType.SUBMIT_SUCCESS;
     }

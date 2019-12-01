@@ -6,6 +6,9 @@ import {
   reducer,
   ActionType,
   Editable,
+  Mode,
+  validateForm,
+  computeFormSubmissionData,
 } from "./create-update-clone-resume.utils";
 import { AppModal } from "../AppModal/app-modal.component";
 import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
@@ -31,7 +34,7 @@ import makeClassNames from "classnames";
 import { SubmittingOverlay } from "../SubmittingOverlay/submitting-overlay.component";
 import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
 
-const CLOSE_TIMEOUT_MS = 5000;
+const CLOSE_TIMEOUT_MS = 5000000;
 
 export function CreateUpdateCloneResume(props: Props) {
   const [stateMachine, dispatch] = useReducer(reducer, props, initState);
@@ -203,19 +206,23 @@ export function CreateUpdateCloneResume(props: Props) {
           icon="checkmark"
           labelPosition="right"
           content={uiTexts.form.submitBtnText}
-          disabled={formState.validity.value !== "valid"}
           onClick={async () => {
+            const { formIsValid, newFormState } = validateForm(formState);
+
             dispatch({
               type: ActionType.SUBMITTING,
+              formState: newFormState,
+              formIsValid,
             });
 
-            if (formState.mode.value === "update") {
+            if (!formIsValid) {
+              return;
+            }
+
+            if (formState.mode.value === Mode.update) {
               await props.updateResume({
                 variables: {
-                  input: {
-                    id: formState.mode.update.context.resume.id,
-                    ...formState.context,
-                  },
+                  input: computeFormSubmissionData(formState),
                 },
               });
             }
