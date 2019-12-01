@@ -24,7 +24,7 @@ import {
   domTitleErrorId,
   domDescriptionErrorId,
   domPrefixSubmittingClass,
-  domPrefixSuccessClass
+  domPrefixSuccessClass,
 } from "./create-update-clone-resume.dom-selectors";
 import makeClassNames from "classnames";
 import { SubmittingOverlay } from "../SubmittingOverlay/submitting-overlay.component";
@@ -44,7 +44,7 @@ export function CreateUpdateCloneResume(props: Props) {
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
     }
-    props.onClose()
+    props.onClose();
   }
 
   useEffect(() => {
@@ -162,6 +162,12 @@ export function CreateUpdateCloneResume(props: Props) {
                   fieldName: "description",
                 });
               }}
+              onBlur={() => {
+                dispatch({
+                  type: ActionType.FORM_FIELD_BLURRED,
+                  fieldName: "description",
+                });
+              }}
               value={formState.context.description}
               hiddenStyles={{ maxHeight: "400px" } as React.CSSProperties}
             />
@@ -188,7 +194,6 @@ export function CreateUpdateCloneResume(props: Props) {
             });
           }}
         />
-
         <Button
           id={domSubmitBtnId}
           type="button"
@@ -196,8 +201,29 @@ export function CreateUpdateCloneResume(props: Props) {
           icon="checkmark"
           labelPosition="right"
           content={uiTexts.form.submitBtnText}
-          onClick={async () => {}}
+          disabled={formState.validity.value !== "valid"}
+          onClick={async () => {
+            dispatch({
+              type: ActionType.SUBMITTING,
+            });
+
+            if (formState.mode.value === "update") {
+              await props.updateResume({
+                variables: {
+                  input: {
+                    id: formState.mode.update.context.resume.id,
+                    ...formState.context,
+                  },
+                },
+              });
+            }
+
+            dispatch({
+              type: ActionType.SUBMIT_SUCCESS,
+            });
+          }}
         />
+        )
       </Modal.Actions>
     </AppModal>
   );

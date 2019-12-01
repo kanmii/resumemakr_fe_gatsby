@@ -547,9 +547,9 @@ describe("component", () => {
     ).toBeNull();
 
     /**
-     * When we hover again on the resume title
+     * When we click on the resume title
      */
-    fireEvent.mouseEnter(domResumeRowTitle);
+    domResumeRowTitle.click();
 
     /**
      * Then we should see button which when clicked shows update resume UI

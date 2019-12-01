@@ -158,7 +158,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
                   }
 
                   formState.validity.value =
-                    validCount === 3 ? "valid" : "invalid";
+                    validCount === 2 ? "valid" : "invalid";
                 }
               }
             }
@@ -181,7 +181,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
         }
       });
     },
-    //  true,
+    // true,
   );
 
 export const uiTexts = {
@@ -192,7 +192,7 @@ export const uiTexts = {
     title: "Title e.g. name of company to send to",
     description: "Description",
     submitBtnText: "Yes",
-    closeModalBtnText: "No",
+    closeModalBtnText: "Close",
   },
 };
 
