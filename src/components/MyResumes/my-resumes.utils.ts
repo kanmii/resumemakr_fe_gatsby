@@ -9,6 +9,7 @@ import { Mode } from "../CreateUpdateCloneResume/create-update-clone-resume.util
 import { Reducer } from "react";
 import { wrapReducer } from "../../logger";
 import immer from "immer";
+import { ResumeTitlesFrag_edges_node } from "../../graphql/apollo-types/ResumeTitlesFrag";
 
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 export function initState(props: Props): StateMachine {
@@ -33,7 +34,7 @@ export enum ActionType {
   createResume = "CreateResume",
   cloneResume = "CloneResume",
   SHOW_UPDATE_RESUME_UI = "@my-resumes/show-update-resume-ui",
-  TRIGGER_SHOW_UPDATE_RESUME_UI = "@my-resumes/trigger-show-update-resume-ui",
+  SHOW_UPDATE_RESUME_UI_TRIGGER = "@my-resumes/show-update-resume-ui-trigger",
   DISMISS_SHOW_UPDATE_RESUME_UI_TRIGGER = "@my-resumes/dismiss-show-update-resume-ui-trigger",
   CREATE_UPDATE_CLONE_UI_CLOSED = "@my-resumes/create-update-clone-resume-ui-closed",
 }
@@ -47,16 +48,21 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
         switch (type) {
           case ActionType.SHOW_UPDATE_RESUME_UI:
             {
-              proxy.createUpdateClone = {
-                value: "opened",
-                opened: {
-                  context: {
-                    mode: (payload as CreateUpdateClonePayload).mode,
-                  },
-                },
-              };
+              const { updateUITrigger } = proxy;
 
-              proxy.updateUITrigger.value = "inactive";
+              if (updateUITrigger.value === "active") {
+                proxy.createUpdateClone = {
+                  value: "opened",
+                  opened: {
+                    context: {
+                      mode: (payload as CreateUpdateClonePayload).mode,
+                      resume: updateUITrigger.active.context.resume,
+                    },
+                  },
+                };
+
+                proxy.updateUITrigger.value = "inactive";
+              }
             }
 
             break;
@@ -68,13 +74,14 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
             break;
 
-          case ActionType.TRIGGER_SHOW_UPDATE_RESUME_UI:
+          case ActionType.SHOW_UPDATE_RESUME_UI_TRIGGER:
             {
               proxy.updateUITrigger = {
                 value: "active",
                 active: {
                   context: {
-                    id: (payload as TriggerShowUpdateResumeUIPayload).id,
+                    resume: (payload as TriggerShowUpdateResumeUIPayload)
+                      .resume,
                   },
                 },
               };
@@ -131,7 +138,7 @@ interface StateMachine {
         value: "active";
         active: {
           context: {
-            id: string;
+            resume: ResumeTitlesFrag_edges_node;
           };
         };
       };
@@ -146,6 +153,7 @@ type CreateUpdateCloneState =
       opened: {
         context: {
           mode: Mode;
+          resume?: ResumeTitlesFrag_edges_node;
         };
       };
     };
@@ -155,7 +163,7 @@ interface CreateUpdateClonePayload {
 }
 
 interface TriggerShowUpdateResumeUIPayload {
-  id: string;
+  resume: ResumeTitlesFrag_edges_node;
 }
 
 type Action =
@@ -166,7 +174,7 @@ type Action =
       type: ActionType.CREATE_UPDATE_CLONE_UI_CLOSED;
     }
   | ({
-      type: ActionType.TRIGGER_SHOW_UPDATE_RESUME_UI;
+      type: ActionType.SHOW_UPDATE_RESUME_UI_TRIGGER;
     } & TriggerShowUpdateResumeUIPayload)
   | {
       type: ActionType.DISMISS_SHOW_UPDATE_RESUME_UI_TRIGGER;

@@ -422,6 +422,7 @@ export function MyResumes(props: Props) {
         {createUpdateCloneState.value === "opened" && (
           <CreateUpdateCloneResume
             mode={createUpdateCloneState.opened.context.mode}
+            resume={createUpdateCloneState.opened.context.resume}
             onClose={() => {
               dispatch({
                 type: ActionType.CREATE_UPDATE_CLONE_UI_CLOSED,
@@ -523,11 +524,16 @@ export function MyResumes(props: Props) {
                 <div
                   id={makeResumeRowTitleId(id)}
                   className={`clickable ${domRowTitleClass}`}
-                  onClick={() => goToResume(title)}
+                  onClick={() => {
+                    dispatch({
+                      type: ActionType.SHOW_UPDATE_RESUME_UI_TRIGGER,
+                      resume: node,
+                    });
+                  }}
                   onMouseEnter={() => {
                     dispatch({
-                      type: ActionType.TRIGGER_SHOW_UPDATE_RESUME_UI,
-                      id,
+                      type: ActionType.SHOW_UPDATE_RESUME_UI_TRIGGER,
+                      resume: node,
                     });
                   }}
                   onMouseLeave={() => {
@@ -539,12 +545,17 @@ export function MyResumes(props: Props) {
                   {title}
 
                   {stateMachine.updateUITrigger.value === "active" &&
-                    stateMachine.updateUITrigger.active.context.id === id && (
+                    stateMachine.updateUITrigger.active.context.resume.id ===
+                      id && (
                       <Button
                         type="button"
                         className={domUpdateUITriggerClassname}
                         id={makeShowUpdateResumeUITriggerBtnId(id)}
-                        onClick={() => {
+                        onClick={evt => {
+                          // otherwise this button will be displayed again by
+                          // parent click handler
+                          evt.stopPropagation();
+
                           dispatch({
                             type: ActionType.SHOW_UPDATE_RESUME_UI,
                             mode: Mode.update,
@@ -557,10 +568,7 @@ export function MyResumes(props: Props) {
                     )}
                 </div>
 
-                <div
-                  className="column modified-date"
-                  onClick={() => goToResume(title)}
-                >
+                <div className="column modified-date">
                   {dateFormat(updatedAt, "Do MMM, YYYY H:mm A")}
                 </div>
               </div>

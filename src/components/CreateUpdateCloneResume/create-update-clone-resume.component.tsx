@@ -44,6 +44,7 @@ export function CreateUpdateCloneResume(props: Props) {
     if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
     }
+    props.onClose()
   }
 
   useEffect(() => {
@@ -68,7 +69,6 @@ export function CreateUpdateCloneResume(props: Props) {
       }}
       onUnmount={onClose}
       closeOnDimmerClick={false}
-      closeIcon={true}
       className={makeClassNames(domPrefix, {
         [domPrefixSubmittingClass]: stateValue === "submitting",
         [domPrefixSuccessClass]: stateValue === "submitSuccess",
