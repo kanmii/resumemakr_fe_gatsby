@@ -14,9 +14,10 @@ export interface UpdateResumeMinimalFragment_resume {
   id: string;
   title: string;
   description: string | null;
+  updatedAt: any;
 }
 
 export interface UpdateResumeMinimalFragment {
   __typename: "ResumeSuccess";
-  resume: UpdateResumeMinimalFragment_resume | null;
+  resume: UpdateResumeMinimalFragment_resume;
 }

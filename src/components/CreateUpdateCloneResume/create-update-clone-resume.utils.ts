@@ -205,6 +205,8 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
               if (formIsValid) {
                 proxy.value = "submitting";
+              } else {
+                proxy.value = "editable";
               }
 
               (proxy as Editable).editable.form = formState;
@@ -214,6 +216,16 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
           case ActionType.SUBMIT_SUCCESS:
             {
+              const formMode = (proxy as Editable).editable.form
+                .mode as UpdateMode;
+
+              formMode.value = Mode.update;
+              formMode.update = {
+                context: {
+                  resume: (payload as SubmitSuccessPayload).resume,
+                },
+              };
+
               proxy.value = "submitSuccess";
             }
 
@@ -370,6 +382,7 @@ export function computeFormSubmissionData(formState: EditableFormState) {
 export const uiTexts = {
   cloneFromTitle: "Clone from:",
   updateResume: "Update: ",
+  updateSuccessMessage: "Resume updated successfully",
 
   form: {
     title: "Title e.g. name of company to send to",
@@ -483,7 +496,11 @@ interface SubmittingPayload {
   formIsValid: boolean;
 }
 
-export type Action =
+interface SubmitSuccessPayload {
+  resume: ResumeTitlesFrag_edges_node;
+}
+
+type Action =
   | ({
       type: ActionType.FORM_CHANGED;
     } & FormFieldChangedPayload)
@@ -496,9 +513,9 @@ export type Action =
   | (SubmittingPayload & {
       type: ActionType.SUBMITTING;
     })
-  | {
+  | (SubmitSuccessPayload & {
       type: ActionType.SUBMIT_SUCCESS;
-    }
+    })
   | {
       type: ActionType.CLOSE;
     }

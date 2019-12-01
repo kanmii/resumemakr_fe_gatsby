@@ -40,7 +40,7 @@ import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
 import { domFieldSuccessClass } from "../components.utils";
 import { UpdateResumeMinimalExecutionResult } from "../../graphql/apollo/update-resume.mutation";
 
-const CLOSE_TIMEOUT_MS = 5000000;
+const CLOSE_TIMEOUT_MS = 60000;
 
 export function CreateUpdateCloneResume(props: Props) {
   const [stateMachine, dispatch] = useReducer(reducer, props, initState);
@@ -64,6 +64,11 @@ export function CreateUpdateCloneResume(props: Props) {
           type: ActionType.CLOSE,
         });
       }, CLOSE_TIMEOUT_MS);
+
+      // if form was previously submitted and now resubmitted, then we need to
+      // clear timer.
+    } else if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
     }
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [stateValue]);
@@ -87,7 +92,7 @@ export function CreateUpdateCloneResume(props: Props) {
 
       {stateValue === "submitSuccess" && (
         <Message success={true} id={domSubmitSuccessId}>
-          <Message.Header>Password changed successfully</Message.Header>
+          <Message.Header>{uiTexts.updateSuccessMessage}</Message.Header>
 
           <Message.Content
             style={{
@@ -263,6 +268,7 @@ export function CreateUpdateCloneResume(props: Props) {
                   case "ResumeSuccess":
                     dispatch({
                       type: ActionType.SUBMIT_SUCCESS,
+                      resume: serverData.resume,
                     });
                     break;
                 }

@@ -64,6 +64,7 @@ const UPDATE_RESUME_MINIMAL_FRAGMENT = gql`
       id
       title
       description
+      updatedAt
     }
   }
 `;

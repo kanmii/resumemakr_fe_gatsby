@@ -16,11 +16,12 @@ export interface UpdateResumeMinimal_updateResumeMinimal_ResumeSuccess_resume {
   id: string;
   title: string;
   description: string | null;
+  updatedAt: any;
 }
 
 export interface UpdateResumeMinimal_updateResumeMinimal_ResumeSuccess {
   __typename: "ResumeSuccess";
-  resume: UpdateResumeMinimal_updateResumeMinimal_ResumeSuccess_resume | null;
+  resume: UpdateResumeMinimal_updateResumeMinimal_ResumeSuccess_resume;
 }
 
 export interface UpdateResumeMinimal_updateResumeMinimal_UpdateResumeErrors_errors {
