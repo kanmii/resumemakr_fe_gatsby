@@ -15,5 +15,5 @@ export interface UpdateResumeErrorsFragment_errors {
 
 export interface UpdateResumeErrorsFragment {
   __typename: "UpdateResumeErrors";
-  errors: UpdateResumeErrorsFragment_errors | null;
+  errors: UpdateResumeErrorsFragment_errors;
 }

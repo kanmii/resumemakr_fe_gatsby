@@ -12,6 +12,7 @@ import { ApolloError } from "apollo-client";
 import * as Yup from "yup";
 import { ValidationError } from "yup";
 import { UpdateResumeMinimalVariables } from "../../graphql/apollo-types/UpdateResumeMinimal";
+import { UpdateResumeErrorsFragment_errors } from "../../graphql/apollo-types/UpdateResumeErrorsFragment";
 
 export enum Mode {
   create = "@mode/create",
@@ -190,19 +191,7 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
                   fieldState.edit.value = "changed";
                   fieldValidity.value = "valid";
                 } catch (error) {
-                  console.log(
-                    `\n\t\tLogging start\n\n\n\n label\n`,
-                    error,
-                    `\n\n\n\n\t\tLogging ends\n`,
-                  );
-                  fieldValidity.value = "invalid";
-                  const invalidState = fieldValidity as FormFieldInvalid;
-                  invalidState.invalid = {
-                    context: {
-                      error: error.message,
-                    },
-                  };
-
+                  setFieldValidity(fieldValidity, error.message);
                   formState.validity.value = "invalid";
                 }
               }
@@ -229,11 +218,94 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
             }
 
             break;
+
+          case ActionType.SERVER_ERRORS:
+            {
+              proxy.value = "serverErrors";
+              const stateMachine = proxy as ServerErrors;
+              stateMachine.serverErrors = {
+                value: "fieldErrors",
+              };
+
+              const errors = (payload as ServerErrorsPayload).errors;
+              const fieldErrors = errors as UpdateResumeErrorsFragment_errors;
+
+              if (fieldErrors.__typename) {
+                const formState = (proxy as Editable).editable.form;
+                formState.validity.value = "invalid";
+                const formFields = formState.fields;
+
+                const { title, description, error } = fieldErrors;
+
+                if (title) {
+                  setFieldValidity(formFields.title.validity, title);
+                }
+
+                if (description) {
+                  setFieldValidity(
+                    formFields.description.validity,
+                    description,
+                  );
+                }
+
+                if (error) {
+                  stateMachine.serverErrors = {
+                    value: "nonFieldError",
+                    nonFieldError: {
+                      context: {
+                        error,
+                      },
+                    },
+                  };
+                }
+
+                return;
+              }
+
+              if ("string" === typeof errors) {
+                stateMachine.serverErrors = {
+                  value: "nonFieldError",
+                  nonFieldError: {
+                    context: {
+                      error: errors,
+                    },
+                  },
+                };
+
+                return;
+              }
+
+              if (errors instanceof Error) {
+                stateMachine.serverErrors = {
+                  value: "nonFieldError",
+                  nonFieldError: {
+                    context: {
+                      error: errors.message,
+                    },
+                  },
+                };
+              }
+            }
+
+            break;
         }
       });
     },
     // true,
   );
+
+function setFieldValidity(
+  fieldValidity: FormFieldState["validity"],
+  error: string,
+) {
+  fieldValidity.value = "invalid";
+  const invalidState = fieldValidity as FormFieldInvalid;
+  invalidState.invalid = {
+    context: {
+      error,
+    },
+  };
+}
 
 export function validateForm(formState: EditableFormState) {
   let formIsValid = false;
@@ -371,10 +443,18 @@ interface FormState {
 
 interface ServerErrors {
   value: "serverErrors";
-  serverErrors: {
+  serverErrors:
+    | {
+        value: "fieldErrors";
+      }
+    | ServerNonFieldError;
+}
+
+interface ServerNonFieldError {
+  value: "nonFieldError";
+  nonFieldError: {
     context: {
-      errors: string;
-      title: string;
+      error: string;
     };
   };
 }
@@ -397,7 +477,7 @@ interface FormFieldBlurredPayload {
 }
 
 interface ServerErrorsPayload {
-  error: ApolloError;
+  errors: ApolloError | UpdateResumeErrorsFragment_errors | string;
 }
 
 interface SubmittingPayload {

@@ -127,6 +127,7 @@ li {
 }
 
 
+// components can use the javascript variable defined in /src/components/components.utils.ts
 .form-field-success {
   @extend %success-field;
 }

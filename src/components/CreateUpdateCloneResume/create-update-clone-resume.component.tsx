@@ -6,7 +6,7 @@ import {
   reducer,
   ActionType,
   Editable,
-  Mode,
+  // Mode,
   validateForm,
   computeFormSubmissionData,
 } from "./create-update-clone-resume.utils";
@@ -29,10 +29,16 @@ import {
   domPrefixSubmittingClass,
   domPrefixSuccessClass,
   domCloseModalBtnId,
+  domTitleFieldId,
+  domDescriptionFieldId,
+  domSubmitServerErrorsId,
+  domSubmitServerErrorTextId,
 } from "./create-update-clone-resume.dom-selectors";
 import makeClassNames from "classnames";
 import { SubmittingOverlay } from "../SubmittingOverlay/submitting-overlay.component";
 import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
+import { domFieldSuccessClass } from "../components.utils";
+import { UpdateResumeMinimalExecutionResult } from "../../graphql/apollo/update-resume.mutation";
 
 const CLOSE_TIMEOUT_MS = 5000000;
 
@@ -66,11 +72,6 @@ export function CreateUpdateCloneResume(props: Props) {
     <AppModal
       id={domPrefix}
       open={stateValue !== "closed"}
-      onClose={() => {
-        dispatch({
-          type: ActionType.CLOSE,
-        });
-      }}
       onUnmount={onClose}
       closeOnDimmerClick={false}
       className={makeClassNames(domPrefix, {
@@ -106,12 +107,25 @@ export function CreateUpdateCloneResume(props: Props) {
         </Message>
       )}
 
+      {stateMachine.value === "serverErrors" && (
+        <Message error={true} id={domSubmitServerErrorsId}>
+          <Message.Header>Errors occurred</Message.Header>
+
+          {stateMachine.serverErrors.value === "nonFieldError" && (
+            <Message.Content id={domSubmitServerErrorTextId}>
+              {stateMachine.serverErrors.nonFieldError.context.error}
+            </Message.Content>
+          )}
+        </Message>
+      )}
+
       <Modal.Content scrolling={true}>
         <Modal.Description>
           <Form>
             <Form.Field
+              id={domTitleFieldId}
               className={makeClassNames({
-                "form-field-success":
+                [domFieldSuccessClass]:
                   formFields.title.validity.value === "valid",
               })}
               error={formFields.title.validity.value === "invalid"}
@@ -145,8 +159,9 @@ export function CreateUpdateCloneResume(props: Props) {
           </Form>
 
           <Form.Field
+            id={domDescriptionFieldId}
             className={makeClassNames({
-              "form-field-success":
+              [domFieldSuccessClass]:
                 formFields.description.validity.value === "valid",
             })}
             error={formFields.description.validity.value === "invalid"}
@@ -219,17 +234,52 @@ export function CreateUpdateCloneResume(props: Props) {
               return;
             }
 
-            if (formState.mode.value === Mode.update) {
-              await props.updateResume({
+            try {
+              let serverResponse = {} as UpdateResumeMinimalExecutionResult;
+
+              // if (formState.mode.value === Mode.update) {
+              serverResponse = await props.updateResume({
                 variables: {
                   input: computeFormSubmissionData(formState),
                 },
               });
-            }
 
-            dispatch({
-              type: ActionType.SUBMIT_SUCCESS,
-            });
+              // }
+
+              const serverData =
+                serverResponse &&
+                serverResponse.data &&
+                serverResponse.data.updateResumeMinimal;
+
+              if (serverData) {
+                switch (serverData.__typename) {
+                  case "UpdateResumeErrors":
+                    dispatch({
+                      type: ActionType.SERVER_ERRORS,
+                      errors: serverData.errors,
+                    });
+                    break;
+
+                  case "ResumeSuccess":
+                    dispatch({
+                      type: ActionType.SUBMIT_SUCCESS,
+                    });
+                    break;
+                }
+
+                return;
+              }
+
+              dispatch({
+                type: ActionType.SERVER_ERRORS,
+                errors: "invalid response from server",
+              });
+            } catch (errors) {
+              dispatch({
+                type: ActionType.SERVER_ERRORS,
+                errors,
+              });
+            }
           }}
         />
       </Modal.Actions>

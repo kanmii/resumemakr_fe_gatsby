@@ -16,7 +16,8 @@ module.exports = {
     "!src/__tests__/test_utils.tsx",
     "!src/utils/**",
     "!src/pages/**",
-    "!src/**/*.d.ts"
+    "!src/**/*.d.ts",
+    "!src/components/CreateUpdateCloneResume/create-update-clone-resume.index.tsx"
   ],
   transform: {
     "^.+\\.tsx?$": "<rootDir>/node_modules/babel-jest",

@@ -58,3 +58,6 @@ export const PasswordConfirmationValidationSchema = passwordValidationSchema.tes
     return this.parent.password === val;
   },
 );
+
+// the style for the class is in /styles/globals.scss
+export const domFieldSuccessClass = "form-field-success";

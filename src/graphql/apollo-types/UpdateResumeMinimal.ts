@@ -32,7 +32,7 @@ export interface UpdateResumeMinimal_updateResumeMinimal_UpdateResumeErrors_erro
 
 export interface UpdateResumeMinimal_updateResumeMinimal_UpdateResumeErrors {
   __typename: "UpdateResumeErrors";
-  errors: UpdateResumeMinimal_updateResumeMinimal_UpdateResumeErrors_errors | null;
+  errors: UpdateResumeMinimal_updateResumeMinimal_UpdateResumeErrors_errors;
 }
 
 export type UpdateResumeMinimal_updateResumeMinimal = UpdateResumeMinimal_updateResumeMinimal_ResumeSuccess | UpdateResumeMinimal_updateResumeMinimal_UpdateResumeErrors;

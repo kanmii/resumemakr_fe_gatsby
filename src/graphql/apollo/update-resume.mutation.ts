@@ -4,6 +4,7 @@ import {
   MutationFunction,
   MutationFunctionOptions,
   MutationResult,
+  ExecutionResult,
 } from "react-apollo";
 import { resumeFullFrag } from "./resume_full.fragment";
 import {
@@ -69,15 +70,15 @@ const UPDATE_RESUME_MINIMAL_FRAGMENT = gql`
 
 export const UPDATE_RESUME_MINIMAL_MUTATION = gql`
   mutation UpdateResumeMinimal($input: UpdateResumeMinimalInput!) {
-      updateResumeMinimal(input: $input) {
-        ... on ResumeSuccess {
-          ...UpdateResumeMinimalFragment
-        }
-
-        ... on UpdateResumeErrors {
-          ...UpdateResumeErrorsFragment
-        }
+    updateResumeMinimal(input: $input) {
+      ... on ResumeSuccess {
+        ...UpdateResumeMinimalFragment
       }
+
+      ... on UpdateResumeErrors {
+        ...UpdateResumeErrorsFragment
+      }
+    }
   }
 
   ${UPDATE_RESUME_MINIMAL_FRAGMENT}
@@ -99,11 +100,16 @@ export type UpdateResumeMinimalMutationFnOptions = MutationFunctionOptions<
   UpdateResumeMinimalVariables
 >;
 
+// in unit test - type check mutation function resolved result
+export type UpdateResumeMinimalExecutionResult = ExecutionResult<
+  UpdateResumeMinimal
+>;
+
 export type UseUpdateResumeMinimalMutation = [
   UpdateResumeMinimalMutationFn,
   MutationResult<UpdateResumeMinimal>,
 ];
 
 export interface UpdateResumeMinimalProps {
-  updateResume: UpdateResumeMinimalMutationFn
+  updateResume: UpdateResumeMinimalMutationFn;
 }
