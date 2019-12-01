@@ -1,0 +1,1 @@
+{"__schema":{"types":[{"kind":"UNION","name":"UpdateResumeMinimalPayload","possibleTypes":[{"name":"ResumeSuccess"},{"name":"UpdateResumeErrors"}]},{"kind":"INTERFACE","name":"Node","possibleTypes":[{"name":"User"},{"name":"Resume"}]}]}}

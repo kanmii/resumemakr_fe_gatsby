@@ -1,4 +1,8 @@
-import { InMemoryCache, NormalizedCacheObject } from "apollo-cache-inmemory";
+import {
+  InMemoryCache,
+  NormalizedCacheObject,
+  IntrospectionFragmentMatcher,
+} from "apollo-cache-inmemory";
 import { ApolloClient } from "apollo-client";
 import { CachePersistor } from "apollo-cache-persist";
 import * as AbsintheSocket from "@absinthe/socket";
@@ -11,16 +15,17 @@ import {
   middlewareAuthLink,
   middlewareErrorLink,
   middlewareLoggerLink,
-  MakeSocketLinkFn
+  MakeSocketLinkFn,
 } from "./apollo-middlewares";
 import {
   ConnectionStatus,
   makeConnectionObject,
-  resetConnectionObject
+  resetConnectionObject,
 } from "./get-conn-status";
+import introspectionQueryResultData from "../graphql/apollo-types/fragment-types.json";
 
 export function buildClientCache(
-  { uri, newE2eTest, resolvers }: BuildClientCache = {} as BuildClientCache
+  { uri, newE2eTest, resolvers }: BuildClientCache = {} as BuildClientCache,
 ) {
   // use cypress version of cache if it has been set by cypress
   const globalVars = getOrMakeGlobals(newE2eTest);
@@ -33,7 +38,10 @@ export function buildClientCache(
 
   if (!cache) {
     cache = new InMemoryCache({
-      addTypename: true
+      addTypename: true,
+      fragmentMatcher: new IntrospectionFragmentMatcher({
+        introspectionQueryResultData,
+      }),
     }) as InMemoryCache;
   }
 
@@ -43,8 +51,8 @@ export function buildClientCache(
     const absintheSocket = AbsintheSocket.create(
       getSocket({
         uri,
-        ...makeSocketLinkArgs
-      })
+        ...makeSocketLinkArgs,
+      }),
     );
 
     return createAbsintheSocketLink(absintheSocket);
@@ -57,11 +65,11 @@ export function buildClientCache(
 
   const client = new ApolloClient({
     cache,
-    link
+    link,
   }) as ApolloClient<{}>;
 
   cache.writeData({
-    data: state.defaultState
+    data: state.defaultState,
   });
 
   if (resolvers) {
@@ -78,12 +86,12 @@ export function buildClientCache(
 export default buildClientCache;
 
 export type RestoreCacheOrPurgeStorageFn = (
-  persistor: CachePersistor<{}>
+  persistor: CachePersistor<{}>,
 ) => Promise<CachePersistor<{}>>;
 
 function makePersistor(
   appCache: InMemoryCache,
-  persistor?: CachePersistor<{}>
+  persistor?: CachePersistor<{}>,
 ) {
   persistor = persistor
     ? persistor
@@ -91,14 +99,14 @@ function makePersistor(
         cache: appCache,
         storage: localStorage as PersistentStorage<PersistedData<{}>>,
         key: SCHEMA_KEY,
-        maxSize: false
+        maxSize: false,
       }) as CachePersistor<{}>);
 
   return persistor;
 }
 
 export async function restoreCacheOrPurgeStorage(
-  persistor: CachePersistor<{}>
+  persistor: CachePersistor<{}>,
 ) {
   if (persistor === getGlobalsFromCypress().persistor) {
     return persistor;
@@ -122,7 +130,7 @@ export async function restoreCacheOrPurgeStorage(
 
 export const resetClientAndPersistor = async (
   appClient: ApolloClient<{}>,
-  appPersistor: CachePersistor<NormalizedCacheObject>
+  appPersistor: CachePersistor<NormalizedCacheObject>,
 ) => {
   await appPersistor.pause(); // Pause automatic persistence.
   await appPersistor.purge(); // Delete everything in the storage provider.
