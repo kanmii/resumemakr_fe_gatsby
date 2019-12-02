@@ -261,7 +261,8 @@ export function CreateUpdateCloneResume(props: Props) {
                   case "UpdateResumeErrors":
                     dispatch({
                       type: ActionType.SERVER_ERRORS,
-                      errors: serverData.errors,
+                      errorType: "operational",
+                      error: serverData.errors,
                     });
                     break;
 
@@ -278,12 +279,14 @@ export function CreateUpdateCloneResume(props: Props) {
 
               dispatch({
                 type: ActionType.SERVER_ERRORS,
-                errors: "invalid response from server",
+                errorType: "unanticipated",
+                error: "invalid response from server",
               });
-            } catch (errors) {
+            } catch (error) {
               dispatch({
                 type: ActionType.SERVER_ERRORS,
-                errors,
+                errorType: "apollo",
+                error,
               });
             }
           }}

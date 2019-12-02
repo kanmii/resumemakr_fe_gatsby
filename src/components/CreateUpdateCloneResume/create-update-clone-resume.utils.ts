@@ -239,62 +239,74 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
                 value: "fieldErrors",
               };
 
-              const errors = (payload as ServerErrorsPayload).errors;
-              const fieldErrors = errors as UpdateResumeErrorsFragment_errors;
+              const errorPayload = payload as ServerErrorsPayload;
 
-              if (fieldErrors.__typename) {
-                const formState = (proxy as Editable).editable.form;
-                formState.validity.value = "invalid";
-                const formFields = formState.fields;
+              switch (errorPayload.errorType) {
+                case "operational":
+                  {
+                    const formState = (proxy as Editable).editable.form;
+                    formState.validity.value = "invalid";
+                    const formFields = formState.fields;
 
-                const { title, description, error } = fieldErrors;
+                    const { title, description, error } = errorPayload.error;
 
-                if (title) {
-                  setFieldValidity(formFields.title.validity, title);
-                }
+                    if (title) {
+                      setFieldValidity(formFields.title.validity, title);
+                    }
 
-                if (description) {
-                  setFieldValidity(
-                    formFields.description.validity,
-                    description,
-                  );
-                }
+                    if (description) {
+                      setFieldValidity(
+                        formFields.description.validity,
+                        description,
+                      );
+                    }
 
-                if (error) {
-                  stateMachine.serverErrors = {
-                    value: "nonFieldError",
-                    nonFieldError: {
-                      context: {
-                        error,
+                    if (error) {
+                      stateMachine.serverErrors = {
+                        value: "nonFieldError",
+                        nonFieldError: {
+                          context: {
+                            error,
+                          },
+                        },
+                      };
+                    }
+
+                    return;
+                  }
+
+                  break;
+
+                case "unanticipated":
+                  {
+                    stateMachine.serverErrors = {
+                      value: "nonFieldError",
+                      nonFieldError: {
+                        context: {
+                          error: errorPayload.error,
+                        },
                       },
-                    },
-                  };
-                }
+                    };
 
-                return;
+                    return;
+                  }
+
+                  break;
+
+                case "apollo":
+                  {
+                    stateMachine.serverErrors = {
+                      value: "nonFieldError",
+                      nonFieldError: {
+                        context: {
+                          error: errorPayload.error.message,
+                        },
+                      },
+                    };
+                  }
+
+                  break;
               }
-
-              if ("string" === typeof errors) {
-                stateMachine.serverErrors = {
-                  value: "nonFieldError",
-                  nonFieldError: {
-                    context: {
-                      error: errors,
-                    },
-                  },
-                };
-
-                return;
-              }
-
-              stateMachine.serverErrors = {
-                value: "nonFieldError",
-                nonFieldError: {
-                  context: {
-                    error: (errors as Error).message,
-                  },
-                },
-              };
             }
 
             break;
@@ -487,8 +499,24 @@ interface FormFieldBlurredPayload {
   fieldName: KeyOfFormState;
 }
 
-interface ServerErrorsPayload {
-  errors: ApolloError | UpdateResumeErrorsFragment_errors | string;
+type ServerErrorsPayload =
+  | ApolloErrorPayload
+  | UnanticipatedErrorPayload
+  | OperationalErrorPayload;
+
+interface ApolloErrorPayload {
+  errorType: "apollo";
+  error: ApolloError;
+}
+
+interface UnanticipatedErrorPayload {
+  errorType: "unanticipated";
+  error: string;
+}
+
+interface OperationalErrorPayload {
+  errorType: "operational";
+  error: UpdateResumeErrorsFragment_errors;
 }
 
 interface SubmittingPayload {
