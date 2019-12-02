@@ -1,8 +1,8 @@
-export const prefix = "components-personal-info";
-export const addressFieldId = `${prefix}-address-field`;
-export const firstNameFieldId = `${prefix}-first-name-field`;
-export const lastNameFieldId = `${prefix}-last-name-field`;
-export const professionFieldId = `${prefix}-profession-field`;
-export const phoneFieldId = `${prefix}-phone-field`;
-export const emailFieldId = `${prefix}-email-field`;
-export const dateOfBirthFieldId = `${prefix}-date-of-birth-field`;
+export const domPrefix = "components-personal-info";
+export const domAddressInputId = `${domPrefix}-address-input`;
+export const domFirstNameInputId = `${domPrefix}-first-name-input`;
+export const domLastNameInputId = `${domPrefix}-last-name-input`;
+export const domProfessionInputId = `${domPrefix}-profession-input`;
+export const domPhoneInputId = `${domPrefix}-phone-input`;
+export const domEmailInputId = `${domPrefix}-email-input`;
+export const domDateOfBirthInputId = `${domPrefix}-date-of-birth-input`;

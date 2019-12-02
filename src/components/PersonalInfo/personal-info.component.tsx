@@ -8,14 +8,14 @@ import { PhotoField } from "../PhotoField/photo-field.component";
 import { Section } from "../UpdateResumeForm/update-resume.utils";
 import { emptyVal, uiTexts } from "./personal-info.utils";
 import {
-  prefix,
-  addressFieldId,
-  firstNameFieldId,
-  lastNameFieldId,
-  professionFieldId,
-  phoneFieldId,
-  emailFieldId,
-  dateOfBirthFieldId,
+  domPrefix,
+  domAddressInputId,
+  domFirstNameInputId,
+  domLastNameInputId,
+  domProfessionInputId,
+  domPhoneInputId,
+  domEmailInputId,
+  domDateOfBirthInputId,
 } from "./personal-info.dom-selectors";
 
 interface Props {
@@ -33,7 +33,7 @@ export function PersonalInfo(props: Props) {
         label={label}
         ico={<Icon name="user outline" />}
         data-testid="personal-info-section"
-        id={prefix}
+        id={domPrefix}
       />
 
       <BioData values={values} />
@@ -54,11 +54,11 @@ function BioData({ values }: { values: PersonalInfoInput }) {
               label={uiTexts.firstNameLabel}
               component={RegularField}
               value={values.firstName}
-              id={firstNameFieldId}
+              id={domFirstNameInputId}
             />
 
             <FastField
-              id={lastNameFieldId}
+              id={domLastNameInputId}
               name={makeName("lastName")}
               label={uiTexts.lastNameLabel}
               component={RegularField}
@@ -67,7 +67,7 @@ function BioData({ values }: { values: PersonalInfoInput }) {
           </div>
 
           <FastField
-            id={professionFieldId}
+            id={domProfessionInputId}
             name={makeName("profession")}
             label={uiTexts.professionLabel}
             component={RegularField}
@@ -101,11 +101,11 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
           comp={TextArea}
           component={RegularField}
           value={values.address}
-          id={addressFieldId}
+          id={domAddressInputId}
         />
 
         <FastField
-          id={phoneFieldId}
+          id={domPhoneInputId}
           name={makeName("phone")}
           label={uiTexts.phoneLabel}
           component={RegularField}
@@ -113,7 +113,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
         />
 
         <FastField
-          id={emailFieldId}
+          id={domEmailInputId}
           name={makeName("email")}
           label={uiTexts.emailLabel}
           type="email"
@@ -122,7 +122,7 @@ function FirstColumn(props: { values: PersonalInfoInput }) {
         />
 
         <FastField
-          id={dateOfBirthFieldId}
+          id={domDateOfBirthInputId}
           name={makeName("dateOfBirth")}
           label={uiTexts.dateOfBirthLabel}
           component={RegularField}

@@ -9,12 +9,12 @@ import {
 import { nextBtnId } from "../../src/components/UpdateResumeForm/update-resume.dom-selectors";
 import { defaultVal as personalInfoVals } from "../../src/components/PersonalInfo/personal-info.utils";
 import {
-  firstNameFieldId,
-  lastNameFieldId,
-  professionFieldId,
-  addressFieldId,
-  phoneFieldId,
-  emailFieldId,
+  domFirstNameInputId,
+  domLastNameInputId,
+  domProfessionInputId,
+  domAddressInputId,
+  domPhoneInputId,
+  domEmailInputId,
 } from "../../src/components/PersonalInfo/personal-info.dom-selectors";
 import { fileChooserId } from "../../src/components/PhotoField/photo-field.dom-selectors";
 import { prefix as experiencesDomId } from "../../src/components/Experiences/experiences.dom-selectors";
@@ -58,7 +58,7 @@ describe("create new resume page", function() {
      * Then user should not see any text that shows user is on the page
      * to complete resume details
      */
-    cy.get("#" + firstNameFieldId).should("not.exist");
+    cy.get("#" + domFirstNameInputId).should("not.exist");
 
     /**
      * When user submits the form
@@ -74,17 +74,17 @@ describe("create new resume page", function() {
      * When user completes the first name field
      */
 
-    cy.get("#" + firstNameFieldId).type(personalInfoVals.firstName as string);
+    cy.get("#" + domFirstNameInputId).type(personalInfoVals.firstName as string);
 
     /**
      * And user completes the last name field
      */
-    cy.get("#" + lastNameFieldId).type(personalInfoVals.lastName as string);
+    cy.get("#" + domLastNameInputId).type(personalInfoVals.lastName as string);
 
     /**
      * And user completes the profession field
      */
-    cy.get("#" + professionFieldId).type(personalInfoVals.profession as string);
+    cy.get("#" + domProfessionInputId).type(personalInfoVals.profession as string);
 
     /**
      * And user uploads an image
@@ -100,17 +100,17 @@ describe("create new resume page", function() {
     /**
      * And user completes address field
      */
-    cy.get("#" + addressFieldId).type(personalInfoVals.address as string);
+    cy.get("#" + domAddressInputId).type(personalInfoVals.address as string);
 
     /**
      * And user completes phone field
      */
-    cy.get("#" + phoneFieldId).type(personalInfoVals.phone as string);
+    cy.get("#" + domPhoneInputId).type(personalInfoVals.phone as string);
 
     /**
      * And user completes email field
      */
-    cy.get("#" + emailFieldId).type(personalInfoVals.email as string);
+    cy.get("#" + domEmailInputId).type(personalInfoVals.email as string);
 
     /**
      * Then user should not be on experiences page

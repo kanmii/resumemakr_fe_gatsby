@@ -53,8 +53,8 @@ import {
   photoDeleteConfirmedId,
 } from "../components/PhotoField/photo-field.dom-selectors";
 import {
-  prefix as personalInfoId,
-  addressFieldId,
+  domPrefix as personalInfoId,
+  domAddressInputId,
 } from "../components/PersonalInfo/personal-info.dom-selectors";
 import { prefix as educationId } from "../components/Education/education.dom-selectors";
 import { prefix as experiencesId } from "../components/Experiences/experiences.dom-selectors";
@@ -539,7 +539,7 @@ describe("component", () => {
     /**
      * And user edits the address field
      */
-    const $address = document.getElementById(addressFieldId) as HTMLElement;
+    const $address = document.getElementById(domAddressInputId) as HTMLElement;
     fillField($address, "a");
 
     /**
@@ -676,7 +676,7 @@ describe("component", () => {
     /**
      * When user completes the address input
      */
-    const $address = document.getElementById(addressFieldId) as HTMLElement;
+    const $address = document.getElementById(domAddressInputId) as HTMLElement;
     fillField($address, "a");
 
     /**

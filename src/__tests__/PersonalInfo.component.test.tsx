@@ -13,13 +13,13 @@ import { fillField } from "./test_utils";
 import { makeResumeRoute } from "../routing";
 import { defaultVal } from "../components/PersonalInfo/personal-info.utils";
 import {
-  firstNameFieldId,
-  lastNameFieldId,
-  professionFieldId,
-  phoneFieldId,
-  addressFieldId,
-  emailFieldId,
-  dateOfBirthFieldId,
+  domFirstNameInputId,
+  domLastNameInputId,
+  domProfessionInputId,
+  domPhoneInputId,
+  domAddressInputId,
+  domEmailInputId,
+  domDateOfBirthInputId,
 } from "../components/PersonalInfo/personal-info.dom-selectors";
 import { useUpdateResumeMutation } from "../graphql/apollo/update-resume.mutation";
 
@@ -82,7 +82,7 @@ it("updates on input blur", async () => {
    */
 
   const $firstName = document.getElementById(
-    firstNameFieldId,
+    domFirstNameInputId,
   ) as HTMLInputElement;
 
   expect($firstName.value).toBe("");
@@ -91,7 +91,7 @@ it("updates on input blur", async () => {
    * And that last name input is empty
    */
   const $lastName = document.getElementById(
-    lastNameFieldId,
+    domLastNameInputId,
   ) as HTMLInputElement;
 
   expect($lastName.value).toBe("");
@@ -100,33 +100,33 @@ it("updates on input blur", async () => {
    * And that profession input is empty
    */
   const $profession = document.getElementById(
-    professionFieldId,
+    domProfessionInputId,
   ) as HTMLInputElement;
   expect($profession.value).toBe("");
 
   /**
    * And that address input is empty
    */
-  const $address = document.getElementById(addressFieldId) as HTMLInputElement;
+  const $address = document.getElementById(domAddressInputId) as HTMLInputElement;
   expect($address.value).toBe("");
 
   /**
    * And that phone input is empty
    */
-  const $phone = document.getElementById(phoneFieldId) as HTMLInputElement;
+  const $phone = document.getElementById(domPhoneInputId) as HTMLInputElement;
   expect($phone.value).toBe("");
 
   /**
    * And that email input is empty
    */
-  const $email = document.getElementById(emailFieldId) as HTMLInputElement;
+  const $email = document.getElementById(domEmailInputId) as HTMLInputElement;
   expect($email.value).toBe("");
 
   /**
    * And that date of birth input is empty
    */
   const $dateOfBirth = document.getElementById(
-    dateOfBirthFieldId,
+    domDateOfBirthInputId,
   ) as HTMLInputElement;
   expect($dateOfBirth.value).toBe("");
 
