@@ -39,16 +39,10 @@ export const emptyVal: PersonalInfoInput = {
 
 export const uiTexts = {
   firstNameLabel: "First name",
-
   lastNameLabel: "Last name",
-
   professionLabel: "Profession",
-
   addressLabel: "Address",
-
   phoneLabel: "Phone",
-
   emailLabel: "Email",
-
   dateOfBirthLabel: "Date of birth yyyy-mm-dd"
 };
