@@ -1,5 +1,7 @@
 import React from "react";
-import { Icon, Card, TextArea } from "semantic-ui-react";
+import TextArea from "semantic-ui-react/dist/commonjs/addons/TextArea";
+import Card from "semantic-ui-react/dist/commonjs/views/Card";
+import Icon from "semantic-ui-react/dist/commonjs/elements/Icon";
 import { FastField } from "formik";
 import { PersonalInfoInput } from "../../graphql/apollo-types/globalTypes";
 import { SectionLabel } from "../SectionLabel";
