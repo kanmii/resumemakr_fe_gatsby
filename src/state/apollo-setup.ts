@@ -211,6 +211,7 @@ export interface E2EWindowObject {
   client: ApolloClient<{}>;
   persistor: CachePersistor<{}>;
   connectionStatus: ConnectionStatus;
+  logReducer: boolean;
 }
 
 type KeyOfE2EWindowObject = keyof E2EWindowObject;

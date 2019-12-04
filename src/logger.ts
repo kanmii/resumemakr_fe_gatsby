@@ -3,6 +3,7 @@ import { Reducer } from "react";
 import lodashIsEqual from "lodash/isEqual";
 
 const isDevEnv = process.env.NODE_ENV === "development";
+const isProdEnv = process.env.NODE_ENV === "production";
 const isTestEnv = process.env.NODE_ENV === "test";
 
 export const logger = async (prefix: keyof Console, tag: any, ...data: any) => {
@@ -23,6 +24,13 @@ export function wrapReducer<State, Action>(
   reducer: Reducer<State, Action>,
   shouldWrap?: boolean,
 ) {
+  if (isProdEnv) {
+    const logReducer = window.____resumemakr.logReducer;
+    if (logReducer) {
+      shouldWrap = logReducer;
+    }
+  }
+
   if (shouldWrap === false) {
     return reducer(prevState, action);
   }
