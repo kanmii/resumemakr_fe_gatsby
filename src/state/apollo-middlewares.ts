@@ -25,7 +25,7 @@ export function middlewareAuthLink(makeSocketLink: MakeSocketLinkFn) {
     }
 
     operation.setContext({
-      headers
+      headers,
     });
 
     return socketLink.request(operation, forward);
@@ -33,7 +33,10 @@ export function middlewareAuthLink(makeSocketLink: MakeSocketLinkFn) {
 }
 
 export function middlewareLoggerLink(link: ApolloLink) {
-  if (process.env.NODE_ENV === "production" || process.env.NO_LOG) {
+  if (
+    process.env.NODE_ENV === "production" &&
+    !window.____resumemakr.logGraphql
+  ) {
     return link;
   }
 
@@ -47,9 +50,9 @@ export function middlewareLoggerLink(link: ApolloLink) {
       `\n====${operationName}===\n\n`,
       {
         query: operation.query.loc ? operation.query.loc.source.body : "",
-        variables: operation.variables
+        variables: operation.variables,
       },
-      `\n\n===End ${operationName}====`
+      `\n\n===End ${operationName}====`,
     );
 
     if (!forward) {
@@ -66,7 +69,7 @@ export function middlewareLoggerLink(link: ApolloLink) {
           getNow(),
           `\n=Received response from ${operationName}=\n\n`,
           response,
-          `\n\n=End Received response from ${operationName}=`
+          `\n\n=End Received response from ${operationName}=`,
         );
         return response;
       });
@@ -77,15 +80,16 @@ export function middlewareLoggerLink(link: ApolloLink) {
 }
 
 export function middlewareErrorLink(link: ApolloLink) {
-  if (process.env.NODE_ENV === "production" || process.env.NO_LOG) {
+  if (
+    process.env.NODE_ENV === "production" &&
+    !window.____resumemakr.logGraphql
+  ) {
     return link;
   }
 
   return onError(({ graphQLErrors, networkError, response, operation }) => {
     const logError = (errorName: string, obj: object) => {
-      const operationName = `Response [${errorName} error] from Apollo operation: ${
-        operation.operationName
-      }`;
+      const operationName = `Response [${errorName} error] from Apollo operation: ${operation.operationName}`;
 
       // tslint:disable-next-line:no-console
       console.error(
@@ -93,7 +97,7 @@ export function middlewareErrorLink(link: ApolloLink) {
         getNow(),
         `\n=${operationName}=\n\n`,
         obj,
-        `\n\n=End Response ${operationName}=`
+        `\n\n=End Response ${operationName}=`,
       );
     };
 

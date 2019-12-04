@@ -212,6 +212,7 @@ export interface E2EWindowObject {
   persistor: CachePersistor<{}>;
   connectionStatus: ConnectionStatus;
   logReducer: boolean;
+  logGraphql: boolean;
 }
 
 type KeyOfE2EWindowObject = keyof E2EWindowObject;
