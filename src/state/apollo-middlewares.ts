@@ -32,15 +32,24 @@ export function middlewareAuthLink(makeSocketLink: MakeSocketLinkFn) {
   });
 }
 
-export function middlewareLoggerLink(link: ApolloLink) {
-  if (
-    process.env.NODE_ENV === "production" &&
-    !window.____resumemakr.logGraphql
-  ) {
-    return link;
-  }
+function noProductionLog() {
+  return (
+    process.env.NODE_ENV === "production" && !window.____resumemakr.logGraphql
+  );
+}
 
+export function middlewareLoggerLink(link: ApolloLink) {
   return new ApolloLink((operation, forward) => {
+    if (!forward) {
+      return null;
+    }
+
+    const fop = forward(operation);
+
+    if (noProductionLog()) {
+      return fop;
+    }
+
     const operationName = `Apollo operation: ${operation.operationName}`;
 
     // tslint:disable-next-line:no-console
@@ -54,12 +63,6 @@ export function middlewareLoggerLink(link: ApolloLink) {
       },
       `\n\n===End ${operationName}====`,
     );
-
-    if (!forward) {
-      return null;
-    }
-
-    const fop = forward(operation);
 
     if (fop.map) {
       return fop.map(response => {
@@ -80,18 +83,10 @@ export function middlewareLoggerLink(link: ApolloLink) {
 }
 
 export function middlewareErrorLink(link: ApolloLink) {
-  if (
-    process.env.NODE_ENV === "production" &&
-    !window.____resumemakr.logGraphql
-  ) {
-    return link;
-  }
-
   return onError(({ graphQLErrors, networkError, response, operation }) => {
-    const logError = (errorName: string, obj: object) => {
+    function logError(errorName: string, obj: object) {
       const operationName = `Response [${errorName} error] from Apollo operation: ${operation.operationName}`;
 
-      // tslint:disable-next-line:no-console
       console.error(
         "\n\n\n",
         getNow(),
@@ -99,7 +94,11 @@ export function middlewareErrorLink(link: ApolloLink) {
         obj,
         `\n\n=End Response ${operationName}=`,
       );
-    };
+    }
+
+    if (noProductionLog()) {
+      return;
+    }
 
     if (graphQLErrors) {
       logError("graphQLErrors", graphQLErrors);
