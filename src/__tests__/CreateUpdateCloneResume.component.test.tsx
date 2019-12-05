@@ -16,6 +16,8 @@ import {
   initState,
   ActionType,
   Editable,
+  validateForm,
+  EditableFormState,
 } from "../components/CreateUpdateCloneResume/create-update-clone-resume.utils";
 import {
   domTitleInputId,
@@ -44,6 +46,7 @@ import { act } from "react-dom/test-utils";
 import { domFieldSuccessClass } from "../components/components.utils";
 import { ApolloError } from "apollo-client";
 import { GraphQLError } from "graphql";
+import { ResumeTitlesFrag_edges_node } from "../graphql/apollo-types/ResumeTitlesFrag";
 
 describe("component", () => {
   beforeEach(() => {
@@ -78,7 +81,7 @@ describe("component", () => {
         resume: {
           id: "a",
           title: "ta",
-          description: "da",
+          description: null,
         },
       },
     });
@@ -100,7 +103,7 @@ describe("component", () => {
       domDescriptionInputId,
     ) as HTMLInputElement;
 
-    expect(domDescriptionField.value).toBe("da");
+    expect(domDescriptionField.value).toBe("");
 
     /**
      * And we should not see field errors
@@ -131,7 +134,6 @@ describe("component", () => {
      * And we should see field errors
      */
     expect(document.getElementById(domTitleErrorId)).not.toBeNull();
-    expect(document.getElementById(domDescriptionErrorId)).not.toBeNull();
 
     /**
      * When we complete the fields with new data
@@ -588,7 +590,7 @@ describe("component", () => {
   });
 });
 
-describe("reducer", () => {
+describe("utils", () => {
   test('FORM_FIELD_BLURRED event only effective if editingState.value === "changing"', () => {
     const state = initState({} as Props);
 
@@ -617,6 +619,53 @@ describe("reducer", () => {
 
     expect(nextState.editable.form.fields.title.validity.value).toBe("invalid");
     expect(nextState.editable.form.validity.value).toBe("invalid");
+  });
+
+  test("validateForm() when resume.description === null", () => {
+    const formState: EditableFormState = {
+      context: {
+        title: "ba", // title has diverged: resume.title === 'ab'
+        description: "", // description === '' when resume.description === null,
+      },
+
+      fields: {
+        title: {
+          edit: {
+            value: "unchanged",
+          },
+          validity: {
+            value: "unvalidated",
+          },
+        },
+        description: {
+          edit: {
+            value: "unchanged",
+          },
+          validity: {
+            value: "unvalidated",
+          },
+        },
+      },
+
+      validity: {
+        value: "unvalidated",
+      },
+
+      mode: {
+        value: Mode.update,
+        update: {
+          context: {
+            resume: {
+              title: "ab",
+              description: null,
+            } as ResumeTitlesFrag_edges_node,
+          },
+        },
+      },
+    };
+
+    const result = validateForm(formState);
+    expect(result.formIsValid).toBe(true);
   });
 });
 

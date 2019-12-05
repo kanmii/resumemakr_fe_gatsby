@@ -21,10 +21,9 @@ export enum Mode {
 }
 
 export function initState(props: Props): StateMachine {
-  const resume = (props.resume || {
-    title: "",
-    description: "",
-  }) as ResumeTitlesFrag_edges_node;
+  const resume = { ...(props.resume || {}) } as ResumeTitlesFrag_edges_node;
+  resume.title = resume.title || "";
+  resume.description = resume.description || "";
 
   return {
     value: "editable",
@@ -116,7 +115,7 @@ const validationSchema = Yup.object<ValidationSchemaShape>().shape({
             const resume = mode.update.context.resume;
 
             // if description not changed, then title must be changed
-            if (formDescription === resume.description) {
+            if ((formDescription || null) === resume.description) {
               return this.parent.title !== resume.title;
             }
 
@@ -271,8 +270,6 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
                         },
                       };
                     }
-
-                    return;
                   }
 
                   break;
@@ -287,8 +284,6 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
                         },
                       },
                     };
-
-                    return;
                   }
 
                   break;
@@ -424,7 +419,7 @@ export interface Editable {
   };
 }
 
-interface EditableFormState {
+export interface EditableFormState {
   context: {
     title: string;
     description: string;
