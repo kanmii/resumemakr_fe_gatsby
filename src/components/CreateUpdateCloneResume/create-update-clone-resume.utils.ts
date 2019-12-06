@@ -4,8 +4,12 @@ import {
   FormFieldInvalid,
 } from "../components.types";
 import { ResumeTitlesFrag_edges_node } from "../../graphql/apollo-types/ResumeTitlesFrag";
-import { UpdateResumeMinimalProps } from "../../graphql/apollo/update-resume.mutation";
-import { Reducer } from "react";
+import {
+  UpdateResumeMinimalProps,
+  UpdateResumeMinimalMutationFn,
+  UpdateResumeMinimalExecutionResult,
+} from "../../graphql/apollo/update-resume.mutation";
+import { Reducer, Dispatch } from "react";
 import { wrapReducer } from "../../logger";
 import immer from "immer";
 import { ApolloError } from "apollo-client";
@@ -127,6 +131,63 @@ const validationSchema = Yup.object<ValidationSchemaShape>().shape({
   ),
 });
 
+export async function pushToServer(
+  dispatch: Dispatch<Action>,
+  updateResume: UpdateResumeMinimalMutationFn,
+  formState: EditableFormState,
+) {
+  try {
+    let serverResponse = {} as UpdateResumeMinimalExecutionResult;
+
+    // if (formState.mode.value === Mode.update) {
+    serverResponse = await updateResume({
+      variables: {
+        input: computeFormSubmissionData(formState),
+      },
+    });
+
+    // }
+
+    const serverData =
+      serverResponse &&
+      serverResponse.data &&
+      serverResponse.data.updateResumeMinimal;
+
+    if (serverData) {
+      switch (serverData.__typename) {
+        case "UpdateResumeErrors":
+          dispatch({
+            type: ActionType.SERVER_ERRORS,
+            errorType: "operational",
+            error: serverData.errors,
+          });
+          break;
+
+        case "ResumeSuccess":
+          dispatch({
+            type: ActionType.SUBMIT_SUCCESS,
+            resume: serverData.resume,
+          });
+          break;
+      }
+
+      return;
+    }
+
+    dispatch({
+      type: ActionType.SERVER_ERRORS,
+      errorType: "unanticipated",
+      error: "invalid response from server",
+    });
+  } catch (error) {
+    dispatch({
+      type: ActionType.SERVER_ERRORS,
+      errorType: "apollo",
+      error,
+    });
+  }
+}
+
 export const reducer: Reducer<StateMachine, Action> = (state, action) =>
   wrapReducer(
     state,
@@ -198,15 +259,40 @@ export const reducer: Reducer<StateMachine, Action> = (state, action) =>
 
           case ActionType.SUBMITTING:
             {
-              const { formState, formIsValid } = payload as SubmittingPayload;
+              const formState = (proxy as Editable).editable.form;
+              const formFields = formState.fields;
 
-              if (formIsValid) {
+              try {
+                validationSchema.validateSync(formState.context, {
+                  abortEarly: false,
+                  context: {
+                    mode: formState.mode,
+                  },
+                });
+                formState.validity.value = "valid";
+                formFields.title.validity.value = "valid";
+                formFields.description.validity.value = "valid";
                 proxy.value = "submitting";
-              } else {
+              } catch (error) {
+                const errors = error as ValidationError;
+                formState.validity.value = "invalid";
+
+                errors.inner.forEach(fieldError => {
+                  const fieldInvalid = formFields[
+                    fieldError.path
+                  ] as FormFieldState;
+                  fieldInvalid.validity = {
+                    value: "invalid",
+                    invalid: {
+                      context: {
+                        error: fieldError.message,
+                      },
+                    },
+                  };
+                });
+
                 proxy.value = "editable";
               }
-
-              (proxy as Editable).editable.form = formState;
             }
 
             break;
@@ -322,48 +408,6 @@ function setFieldValidity(
   };
 }
 
-export function validateForm(formState: EditableFormState) {
-  let formIsValid = false;
-
-  const newFormState = immer(formState, proxy => {
-    const formFields = proxy.fields;
-
-    try {
-      validationSchema.validateSync(proxy.context, {
-        abortEarly: false,
-        context: {
-          mode: proxy.mode,
-        },
-      });
-      proxy.validity.value = "valid";
-      formFields.title.validity.value = "valid";
-      formFields.description.validity.value = "valid";
-
-      formIsValid = true;
-    } catch (error) {
-      const errors = error as ValidationError;
-      proxy.validity.value = "invalid";
-
-      errors.inner.forEach(fieldError => {
-        const fieldInvalid = formFields[fieldError.path] as FormFieldState;
-        fieldInvalid.validity = {
-          value: "invalid",
-          invalid: {
-            context: {
-              error: fieldError.message,
-            },
-          },
-        };
-      });
-    }
-  });
-
-  return {
-    newFormState,
-    formIsValid,
-  };
-}
-
 export function computeFormSubmissionData(formState: EditableFormState) {
   const result = {} as UpdateResumeMinimalVariables["input"];
   const { context } = formState;
@@ -396,6 +440,8 @@ export const uiTexts = {
     closeModalBtnText: "Close",
   },
 };
+
+////////////////////////// TYPES ////////////////////////////
 
 export type StateMachine =
   | {
@@ -513,8 +559,7 @@ interface OperationalErrorPayload {
 }
 
 interface SubmittingPayload {
-  formState: EditableFormState;
-  formIsValid: boolean;
+  dispatch: Dispatch<Action>;
 }
 
 interface SubmitSuccessPayload {

@@ -6,9 +6,7 @@ import {
   reducer,
   ActionType,
   Editable,
-  // Mode,
-  validateForm,
-  computeFormSubmissionData,
+  pushToServer,
 } from "./create-update-clone-resume.utils";
 import { AppModal } from "../AppModal/app-modal.component";
 import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
@@ -38,7 +36,6 @@ import makeClassNames from "classnames";
 import { SubmittingOverlay } from "../SubmittingOverlay/submitting-overlay.component";
 import { FormCtrlError } from "../FormCtrlError/form-ctrl-error.component";
 import { domFieldSuccessClass } from "../components.utils";
-import { UpdateResumeMinimalExecutionResult } from "../../graphql/apollo/update-resume.mutation";
 
 const CLOSE_TIMEOUT_MS = 60000;
 
@@ -70,8 +67,17 @@ export function CreateUpdateCloneResume(props: Props) {
     } else if (closeTimeoutRef.current) {
       clearTimeout(closeTimeoutRef.current);
     }
-    /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, [stateValue]);
+
+  useEffect(() => {
+    (async function() {
+      if (stateValue === "submitting") {
+        await pushToServer(dispatch, props.updateResume, formState);
+      }
+    })();
+
+    /* eslint-disable-next-line react-hooks/exhaustive-deps*/
+  }, [stateValue, formState]);
 
   return (
     <AppModal
@@ -227,68 +233,10 @@ export function CreateUpdateCloneResume(props: Props) {
           labelPosition="right"
           content={uiTexts.form.submitBtnText}
           onClick={async () => {
-            const { formIsValid, newFormState } = validateForm(formState);
-
             dispatch({
               type: ActionType.SUBMITTING,
-              formState: newFormState,
-              formIsValid,
+              dispatch,
             });
-
-            if (!formIsValid) {
-              return;
-            }
-
-            try {
-              let serverResponse = {} as UpdateResumeMinimalExecutionResult;
-
-              // if (formState.mode.value === Mode.update) {
-              serverResponse = await props.updateResume({
-                variables: {
-                  input: computeFormSubmissionData(formState),
-                },
-              });
-
-              // }
-
-              const serverData =
-                serverResponse &&
-                serverResponse.data &&
-                serverResponse.data.updateResumeMinimal;
-
-              if (serverData) {
-                switch (serverData.__typename) {
-                  case "UpdateResumeErrors":
-                    dispatch({
-                      type: ActionType.SERVER_ERRORS,
-                      errorType: "operational",
-                      error: serverData.errors,
-                    });
-                    break;
-
-                  case "ResumeSuccess":
-                    dispatch({
-                      type: ActionType.SUBMIT_SUCCESS,
-                      resume: serverData.resume,
-                    });
-                    break;
-                }
-
-                return;
-              }
-
-              dispatch({
-                type: ActionType.SERVER_ERRORS,
-                errorType: "unanticipated",
-                error: "invalid response from server",
-              });
-            } catch (error) {
-              dispatch({
-                type: ActionType.SERVER_ERRORS,
-                errorType: "apollo",
-                error,
-              });
-            }
           }}
         />
       </Modal.Actions>
