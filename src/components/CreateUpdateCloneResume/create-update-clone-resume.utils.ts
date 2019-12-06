@@ -188,9 +188,9 @@ export async function pushToServer(
   }
 }
 
-export const reducer: Reducer<StateMachine, Action> = (state, action) =>
+export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
   wrapReducer(
-    state,
+    _prevState,
     action,
     (prevState, { type, ...payload }) => {
       return immer(prevState, proxy => {
