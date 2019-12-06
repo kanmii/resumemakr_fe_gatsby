@@ -621,7 +621,7 @@ describe("utils", () => {
     expect(nextState.editable.form.validity.value).toBe("invalid");
   });
 
-  test("validateForm() when resume.description === null", () => {
+  test("validateForm() when resume.description === null and title changed", () => {
     const formState: EditableFormState = {
       context: {
         title: "ba", // title has diverged: resume.title === 'ab'
@@ -666,6 +666,54 @@ describe("utils", () => {
 
     const result = validateForm(formState);
     expect(result.formIsValid).toBe(true);
+  });
+
+  test("validateForm() when resume.description === null and title unchanged", () => {
+    const formState: EditableFormState = {
+      context: {
+        title: "ab", // title has unchanged: resume.title === 'ab'
+        description: "", // description === '' when resume.description === null,
+      },
+
+      fields: {
+        title: {
+          edit: {
+            value: "unchanged",
+          },
+          validity: {
+            value: "unvalidated",
+          },
+        },
+        description: {
+          edit: {
+            value: "unchanged",
+          },
+          validity: {
+            value: "unvalidated",
+          },
+        },
+      },
+
+      validity: {
+        value: "unvalidated",
+      },
+
+      mode: {
+        value: Mode.update,
+        update: {
+          context: {
+            resume: {
+              title: "ab",
+              description: null,
+            } as ResumeTitlesFrag_edges_node,
+          },
+        },
+      },
+    };
+
+    const result = validateForm(formState);
+    expect(result.formIsValid).toBe(false);
+    expect(result.newFormState.fields.title.validity.value).toBe("invalid");
   });
 });
 

@@ -22,16 +22,14 @@ export enum Mode {
 
 export function initState(props: Props): StateMachine {
   const resume = { ...(props.resume || {}) } as ResumeTitlesFrag_edges_node;
-  resume.title = resume.title || "";
-  resume.description = resume.description || "";
 
   return {
     value: "editable",
     editable: {
       form: {
         context: {
-          title: resume.title,
-          description: resume.description as string,
+          title: resume.title || "",
+          description: resume.description || "",
         },
 
         fields: {
@@ -94,7 +92,7 @@ const validationSchema = Yup.object<ValidationSchemaShape>().shape({
 
             // title has not been changed - then description must be changed
             if (formTitle === resume.title) {
-              return this.parent.description !== resume.description;
+              return (this.parent.description || null) !== resume.description;
             }
 
             return true;
@@ -378,7 +376,7 @@ export function computeFormSubmissionData(formState: EditableFormState) {
       result.title = context.title;
     }
 
-    if (resume.description !== context.description) {
+    if (resume.description !== (context.description || null)) {
       result.description = context.description;
     }
   }
