@@ -28,6 +28,14 @@ export function initState(props: Props): StateMachine {
   const resume = { ...(props.resume || {}) } as ResumeTitlesFrag_edges_node;
 
   return {
+    _meta: {
+      functions: {
+        updateResume: props.updateResume,
+      },
+    },
+
+    effects: [] as StateMachineEffects,
+
     value: "editable",
     editable: {
       form: {
@@ -131,11 +139,11 @@ const validationSchema = Yup.object<ValidationSchemaShape>().shape({
   ),
 });
 
-export async function pushToServer(
-  dispatch: Dispatch<Action>,
-  updateResume: UpdateResumeMinimalMutationFn,
-  formState: EditableFormState,
-) {
+export async function pushToServer({
+  dispatch,
+  updateResume,
+  formState,
+}: PushToServerArgs) {
   try {
     let serverResponse = {} as UpdateResumeMinimalExecutionResult;
 
@@ -194,6 +202,8 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
     action,
     (prevState, { type, ...payload }) => {
       return immer(prevState, proxy => {
+        proxy.effects = [];
+
         switch (type) {
           case ActionType.CLOSE:
             {
@@ -261,6 +271,7 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
             {
               const formState = (proxy as Editable).editable.form;
               const formFields = formState.fields;
+              const { dispatch } = payload as SubmittingPayload;
 
               try {
                 validationSchema.validateSync(formState.context, {
@@ -273,6 +284,15 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
                 formFields.title.validity.value = "valid";
                 formFields.description.validity.value = "valid";
                 proxy.value = "submitting";
+                proxy.effects.push({
+                  key: "pushToServer",
+                  func: pushToServer,
+                  args: {
+                    dispatch,
+                    formState,
+                    updateResume: proxy._meta.functions.updateResume,
+                  },
+                });
               } catch (error) {
                 const errors = error as ValidationError;
                 formState.validity.value = "invalid";
@@ -408,7 +428,7 @@ function setFieldValidity(
   };
 }
 
-export function computeFormSubmissionData(formState: EditableFormState) {
+function computeFormSubmissionData(formState: EditableFormState) {
   const result = {} as UpdateResumeMinimalVariables["input"];
   const { context } = formState;
 
@@ -443,18 +463,44 @@ export const uiTexts = {
 
 ////////////////////////// TYPES ////////////////////////////
 
-export type StateMachine =
-  | {
-      value: "submitting";
-    }
-  | {
-      value: "submitSuccess";
-    }
-  | {
-      value: "closed";
-    }
-  | Editable
-  | ServerErrors;
+export type StateMachine = StateMachineMeta &
+  (
+    | {
+        value: "submitting";
+      }
+    | {
+        value: "submitSuccess";
+      }
+    | {
+        value: "closed";
+      }
+    | Editable
+    | ServerErrors);
+
+interface StateMachineMeta {
+  _meta: {
+    functions: {
+      updateResume: UpdateResumeMinimalMutationFn;
+    };
+  };
+
+  effects: StateMachineEffects;
+}
+
+type StateMachineEffects = StateMachineEffectKeys[];
+
+interface StateMachineEffectKeys {
+  // discriminate union key
+  key: "pushToServer";
+  func: (args: PushToServerArgs) => Promise<void>;
+  args: PushToServerArgs;
+}
+
+interface PushToServerArgs {
+  dispatch: Dispatch<Action>;
+  updateResume: UpdateResumeMinimalMutationFn;
+  formState: EditableFormState;
+}
 
 export interface Editable {
   value: "editable";

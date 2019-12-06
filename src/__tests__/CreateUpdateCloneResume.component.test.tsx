@@ -55,7 +55,7 @@ describe("component", () => {
     cleanup();
   });
 
-  it.only("update resume: successful", async () => {
+  it("update resume: successful", async () => {
     const resolvedValue: UpdateResumeMinimalExecutionResult = {
       data: {
         updateResumeMinimal: {

@@ -6,7 +6,6 @@ import {
   reducer,
   ActionType,
   Editable,
-  pushToServer,
 } from "./create-update-clone-resume.utils";
 import { AppModal } from "../AppModal/app-modal.component";
 import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
@@ -44,6 +43,7 @@ export function CreateUpdateCloneResume(props: Props) {
   const stateValue = stateMachine.value;
   const formState = (stateMachine as Editable).editable.form;
   const formFields = formState.fields;
+  const { effects } = stateMachine;
 
   const closeTimeoutRef = useRef<null | NodeJS.Timeout>(null);
 
@@ -70,14 +70,14 @@ export function CreateUpdateCloneResume(props: Props) {
   }, [stateValue]);
 
   useEffect(() => {
-    (async function() {
-      if (stateValue === "submitting") {
-        await pushToServer(dispatch, props.updateResume, formState);
-      }
-    })();
-
-    /* eslint-disable-next-line react-hooks/exhaustive-deps*/
-  }, [stateValue, formState]);
+    if (effects.length) {
+      (async function() {
+        for (const { func, args } of effects) {
+          await func(args);
+        }
+      })();
+    }
+  }, [effects]);
 
   return (
     <AppModal
