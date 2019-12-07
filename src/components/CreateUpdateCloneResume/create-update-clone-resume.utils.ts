@@ -139,7 +139,7 @@ const validationSchema = Yup.object<ValidationSchemaShape>().shape({
   ),
 });
 
-export async function pushToServer({
+async function pushToServer({
   dispatch,
   updateResume,
   formState,
