@@ -16,6 +16,7 @@ import {
   initState,
   ActionType,
   Editable,
+  StateValue,
 } from "../components/CreateUpdateCloneResume/create-update-clone-resume.utils";
 import {
   domTitleInputId,
@@ -592,8 +593,20 @@ describe("component", () => {
 });
 
 describe("utils", () => {
-  test('FORM_FIELD_BLURRED event only effective if editingState.value === "changing"', () => {
+  test("invalid transition: FORM_FIELD_BLURRED on state.editable.form.fields.title.unchaned", () => {
     const state = initState({} as Props);
+
+    const nextState = reducer(state, {
+      type: ActionType.FORM_FIELD_BLURRED,
+      fieldName: "title",
+    });
+
+    expect(state).toEqual(nextState);
+  });
+
+  test("invalid transition: FORM_FIELD_BLURRED on state.submitting", () => {
+    const state = initState({} as Props);
+    state.value = StateValue.submitting;
 
     const nextState = reducer(state, {
       type: ActionType.FORM_FIELD_BLURRED,

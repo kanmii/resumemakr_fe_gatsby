@@ -6,6 +6,7 @@ import {
   reducer,
   ActionType,
   Editable,
+  StateValue,
 } from "./create-update-clone-resume.utils";
 import { AppModal } from "../AppModal/app-modal.component";
 import Modal from "semantic-ui-react/dist/commonjs/modules/Modal";
@@ -55,7 +56,7 @@ export function CreateUpdateCloneResume(props: Props) {
   }
 
   useEffect(() => {
-    if (stateValue === "submitSuccess") {
+    if (stateValue === StateValue.submitSuccess) {
       closeTimeoutRef.current = setTimeout(() => {
         dispatch({
           type: ActionType.CLOSE,
@@ -82,21 +83,21 @@ export function CreateUpdateCloneResume(props: Props) {
   return (
     <AppModal
       id={domPrefix}
-      open={stateValue !== "closed"}
+      open={stateValue !== StateValue.closed}
       onUnmount={onClose}
       closeOnDimmerClick={false}
       className={makeClassNames(domPrefix, {
-        [domPrefixSubmittingClass]: stateValue === "submitting",
-        [domPrefixSuccessClass]: stateValue === "submitSuccess",
+        [domPrefixSubmittingClass]: stateValue === StateValue.submitting,
+        [domPrefixSuccessClass]: stateValue === StateValue.submitSuccess,
       })}
     >
-      {stateValue === "submitting" && (
+      {stateValue === StateValue.submitting && (
         <SubmittingOverlay id={domSubmittingOverlayId} parentId={domPrefix} />
       )}
 
       <Modal.Header>{uiTexts.updateResume}</Modal.Header>
 
-      {stateValue === "submitSuccess" && (
+      {stateValue === StateValue.submitSuccess && (
         <Message success={true} id={domSubmitSuccessId}>
           <Message.Header>{uiTexts.updateSuccessMessage}</Message.Header>
 
@@ -118,7 +119,7 @@ export function CreateUpdateCloneResume(props: Props) {
         </Message>
       )}
 
-      {stateMachine.value === "serverErrors" && (
+      {stateMachine.value === StateValue.serverErrors && (
         <Message error={true} id={domSubmitServerErrorsId}>
           <Message.Header>Errors occurred</Message.Header>
 

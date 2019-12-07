@@ -1,8 +1,4 @@
-import {
-  FormFieldState,
-  FormFieldEditChanging,
-  FormFieldInvalid,
-} from "../components.types";
+import { FormFieldState, FormFieldInvalid } from "../components.types";
 import { ResumeTitlesFrag_edges_node } from "../../graphql/apollo-types/ResumeTitlesFrag";
 import {
   UpdateResumeMinimalProps,
@@ -17,6 +13,14 @@ import * as Yup from "yup";
 import { ValidationError } from "yup";
 import { UpdateResumeMinimalVariables } from "../../graphql/apollo-types/UpdateResumeMinimal";
 import { UpdateResumeErrorsFragment_errors } from "../../graphql/apollo-types/UpdateResumeErrorsFragment";
+
+export enum StateValue {
+  submitting = "submitting",
+  submitSuccess = "submitSuccess",
+  closed = "closed",
+  editable = "editable",
+  serverErrors = "serverErrors",
+}
 
 export enum Mode {
   create = "@mode/create",
@@ -36,7 +40,7 @@ export function initState(props: Props): StateMachine {
 
     effects: [] as StateMachineEffects,
 
-    value: "editable",
+    value: StateValue.editable,
     editable: {
       form: {
         context: {
@@ -204,10 +208,14 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
       return immer(prevState, proxy => {
         proxy.effects = [];
 
+        if (!canTransitionToNextState(prevState, action)) {
+          return;
+        }
+
         switch (type) {
           case ActionType.CLOSE:
             {
-              proxy.value = "closed";
+              proxy.value = StateValue.closed;
             }
 
             break;
@@ -238,30 +246,22 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
                 fieldName as KeyOfFormState
               ] as FormFieldState;
 
-              const editingState = fieldState.edit as FormFieldEditChanging;
+              const fieldValidity = fieldState.validity;
 
-              if (editingState.value === "changing") {
-                const fieldValidity = fieldState.validity;
-
-                try {
-                  validationSchema.validateSyncAt(
-                    fieldName,
-                    formState.context,
-                    {
-                      context: {
-                        mode: {
-                          value: "",
-                        },
-                      },
+              try {
+                validationSchema.validateSyncAt(fieldName, formState.context, {
+                  context: {
+                    mode: {
+                      value: "",
                     },
-                  );
+                  },
+                });
 
-                  fieldState.edit.value = "changed";
-                  fieldValidity.value = "valid";
-                } catch (error) {
-                  setFieldValidity(fieldValidity, error.message);
-                  formState.validity.value = "invalid";
-                }
+                fieldState.edit.value = "changed";
+                fieldValidity.value = "valid";
+              } catch (error) {
+                setFieldValidity(fieldValidity, error.message);
+                formState.validity.value = "invalid";
               }
             }
 
@@ -283,7 +283,7 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
                 formState.validity.value = "valid";
                 formFields.title.validity.value = "valid";
                 formFields.description.validity.value = "valid";
-                proxy.value = "submitting";
+                proxy.value = StateValue.submitting;
                 proxy.effects.push({
                   key: "pushToServer",
                   func: pushToServer,
@@ -310,8 +310,6 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
                     },
                   };
                 });
-
-                proxy.value = "editable";
               }
             }
 
@@ -329,14 +327,14 @@ export const reducer: Reducer<StateMachine, Action> = (_prevState, action) =>
                 },
               };
 
-              proxy.value = "submitSuccess";
+              proxy.value = StateValue.submitSuccess;
             }
 
             break;
 
           case ActionType.SERVER_ERRORS:
             {
-              proxy.value = "serverErrors";
+              proxy.value = StateValue.serverErrors;
               const stateMachine = proxy as ServerErrors;
               stateMachine.serverErrors = {
                 value: "fieldErrors",
@@ -461,18 +459,53 @@ export const uiTexts = {
   },
 };
 
+function canTransitionToNextState(
+  currentState: StateMachine,
+  { type, ...payload }: Action,
+) {
+  switch (type) {
+    case ActionType.FORM_CHANGED:
+      return true;
+
+    case ActionType.FORM_FIELD_BLURRED:
+      if (currentState.value === StateValue.editable) {
+        return (
+          currentState.editable.form.fields[
+            (payload as FormFieldBlurredPayload).fieldName
+          ].edit.value === "changing"
+        );
+      }
+
+      return false;
+
+    case ActionType.SUBMITTING:
+      return currentState.value === StateValue.editable;
+
+    case ActionType.SUBMIT_SUCCESS:
+    case ActionType.SERVER_ERRORS:
+      return currentState.value === StateValue.submitting;
+
+    case ActionType.CLOSE:
+      return currentState.value !== StateValue.submitting;
+
+    // istanbul ignore next:
+    default:
+      return false;
+  }
+}
+
 ////////////////////////// TYPES ////////////////////////////
 
 export type StateMachine = StateMachineMeta &
   (
     | {
-        value: "submitting";
+        value: StateValue.submitting;
       }
     | {
-        value: "submitSuccess";
+        value: StateValue.submitSuccess;
       }
     | {
-        value: "closed";
+        value: StateValue.closed;
       }
     | Editable
     | ServerErrors);
@@ -503,7 +536,7 @@ interface PushToServerArgs {
 }
 
 export interface Editable {
-  value: "editable";
+  value: StateValue.editable;
   editable: {
     form: EditableFormState;
   };
@@ -550,7 +583,7 @@ interface FormState {
 }
 
 interface ServerErrors {
-  value: "serverErrors";
+  value: StateValue.serverErrors;
   serverErrors:
     | {
         value: "fieldErrors";
@@ -637,4 +670,4 @@ type Action =
 
 export type Props = OwnProps & UpdateResumeMinimalProps;
 
-type ValidationSchemaShape = Editable["editable"]["form"]["context"];
+type ValidationSchemaShape = EditableFormState["context"];
